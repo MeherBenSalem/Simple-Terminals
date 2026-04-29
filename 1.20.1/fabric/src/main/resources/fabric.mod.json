@@ -1,0 +1,31 @@
+{
+    "schemaVersion": 1,
+    "id": "simple_terminals",
+    "version": "${version}",
+    "name": "${mod_name}",
+    "description": "${description}",
+    "authors": [
+        "${mod_author}"
+    ],
+    "contact": {
+        "homepage": "https://nightbeam.cloud",
+        "sources": "https://nightbeam.cloud"
+    },
+    "license": "${license}",
+    "environment": "*",
+    "entrypoints": {
+        "main": [
+            "com.nightbeam.simpleterminals.SimpleTerminals"
+        ],
+        "client": [
+            "com.nightbeam.simpleterminals.client.SimpleTerminalsClient"
+        ]
+    },
+    "depends": {
+        "fabricloader": ">=0.14",
+        "fabric": "*",
+        "minecraft": "${minecraft_version}",
+        "java": ">=17"
+    }
+}
+  

@@ -1,0 +1,34 @@
+{
+	"format_version": "1.9.0",
+	"credit": "Made with Blockbench",
+	"texture_size": [64, 64],
+	"textures": {
+		"0": "simple_terminals:block/terminal",
+		"particle": "simple_terminals:block/terminal"
+	},
+	"elements": [
+		{
+			"name": "terminal",
+			"from": [0, 0, 14],
+			"to": [16, 16, 16],
+			"rotation": {"angle": 0, "axis": "y", "origin": [8, 8, 15]},
+			"faces": {
+				"north": {"uv": [0, 4, 4, 8], "texture": "#0"},
+				"east": {"uv": [4, 4, 4.25, 8], "texture": "#0"},
+				"south": {"uv": [0, 0, 4, 4], "texture": "#0"},
+				"west": {"uv": [4, 0, 4.25, 4], "texture": "#0"},
+				"up": {"uv": [8.25, 0.25, 4.25, 0], "rotation": 180, "texture": "#0"},
+				"down": {"uv": [8.25, 0.25, 4.25, 0.5], "rotation": 180, "texture": "#0"}
+			}
+		}
+	],
+	"groups": [
+		{
+			"name": "core",
+			"origin": [0, 0, 1],
+			"scope": 0,
+			"color": 0,
+			"children": [0]
+		}
+	]
+}
