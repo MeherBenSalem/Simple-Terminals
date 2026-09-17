@@ -1,0 +1,32 @@
+# Build / IDE
+.gradle/
+**/build/
+**/run/
+**/runs/
+**/out/
+**/bin/
+.idea/
+.vscode/
+*.iml
+*.ipr
+*.iws
+.classpath
+.project
+.settings/
+.DS_Store
+Thumbs.db
+*.log
+
+# Release staging / secrets
+releases/
+secrets/
+*.env
+local.env
+
+# OS / temp
+*.tmp
+*.bak
+*~
+
+# Knowledge graph (local)
+graphify-out/

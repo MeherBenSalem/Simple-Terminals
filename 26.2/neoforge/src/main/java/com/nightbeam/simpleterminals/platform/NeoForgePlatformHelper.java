@@ -1,0 +1,368 @@
+package com.nightbeam.simpleterminals.platform;
+
+import com.nightbeam.simpleterminals.NeoForgeNetworking;
+import com.nightbeam.simpleterminals.menu.CraftingTerminalMenu;
+import com.nightbeam.simpleterminals.platform.services.IPlatformHelper;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.Container;
+import net.minecraft.world.MenuProvider;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.neoforged.fml.ModList;
+import net.neoforged.fml.loading.FMLEnvironment;
+import net.neoforged.neoforge.capabilities.Capabilities;
+import net.neoforged.neoforge.transfer.ResourceHandler;
+import net.neoforged.neoforge.transfer.item.ItemResource;
+import net.neoforged.neoforge.transfer.item.ItemUtil;
+import net.neoforged.neoforge.transfer.transaction.Transaction;
+
+import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Optional;
+
+public class NeoForgePlatformHelper implements IPlatformHelper {
+    @Override
+    public String getPlatformName() {
+        return "NeoForge";
+    }
+
+    @Override
+    public boolean isModLoaded(String modId) {
+        return ModList.get().isLoaded(modId);
+    }
+
+    @Override
+    public boolean isDevelopmentEnvironment() {
+        return !FMLEnvironment.isProduction();
+    }
+
+    @Override
+    public Optional<Container> findPlatformContainer(Level level, BlockPos targetPos, Direction accessSide) {
+        BlockEntity blockEntity = level.getBlockEntity(targetPos);
+        if (blockEntity == null) {
+            return Optional.empty();
+        }
+
+        Optional<Container> directHandler = getItemHandlerContainer(level, targetPos, blockEntity, accessSide);
+        if (directHandler.isPresent()) {
+            return directHandler;
+        }
+
+        if (isSophisticatedStorageController(blockEntity)) {
+            return getSophisticatedControllerContainer(level, blockEntity, accessSide);
+        }
+
+        return Optional.empty();
+    }
+
+    @Override
+    public void openCraftingTerminalMenu(ServerPlayer player, BlockPos targetPos, Direction accessSide, int slotCount, Component title) {
+        player.openMenu(new MenuProvider() {
+            @Override
+            public Component getDisplayName() {
+                return title;
+            }
+
+            @Override
+            public AbstractContainerMenu createMenu(int containerId, Inventory inventory, Player menuPlayer) {
+                return CraftingTerminalMenu.createServer(containerId, inventory, targetPos, accessSide);
+            }
+        }, buffer -> buffer.writeVarInt(slotCount));
+    }
+
+    @Override
+    public void sendCraftingTerminalScroll(int containerId, int offsetRows) {
+        NeoForgeNetworking.sendScrollToServer(containerId, offsetRows);
+    }
+
+    @Override
+    public void sendCraftingTerminalSearch(int containerId, String query) {
+        NeoForgeNetworking.sendSearchToServer(containerId, query);
+    }
+
+    private static Optional<Container> getItemHandlerContainer(Level level, BlockPos pos, BlockEntity blockEntity, Direction accessSide) {
+        Optional<Container> sided = resolveItemHandler(level.getCapability(Capabilities.Item.BLOCK, pos, accessSide), blockEntity);
+        if (sided.isPresent()) {
+            return sided;
+        }
+        Optional<Container> unsided = resolveItemHandler(level.getCapability(Capabilities.Item.BLOCK, pos, null), blockEntity);
+        if (unsided.isPresent()) {
+            return unsided;
+        }
+        for (Direction direction : Direction.values()) {
+            Optional<Container> directional = resolveItemHandler(level.getCapability(Capabilities.Item.BLOCK, pos, direction), blockEntity);
+            if (directional.isPresent()) {
+                return directional;
+            }
+        }
+        return Optional.empty();
+    }
+
+    private static Optional<Container> resolveItemHandler(ResourceHandler<ItemResource> handler, BlockEntity owner) {
+        if (handler == null || handler.size() <= 0) {
+            return Optional.empty();
+        }
+        return Optional.of(new ItemHandlerContainer(handler, owner));
+    }
+
+    private static boolean isSophisticatedStorageController(BlockEntity blockEntity) {
+        return "net.p3pp3rf1y.sophisticatedstorage.block.ControllerBlockEntity".equals(blockEntity.getClass().getName());
+    }
+
+    private static Optional<Container> getSophisticatedControllerContainer(Level level, BlockEntity controller, Direction accessSide) {
+        Collection<?> storagePositions = getStoragePositions(controller);
+        if (storagePositions.isEmpty()) {
+            return Optional.empty();
+        }
+
+        List<Container> containers = new ArrayList<>();
+        for (Object value : storagePositions) {
+            if (value instanceof BlockPos storagePos) {
+                BlockEntity storageBlockEntity = level.getBlockEntity(storagePos);
+                if (storageBlockEntity != null) {
+                    getItemHandlerContainer(level, storagePos, storageBlockEntity, accessSide).ifPresent(containers::add);
+                }
+            }
+        }
+
+        if (containers.isEmpty()) {
+            return Optional.empty();
+        }
+        if (containers.size() == 1) {
+            return Optional.of(containers.get(0));
+        }
+        return Optional.of(new CombinedContainer(containers, controller));
+    }
+
+    private static Collection<?> getStoragePositions(BlockEntity controller) {
+        try {
+            Method method = controller.getClass().getMethod("getStoragePositions");
+            Object result = method.invoke(controller);
+            if (result instanceof Collection<?> collection) {
+                return collection;
+            }
+        } catch (ReflectiveOperationException ignored) {
+        }
+        return List.of();
+    }
+
+    private static class ItemHandlerContainer implements Container {
+        private final ResourceHandler<ItemResource> handler;
+        private final BlockEntity owner;
+
+        ItemHandlerContainer(ResourceHandler<ItemResource> handler, BlockEntity owner) {
+            this.handler = handler;
+            this.owner = owner;
+        }
+
+        @Override
+        public int getContainerSize() {
+            return handler.size();
+        }
+
+        @Override
+        public boolean isEmpty() {
+            for (int slot = 0; slot < getContainerSize(); slot++) {
+                if (!getItem(slot).isEmpty()) {
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        @Override
+        public ItemStack getItem(int slot) {
+            return isValidSlot(slot) ? ItemUtil.getStack(handler, slot) : ItemStack.EMPTY;
+        }
+
+        @Override
+        public ItemStack removeItem(int slot, int amount) {
+            if (!isValidSlot(slot) || amount <= 0) {
+                return ItemStack.EMPTY;
+            }
+            ItemResource resource = handler.getResource(slot);
+            if (resource.isEmpty()) {
+                return ItemStack.EMPTY;
+            }
+            amount = Math.min(amount, resource.getMaxStackSize());
+            try (Transaction tx = Transaction.openRoot()) {
+                int extracted = handler.extract(slot, resource, amount, tx);
+                tx.commit();
+                return resource.toStack(extracted);
+            }
+        }
+
+        @Override
+        public ItemStack removeItemNoUpdate(int slot) {
+            ItemStack stack = getItem(slot);
+            return stack.isEmpty() ? ItemStack.EMPTY : removeItem(slot, stack.getCount());
+        }
+
+        @Override
+        public void setItem(int slot, ItemStack stack) {
+            if (!isValidSlot(slot)) {
+                return;
+            }
+
+            ItemStack current = getItem(slot).copy();
+            if (ItemStack.matches(current, stack) && current.getCount() == stack.getCount()) {
+                return;
+            }
+
+            ItemStack extracted = removeItem(slot, current.getCount());
+            ItemStack remainder = ItemUtil.insertItemReturnRemaining(handler, slot, stack.copy(), false, null);
+            if (!remainder.isEmpty()) {
+                ItemUtil.insertItemReturnRemaining(handler, slot, extracted, false, null);
+            }
+            setChanged();
+        }
+
+        @Override
+        public void setChanged() {
+            owner.setChanged();
+        }
+
+        @Override
+        public boolean stillValid(Player player) {
+            return owner.getLevel() != null && !owner.isRemoved()
+                    && player.distanceToSqr(owner.getBlockPos().getX() + 0.5D, owner.getBlockPos().getY() + 0.5D, owner.getBlockPos().getZ() + 0.5D) <= 64.0D;
+        }
+
+        @Override
+        public void clearContent() {
+            for (int slot = 0; slot < getContainerSize(); slot++) {
+                setItem(slot, ItemStack.EMPTY);
+            }
+        }
+
+        @Override
+        public boolean canPlaceItem(int slot, ItemStack stack) {
+            if (!isValidSlot(slot)) {
+                return false;
+            }
+            ItemStack leftover = ItemUtil.insertItemReturnRemaining(handler, slot, stack.copy(), true, null);
+            return leftover.getCount() < stack.getCount();
+        }
+
+        @Override
+        public int getMaxStackSize() {
+            return 64;
+        }
+
+        private boolean isValidSlot(int slot) {
+            return slot >= 0 && slot < getContainerSize();
+        }
+    }
+
+    private static class CombinedContainer implements Container {
+        private final List<Container> containers;
+        private final BlockEntity owner;
+        private final int size;
+
+        CombinedContainer(List<Container> containers, BlockEntity owner) {
+            this.containers = List.copyOf(containers);
+            this.owner = owner;
+            int totalSize = 0;
+            for (Container container : containers) {
+                totalSize += container.getContainerSize();
+            }
+            size = totalSize;
+        }
+
+        @Override
+        public int getContainerSize() {
+            return size;
+        }
+
+        @Override
+        public boolean isEmpty() {
+            for (Container container : containers) {
+                if (!container.isEmpty()) {
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        @Override
+        public ItemStack getItem(int slot) {
+            SlotRef ref = resolve(slot);
+            return ref == null ? ItemStack.EMPTY : ref.container.getItem(ref.slot);
+        }
+
+        @Override
+        public ItemStack removeItem(int slot, int amount) {
+            SlotRef ref = resolve(slot);
+            return ref == null ? ItemStack.EMPTY : ref.container.removeItem(ref.slot, amount);
+        }
+
+        @Override
+        public ItemStack removeItemNoUpdate(int slot) {
+            SlotRef ref = resolve(slot);
+            return ref == null ? ItemStack.EMPTY : ref.container.removeItemNoUpdate(ref.slot);
+        }
+
+        @Override
+        public void setItem(int slot, ItemStack stack) {
+            SlotRef ref = resolve(slot);
+            if (ref != null) {
+                ref.container.setItem(ref.slot, stack);
+            }
+        }
+
+        @Override
+        public void setChanged() {
+            containers.forEach(Container::setChanged);
+            owner.setChanged();
+        }
+
+        @Override
+        public boolean stillValid(Player player) {
+            return owner.getLevel() != null && !owner.isRemoved()
+                    && containers.stream().allMatch(container -> container.stillValid(player));
+        }
+
+        @Override
+        public void clearContent() {
+            containers.forEach(Container::clearContent);
+        }
+
+        @Override
+        public boolean canPlaceItem(int slot, ItemStack stack) {
+            SlotRef ref = resolve(slot);
+            return ref != null && ref.container.canPlaceItem(ref.slot, stack);
+        }
+
+        @Override
+        public int getMaxStackSize() {
+            return containers.stream().mapToInt(Container::getMaxStackSize).min().orElse(64);
+        }
+
+        private SlotRef resolve(int slot) {
+            if (slot < 0) {
+                return null;
+            }
+            int remaining = slot;
+            for (Container container : containers) {
+                int containerSize = container.getContainerSize();
+                if (remaining < containerSize) {
+                    return new SlotRef(container, remaining);
+                }
+                remaining -= containerSize;
+            }
+            return null;
+        }
+
+        private record SlotRef(Container container, int slot) {
+        }
+    }
+}
