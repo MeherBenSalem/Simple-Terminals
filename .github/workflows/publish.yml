@@ -12,8 +12,6 @@
 # Repo variables:
 #   MODRINTH_ID
 #   CURSEFORGE_ID
-#   DEFAULT_LOADER (optional; e.g. paper for plugins when jar name has no loader)
-#   DEFAULT_GAME_VERSION (optional; e.g. 1.21.1 when jar name has no MC version)
 #
 # Usage after a release build is ready:
 #   git tag v1.2.3 && git push --tags
@@ -49,44 +47,54 @@ jobs:
       - name: Resolve version
         id: ver
         shell: bash
+        env:
+          INPUT_VERSION: ${{ inputs.version }}
         run: |
-          if [[ "${{ github.ref }}" == refs/tags/v* ]]; then
-            echo "version=${GITHUB_REF_NAME#v}" >> "$GITHUB_OUTPUT"
-          elif [[ -n "${{ inputs.version }}" ]]; then
-            echo "version=${{ inputs.version }}" >> "$GITHUB_OUTPUT"
+          set -euo pipefail
+          if [[ "$GITHUB_REF" == refs/tags/v* ]]; then
+            VERSION="${GITHUB_REF_NAME#v}"
+          elif [[ -n "$INPUT_VERSION" ]]; then
+            VERSION="$INPUT_VERSION"
           else
             echo "Provide a v*.*.* tag or workflow_dispatch version" >&2
             exit 1
           fi
+          [[ "$VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+([-+][0-9A-Za-z.-]+)?$ ]] || exit 1
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
 
       - name: Find prebuilt release jars
         id: prebuilt
         shell: bash
         run: |
-          VERSION="${{ steps.ver.outputs.version }}"
-          mapfile -t JARS < <(find releases -maxdepth 1 -type f -name "*-${VERSION}.jar" \
-            ! -name "*-sources.jar" ! -name "*-javadoc.jar" \
-            ! -name "*-common-*" ! -name "*-dev*.jar" 2>/dev/null | sort)
-          if [ ${#JARS[@]} -gt 0 ]; then
+          set -euo pipefail
+          if [ -d releases ] && [ -n "$(find releases -type f -name '*.jar' -print -quit)" ]; then
             echo "found=true" >> "$GITHUB_OUTPUT"
-            EOF=$(dd if=/dev/urandom bs=15 count=1 status=none | base64)
-            echo "list<<$EOF" >> "$GITHUB_OUTPUT"
-            printf '%s\n' "${JARS[@]}" >> "$GITHUB_OUTPUT"
-            echo "$EOF" >> "$GITHUB_OUTPUT"
-            printf 'Using prebuilt jars:\n'
-            printf '%s\n' "${JARS[@]}"
+            echo "Prebuilt release directory found; the complete set must pass the release guard"
           else
             echo "found=false" >> "$GITHUB_OUTPUT"
-            echo "No releases/*-${VERSION}.jar — will attempt Gradle build"
+            echo "No prebuilt jars; build all six loader artifacts"
           fi
 
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
       - uses: actions/setup-java@v4
-        if: steps.prebuilt.outputs.found != 'true'
         with:
           distribution: temurin
           java-version: |
+            17
             21
             25
+
+      - name: Verify source resources and release guard tests
+        run: python3 -m unittest discover -s tests -v
+
+      - name: Test native Minecraft recipe and loot implementations
+        run: python3 tests/native_recipe/run.py --java "$JAVA_HOME_25_X64/bin/java"
+
+      - name: Test native 26.2 registry-property construction
+        run: python3 tests/native_registry_ids/run.py --java "$JAVA_HOME_25_X64/bin/java"
 
       - uses: gradle/actions/setup-gradle@v4
         if: steps.prebuilt.outputs.found != 'true'
@@ -96,64 +104,26 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          built=0
           for ws in 1.20.1 1.21.1 26.2; do
-            if [ -f "$ws/gradlew" ] || [ -f "$ws/settings.gradle" ] || [ -f "$ws/settings.gradle.kts" ]; then
-              echo "Building workspace $ws"
-              (
-                cd "$ws"
-                chmod +x gradlew 2>/dev/null || true
-                if [ -f gradlew ]; then ./gradlew build --no-daemon
-                else gradle build --no-daemon
-                fi
-              )
-              built=1
-            fi
+            case "$ws" in
+              26.2) build_java="$JAVA_HOME_25_X64" ;;
+              *) build_java="$JAVA_HOME_21_X64" ;;
+            esac
+            echo "Building workspace $ws with $build_java"
+            (
+              cd "$ws"
+              export JAVA_HOME="$build_java"
+              export PATH="$JAVA_HOME/bin:$PATH"
+              bash gradlew clean build --no-daemon --stacktrace
+            )
           done
-          if [ -f gradlew ] || [ -f settings.gradle ] || [ -f settings.gradle.kts ]; then
-            chmod +x gradlew 2>/dev/null || true
-            if [ -f gradlew ]; then ./gradlew build --no-daemon
-            else gradle build --no-daemon
-            fi
-            built=1
-          fi
-          if [ "$built" -eq 0 ]; then
-            echo "No Gradle project found at repo root or known workspaces" >&2
-            exit 1
-          fi
 
-      - name: Find jars
-        id: jars
-        shell: bash
+      - name: Validate complete packaged release and version-specific notes
+        env:
+          VERSION: ${{ steps.ver.outputs.version }}
         run: |
-          VERSION="${{ steps.ver.outputs.version }}"
-          mapfile -t JARS < <(find releases -maxdepth 1 -type f -name "*-${VERSION}.jar" 2>/dev/null | sort)
-          if [ ${#JARS[@]} -eq 0 ]; then
-            mapfile -t JARS < <(find . -type f -path "*/build/libs/*-${VERSION}.jar" \
-              ! -name "*-sources.jar" ! -name "*-javadoc.jar" \
-              ! -name "*-dev.jar" ! -name "*-dev-shadow.jar" \
-              ! -name "*-common-*" ! -path "*/common/build/*" | sort)
-          fi
-          # Drop empty / near-empty jars (broken remapJar outputs)
-          FILTERED=()
-          for j in "${JARS[@]}"; do
-            size=$(stat -c%s "$j" 2>/dev/null || stat -f%z "$j")
-            if [ "$size" -lt 1024 ]; then
-              echo "Skipping empty/tiny jar ($size bytes): $j" >&2
-              continue
-            fi
-            FILTERED+=("$j")
-          done
-          JARS=("${FILTERED[@]}")
-          if [ ${#JARS[@]} -eq 0 ]; then
-            echo "No jars found for version ${VERSION}" >&2
-            exit 1
-          fi
-          printf '%s\n' "${JARS[@]}"
-          EOF=$(dd if=/dev/urandom bs=15 count=1 status=none | base64)
-          echo "list<<$EOF" >> "$GITHUB_OUTPUT"
-          printf '%s\n' "${JARS[@]}" >> "$GITHUB_OUTPUT"
-          echo "$EOF" >> "$GITHUB_OUTPUT"
+          python3 scripts/release_guard.py --version "$VERSION" \
+            --manifest .release-manifest.json --notes .release-notes.md
 
       - uses: actions/setup-node@v4
         with:
@@ -165,13 +135,12 @@ jobs:
           MODRINTH_TOKEN: ${{ secrets.MODRINTH_TOKEN }}
           CURSEFORGE_TOKEN: ${{ secrets.CURSEFORGE_TOKEN }}
           CURSEFORGE_API_KEY: ${{ secrets.CURSEFORGE_API_KEY }}
-          MODRINTH_ID: ${{ vars.MODRINTH_ID }}
-          CURSEFORGE_ID: ${{ vars.CURSEFORGE_ID }}
+          MODRINTH_ID: ${{ vars.MODRINTH_ID || 'Ss3e4qjk' }}
+          CURSEFORGE_ID: ${{ vars.CURSEFORGE_ID || '1528758' }}
           VERSION: ${{ steps.ver.outputs.version }}
-          JAR_LIST: ${{ steps.jars.outputs.list }}
+          RELEASE_MANIFEST: .release-manifest.json
+          RELEASE_NOTES: .release-notes.md
           PLATFORMS: ${{ inputs.platforms || 'both' }}
-          DEFAULT_LOADER: ${{ vars.DEFAULT_LOADER }}
-          DEFAULT_GAME_VERSION: ${{ vars.DEFAULT_GAME_VERSION }}
         shell: bash
         run: |
           set -euo pipefail
@@ -179,61 +148,38 @@ jobs:
           node <<'NODE'
           const fs = require('fs');
           const path = require('path');
+          const crypto = require('crypto');
+          // Verified public Simple Terminals project IDs. Never publish to a different configured project.
+          if (process.env.MODRINTH_ID !== 'Ss3e4qjk' || process.env.CURSEFORGE_ID !== '1528758') {
+            throw new Error('Configured publish destination is not the verified Simple Terminals project');
+          }
           const version = process.env.VERSION;
           const platforms = (process.env.PLATFORMS || 'both').toLowerCase();
+          if (!['both', 'modrinth', 'curseforge'].includes(platforms)) {
+            throw new Error('Unsupported publish platforms: ' + platforms);
+          }
           const doModrinth = platforms === 'both' || platforms === 'modrinth';
           const doCurse = platforms === 'both' || platforms === 'curseforge';
-          const jars = process.env.JAR_LIST.split(/\n/).map(s => s.trim()).filter(Boolean);
-          if (!jars.length) throw new Error('No jars to upload');
-
-          function resolveChangelog(ver) {
-            const candidates = [
-              `CHANGELOG.md`,
-              `PATCH_NOTES.md`,
-              ...fs.readdirSync('.').filter((f) =>
-                f.toLowerCase().endsWith(`-${ver}-patchnotes.md`) ||
-                f.toLowerCase() === `${ver}-patchnotes.md`
-              ),
-            ];
-            for (const f of candidates) {
-              if (fs.existsSync(f)) return fs.readFileSync(f, 'utf8');
-            }
-            return `Release ${ver}`;
+          const manifest = JSON.parse(fs.readFileSync(process.env.RELEASE_MANIFEST, 'utf8'));
+          if (manifest.version !== version || manifest.artifacts.length !== 6) {
+            throw new Error('Missing or mismatched validated release manifest');
           }
-          const changelog = resolveChangelog(version);
+          // Check all six artifacts before the first API request and reuse exactly these bytes.
+          const jars = manifest.artifacts.map((artifact) => {
+            const bytes = fs.readFileSync(artifact.path);
+            for (const algorithm of ['sha256', 'sha1', 'sha512']) {
+              const digest = crypto.createHash(algorithm).update(bytes).digest('hex');
+              if (digest !== artifact.hashes?.[algorithm]) {
+                throw new Error('Artifact hash mismatch: ' + path.basename(artifact.path) + ' (' + algorithm + ')');
+              }
+            }
+            return { ...artifact, bytes };
+          });
+          const changelog = fs.readFileSync(process.env.RELEASE_NOTES, 'utf8');
+          if (!changelog.trim()) throw new Error('Missing version-specific release notes');
 
           // Stable CurseForge loader version IDs (Upload API Game Versions docs)
-          const LOADER_IDS = { fabric: 7499, forge: 7498, neoforge: 10150, quilt: 9153 };
-
-          function detect(jar) {
-            const n = path.basename(jar).toLowerCase();
-            const p = jar.replace(/\\/g, '/').toLowerCase();
-            let loader = null;
-            if (n.includes('neoforge') || p.includes('/neoforge/')) loader = 'neoforge';
-            else if (n.includes('fabric') || p.includes('/fabric/')) loader = 'fabric';
-            else if (n.includes('quilt') || p.includes('/quilt/')) loader = 'quilt';
-            else if (n.includes('forge') || p.includes('/forge/')) loader = 'forge';
-            else if (
-              n.includes('paper') || n.includes('bukkit') || n.includes('spigot') ||
-              n.includes('folia') || n.includes('purpur') ||
-              fs.existsSync('src/main/resources/plugin.yml') ||
-              fs.existsSync('plugin.yml')
-            ) {
-              loader = 'paper';
-            } else if (process.env.DEFAULT_LOADER) {
-              loader = process.env.DEFAULT_LOADER.toLowerCase();
-            } else {
-              loader = 'fabric';
-            }
-            let gv = null;
-            const m26 = n.match(/(?:^|-)(26\.\d+(?:\.\d+)?)(?:-|$)/);
-            const m1 = n.match(/(?:^|-)(1\.\d+(?:\.\d+)?)(?:-|$)/);
-            if (m26) gv = m26[1];
-            else if (m1) gv = m1[1];
-            // Plugin-only projects often omit MC in the jar name; allow override
-            if (!gv && process.env.DEFAULT_GAME_VERSION) gv = process.env.DEFAULT_GAME_VERSION;
-            return { loader, gv };
-          }
+          const LOADER_IDS = { fabric: 7499, forge: 7498, neoforge: 10150 };
 
           function flattenVersions(payload) {
             const flat = [];
@@ -259,9 +205,9 @@ jobs:
           (async () => {
             if (doModrinth) {
               let uploaded = 0;
-              for (const jar of jars) {
-                const { loader, gv } = detect(jar);
-                const gameVersions = gv ? [gv] : ['1.21.1'];
+              for (const artifact of jars) {
+                const { path: jar, loader, minecraft: gv } = artifact;
+                const gameVersions = [gv];
                 // One Modrinth version per jar — never multi-file attach across loaders/MC lines
                 const body = {
                   name: `${version} · ${loader} · ${gameVersions[0]}`,
@@ -270,7 +216,7 @@ jobs:
                   dependencies: [],
                   game_versions: gameVersions,
                   version_type: 'release',
-                  loaders: [loader === 'paper' ? 'paper' : loader],
+                  loaders: [loader],
                   featured: false,
                   status: 'listed',
                   project_id: process.env.MODRINTH_ID,
@@ -279,7 +225,7 @@ jobs:
                 };
                 const form = new FormData();
                 form.append('data', JSON.stringify(body));
-                form.append('file_0', new Blob([fs.readFileSync(jar)]), path.basename(jar));
+                form.append('file_0', new Blob([artifact.bytes]), path.basename(jar));
                 const mrRes = await fetch('https://api.modrinth.com/v2/version', {
                   method: 'POST',
                   headers: { Authorization: process.env.MODRINTH_TOKEN },
@@ -322,9 +268,8 @@ jobs:
             if (!flat.length) throw new Error('No CurseForge game versions resolved');
 
             let uploaded = 0;
-            for (const jar of jars) {
-              const { loader, gv } = detect(jar);
-              const want = gv || '1.21.1';
+            for (const artifact of jars) {
+              const { path: jar, loader, minecraft: want } = artifact;
               const mcId = findVersionId(flat, want);
               const loaderId = LOADER_IDS[loader];
               const clientId = findVersionId(flat, 'Client');
@@ -332,7 +277,6 @@ jobs:
               if (mcId == null) {
                 throw new Error('No CurseForge game version id for ' + want + ' (' + path.basename(jar) + ')');
               }
-              // Paper/plugins may not have a CF loader tag; still upload with MC + env tags
               const gameVersions = [mcId];
               if (loaderId != null) gameVersions.push(loaderId);
               if (clientId != null) gameVersions.push(clientId);
@@ -350,7 +294,7 @@ jobs:
               if (gameVersionNames.length) meta.gameVersionNames = gameVersionNames;
               const cfForm = new FormData();
               cfForm.append('metadata', JSON.stringify(meta));
-              cfForm.append('file', new Blob([fs.readFileSync(jar)]), path.basename(jar));
+              cfForm.append('file', new Blob([artifact.bytes]), path.basename(jar));
               const cfRes = await fetch(
                 `https://minecraft.curseforge.com/api/projects/${process.env.CURSEFORGE_ID}/upload-file`,
                 { method: 'POST', headers: { 'X-Api-Token': process.env.CURSEFORGE_TOKEN }, body: cfForm },
