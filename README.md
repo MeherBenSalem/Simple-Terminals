@@ -44,6 +44,23 @@ cd ..\26.2
 .\gradlew.bat build
 ```
 
+## Testing
+
+Run source-resource regressions with `python3 -m unittest discover -s tests -v`.
+Run the native Minecraft recipe suite with a JDK 25+:
+`python3 tests/native_recipe/run.py --java "$JAVA_HOME/bin/java"`.
+Also run `python3 tests/native_registry_ids/run.py --java "$JAVA_HOME/bin/java"`
+for the 26.2 registry-property regression.
+See [the native test instructions](tests/native_recipe/README.md) for coverage,
+verified download caching, and loader/UI integration limits.
+
+After building, validate each distributable loader jar with
+`python3 tests/test_terminal_recipe_resources.py --jar 1.21.1:path/to/loader.jar -v`
+(substitute its Minecraft version; repeat `--jar` for multiple artifacts).
+The non-publishing **Verify recipes and builds** workflow runs native tests,
+builds all six supported loader targets, and validates their packaged survival resources.
+The separate publish workflow remains tag/manual-triggered.
+
 ## Project layout
 
 ```

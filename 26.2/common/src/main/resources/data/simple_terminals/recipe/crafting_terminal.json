@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    " R ",
+    "DTC",
+    "   "
+  ],
+  "key": {
+    "R": "minecraft:redstone_torch",
+    "D": "minecraft:diamond",
+    "T": "minecraft:crafting_table",
+    "C": "minecraft:chest"
+  },
+  "result": {
+    "count": 1,
+    "id": "simple_terminals:crafting_terminal"
+  }
+}

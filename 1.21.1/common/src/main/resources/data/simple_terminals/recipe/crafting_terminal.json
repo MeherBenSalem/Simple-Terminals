@@ -20,7 +20,7 @@
     }
   },
   "result": {
-    "item": "simple_terminals:crafting_terminal",
-    "count": 1
+    "count": 1,
+    "id": "simple_terminals:crafting_terminal"
   }
 }

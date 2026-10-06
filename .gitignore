@@ -30,3 +30,7 @@ local.env
 
 # Knowledge graph (local)
 graphify-out/
+
+# Python regression-test caches
+__pycache__/
+*.pyc
