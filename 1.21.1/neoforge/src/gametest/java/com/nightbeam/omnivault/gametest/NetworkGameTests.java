@@ -378,4 +378,55 @@ public class NetworkGameTests {
             helper.succeed();
         });
     }
+
+    @GameTest(template = "floor_9x9")
+    public static void destructorBreaksBlocksIntoTheNetwork(GameTestHelper helper) {
+        spine(helper);
+        driveWithCell(helper, new BlockPos(3, 1, 5), CellTier.T4K);
+        facing(helper, new BlockPos(5, 1, 5), NetworkContent.DESTRUCTOR.get(), Direction.SOUTH);
+        helper.setBlock(new BlockPos(5, 1, 6), Blocks.STONE);
+        helper.succeedWhen(() -> {
+            helper.assertBlockPresent(Blocks.AIR, new BlockPos(5, 1, 6));
+            helper.assertTrue(network(helper).storage().getCount(ItemKey.of(new ItemStack(Items.COBBLESTONE))) == 1, "stone mined into cobblestone");
+        });
+    }
+
+    @GameTest(template = "floor_9x9")
+    public static void destructorLeavesContainersAlone(GameTestHelper helper) {
+        spine(helper);
+        driveWithCell(helper, new BlockPos(3, 1, 5), CellTier.T4K);
+        facing(helper, new BlockPos(5, 1, 5), NetworkContent.DESTRUCTOR.get(), Direction.SOUTH);
+        helper.setBlock(new BlockPos(5, 1, 6), Blocks.CHEST);
+        helper.runAfterDelay(45, () -> {
+            helper.assertBlockPresent(Blocks.CHEST, new BlockPos(5, 1, 6));
+            helper.succeed();
+        });
+    }
+
+    @GameTest(template = "floor_9x9")
+    public static void constructorPlacesBlocksFromTheNetwork(GameTestHelper helper) {
+        spine(helper);
+        driveWithCell(helper, new BlockPos(3, 1, 5), CellTier.T4K);
+        facing(helper, new BlockPos(5, 1, 5), NetworkContent.CONSTRUCTOR.get(), Direction.SOUTH);
+        var constructor = (com.nightbeam.omnivault.network.block.ConstructorBlockEntity) helper.getBlockEntity(new BlockPos(5, 1, 5));
+        constructor.filter().setItem(0, new ItemStack(Items.OAK_LOG));
+        // The template's floor occupies relative y = 1, so clear the space the constructor fills.
+        helper.setBlock(new BlockPos(5, 1, 6), Blocks.AIR);
+        helper.runAfterDelay(5, () -> network(helper).storage().insert(ItemKey.of(new ItemStack(Items.OAK_LOG)), 3, false));
+        helper.succeedWhen(() -> {
+            helper.assertBlockPresent(Blocks.OAK_LOG, new BlockPos(5, 1, 6));
+            helper.assertTrue(network(helper).storage().getCount(ItemKey.of(new ItemStack(Items.OAK_LOG))) == 2, "one log was used");
+        });
+    }
+
+    @GameTest(template = "floor_9x9")
+    public static void storageMonitorTracksCount(GameTestHelper helper) {
+        spine(helper);
+        driveWithCell(helper, new BlockPos(3, 1, 5), CellTier.T4K);
+        helper.setBlock(new BlockPos(5, 1, 5), NetworkContent.STORAGE_MONITOR.get().defaultBlockState().setValue(OrientedDeviceBlock.FACING, Direction.SOUTH));
+        var monitor = (com.nightbeam.omnivault.network.block.StorageMonitorBlockEntity) helper.getBlockEntity(new BlockPos(5, 1, 5));
+        monitor.setDisplayed(new ItemStack(Items.GLOWSTONE_DUST));
+        helper.runAfterDelay(5, () -> network(helper).storage().insert(ItemKey.of(new ItemStack(Items.GLOWSTONE_DUST)), 321, false));
+        helper.succeedWhen(() -> helper.assertTrue(monitor.count() == 321, "monitor shows the network count"));
+    }
 }

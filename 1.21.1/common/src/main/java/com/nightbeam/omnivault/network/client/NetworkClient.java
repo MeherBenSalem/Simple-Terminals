@@ -37,6 +37,7 @@ public final class NetworkClient {
             r.screen(NetworkContent.CORE_MENU, CoreScreen::new);
             r.blockEntityRenderer(NetworkContent.DRIVE_BE, DriveRenderer::new);
             r.blockEntityRenderer(NetworkContent.NEXUS_CORE_BE, CoreRenderer::new);
+            r.blockEntityRenderer(NetworkContent.STORAGE_MONITOR_BE, StorageMonitorRenderer::new);
             r.standaloneModel(DriveRenderer.CELL);
             r.standaloneModel(DriveRenderer.LED);
             r.standaloneModel(CoreRenderer.CRYSTAL);

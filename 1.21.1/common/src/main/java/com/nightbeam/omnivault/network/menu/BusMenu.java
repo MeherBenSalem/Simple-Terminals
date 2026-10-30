@@ -20,7 +20,7 @@ import org.jetbrains.annotations.Nullable;
 /** Shared screen for import, export and storage buses: filter, upgrades and mode buttons. */
 public class BusMenu extends OVMenu {
     public enum Kind {
-        IMPORT, EXPORT, STORAGE
+        IMPORT, EXPORT, STORAGE, DESTRUCTOR, CONSTRUCTOR
     }
 
     public static final int FILTER_X = 62;

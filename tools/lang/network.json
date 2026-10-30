@@ -83,5 +83,8 @@
   "gui.omnivault.terminal.mode.fluids": "Showing fluids (click for items)",
   "gui.omnivault.terminal.fluid_amount": "%s mB",
   "gui.omnivault.terminal.fluid_hint": "Click with an empty bucket to fill it; click with a full bucket to empty it",
-  "gui.omnivault.terminal.fluid_summary": "%s fluids"
+  "gui.omnivault.terminal.fluid_summary": "%s fluids",
+  "block.omnivault.destructor": "Destructor",
+  "block.omnivault.constructor": "Constructor",
+  "block.omnivault.storage_monitor": "Storage Monitor"
 }

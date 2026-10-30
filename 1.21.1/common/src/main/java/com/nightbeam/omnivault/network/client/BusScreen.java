@@ -21,7 +21,7 @@ public class BusScreen extends AbstractContainerScreen<BusMenu> {
     @Override
     protected void init() {
         super.init();
-        if (menu.kind() != BusMenu.Kind.EXPORT) {
+        if (menu.kind() != BusMenu.Kind.EXPORT && menu.kind() != BusMenu.Kind.CONSTRUCTOR) {
             addRenderableWidget(new OVButton(leftPos + 8, topPos + 22, 18, 18,
                     () -> Component.literal(menu.denyList() ? "✖" : "✔"),
                     () -> Component.translatable(menu.denyList() ? "gui.omnivault.filter.deny" : "gui.omnivault.filter.allow"),

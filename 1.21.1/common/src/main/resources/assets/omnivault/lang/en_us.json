@@ -1,5 +1,7 @@
 {
+  "block.omnivault.constructor": "Constructor",
   "block.omnivault.crafting_terminal": "Crafting Terminal",
+  "block.omnivault.destructor": "Destructor",
   "block.omnivault.drive": "Cell Drive",
   "block.omnivault.export_bus": "Export Bus",
   "block.omnivault.import_bus": "Import Bus",
@@ -9,6 +11,7 @@
   "block.omnivault.omnium_block": "Block of Omnium",
   "block.omnivault.signal_emitter": "Signal Emitter",
   "block.omnivault.storage_bus": "Storage Bus",
+  "block.omnivault.storage_monitor": "Storage Monitor",
   "block.omnivault.terminal": "Storage Terminal",
   "block.omnivault.wireless_transmitter": "Wireless Transmitter",
   "gui.omnivault.access.both": "Insert and extract",

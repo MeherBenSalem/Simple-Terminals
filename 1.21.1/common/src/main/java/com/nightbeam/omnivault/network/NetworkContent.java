@@ -1,6 +1,8 @@
 package com.nightbeam.omnivault.network;
 
 import com.nightbeam.omnivault.network.block.CableBlock;
+import com.nightbeam.omnivault.network.block.ConstructorBlockEntity;
+import com.nightbeam.omnivault.network.block.DestructorBlockEntity;
 import com.nightbeam.omnivault.network.block.DirectionalDeviceBlock;
 import com.nightbeam.omnivault.network.block.DriveBlockEntity;
 import com.nightbeam.omnivault.network.block.ExportBusBlockEntity;
@@ -12,6 +14,8 @@ import com.nightbeam.omnivault.network.block.OrientedDeviceBlock;
 import com.nightbeam.omnivault.network.block.SignalEmitterBlock;
 import com.nightbeam.omnivault.network.block.SignalEmitterBlockEntity;
 import com.nightbeam.omnivault.network.block.StorageBusBlockEntity;
+import com.nightbeam.omnivault.network.block.StorageMonitorBlock;
+import com.nightbeam.omnivault.network.block.StorageMonitorBlockEntity;
 import com.nightbeam.omnivault.network.block.TerminalBlock;
 import com.nightbeam.omnivault.network.block.TerminalBlockEntity;
 import com.nightbeam.omnivault.network.block.WirelessTransmitterBlock;
@@ -86,6 +90,12 @@ public final class NetworkContent {
                     return true;
                 }
             });
+    public static final Supplier<DirectionalDeviceBlock> DESTRUCTOR = ModRegistry.blockWithItem("destructor",
+            () -> new DirectionalDeviceBlock(DestructorBlockEntity::new, BUS_SHAPE, device().noOcclusion()));
+    public static final Supplier<DirectionalDeviceBlock> CONSTRUCTOR = ModRegistry.blockWithItem("constructor",
+            () -> new DirectionalDeviceBlock(ConstructorBlockEntity::new, BUS_SHAPE, device().noOcclusion()));
+    public static final Supplier<StorageMonitorBlock> STORAGE_MONITOR = ModRegistry.blockWithItem("storage_monitor",
+            () -> new StorageMonitorBlock(device().lightLevel(NetworkContent::screenLight)));
     public static final Supplier<SignalEmitterBlock> SIGNAL_EMITTER = ModRegistry.blockWithItem("signal_emitter",
             () -> new SignalEmitterBlock(SignalEmitterBlockEntity::new, EMITTER_SHAPE, device().noOcclusion()));
     public static final Supplier<WirelessTransmitterBlock> WIRELESS_TRANSMITTER = ModRegistry.blockWithItem("wireless_transmitter",
@@ -133,6 +143,9 @@ public final class NetworkContent {
     public static final Supplier<BlockEntityType<ExportBusBlockEntity>> EXPORT_BUS_BE = ModRegistry.blockEntity("export_bus", ExportBusBlockEntity::new, EXPORT_BUS);
     public static final Supplier<BlockEntityType<StorageBusBlockEntity>> STORAGE_BUS_BE = ModRegistry.blockEntity("storage_bus", StorageBusBlockEntity::new, STORAGE_BUS);
     public static final Supplier<BlockEntityType<NetworkPortBlockEntity>> NETWORK_PORT_BE = ModRegistry.blockEntity("network_port", NetworkPortBlockEntity::new, NETWORK_PORT);
+    public static final Supplier<BlockEntityType<DestructorBlockEntity>> DESTRUCTOR_BE = ModRegistry.blockEntity("destructor", DestructorBlockEntity::new, DESTRUCTOR);
+    public static final Supplier<BlockEntityType<ConstructorBlockEntity>> CONSTRUCTOR_BE = ModRegistry.blockEntity("constructor", ConstructorBlockEntity::new, CONSTRUCTOR);
+    public static final Supplier<BlockEntityType<StorageMonitorBlockEntity>> STORAGE_MONITOR_BE = ModRegistry.blockEntity("storage_monitor", StorageMonitorBlockEntity::new, STORAGE_MONITOR);
     public static final Supplier<BlockEntityType<SignalEmitterBlockEntity>> SIGNAL_EMITTER_BE = ModRegistry.blockEntity("signal_emitter", SignalEmitterBlockEntity::new, SIGNAL_EMITTER);
     public static final Supplier<BlockEntityType<WirelessTransmitterBlockEntity>> WIRELESS_TRANSMITTER_BE = ModRegistry.blockEntity("wireless_transmitter", WirelessTransmitterBlockEntity::new, WIRELESS_TRANSMITTER);
 
