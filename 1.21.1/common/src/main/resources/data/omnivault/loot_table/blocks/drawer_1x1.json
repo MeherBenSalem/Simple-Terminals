@@ -1,0 +1,29 @@
+{
+  "type": "minecraft:block",
+  "pools": [
+    {
+      "rolls": 1,
+      "bonus_rolls": 0,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "omnivault:drawer_1x1",
+          "functions": [
+            {
+              "function": "minecraft:copy_components",
+              "source": "block_entity",
+              "include": [
+                "minecraft:custom_name",
+                "omnivault:drawer_contents",
+                "omnivault:compacting_contents",
+                "omnivault:drawer_locked",
+                "omnivault:drawer_upgrades"
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "random_sequence": "omnivault:blocks/drawer_1x1"
+}

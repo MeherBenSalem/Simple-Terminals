@@ -1,5 +1,6 @@
 package com.nightbeam.omnivault.client;
 
+import com.nightbeam.omnivault.drawer.client.DrawerClient;
 import com.nightbeam.omnivault.autocraft.client.AutocraftClient;
 import com.nightbeam.omnivault.network.client.NetworkClient;
 import com.nightbeam.omnivault.physical.client.PhysicalClient;
@@ -27,6 +28,7 @@ public final class OmniVaultClient {
         PhysicalClient.init();
         BackpackClient.init();
         AutocraftClient.init();
+        DrawerClient.init();
     }
 
     public static void registration(Consumer<ClientRegistrar> registration) {

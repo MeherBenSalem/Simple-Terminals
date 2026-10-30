@@ -12,6 +12,8 @@
     "omnivault:assembler",
     "omnivault:crafting_processor",
     "omnivault:pattern_provider",
-    "omnivault:pattern_terminal"
+    "omnivault:pattern_terminal",
+    "omnivault:compacting_drawer",
+    "omnivault:drawer_controller"
   ]
 }

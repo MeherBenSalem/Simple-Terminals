@@ -39,6 +39,7 @@ public class OmniVaultNeoForge {
         NeoForge.EVENT_BUS.addListener((ServerTickEvent.Post event) -> OmniVaultCommon.serverTick(event.getServer()));
         PhysicalNeoForge.init();
         BackpackNeoForgeEvents.register();
+        com.nightbeam.omnivault.neoforge.drawer.DrawerNeoForgeEvents.register();
     }
 
     private void registerPayloads(RegisterPayloadHandlersEvent event) {
