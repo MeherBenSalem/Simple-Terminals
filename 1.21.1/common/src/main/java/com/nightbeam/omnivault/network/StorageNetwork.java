@@ -4,7 +4,17 @@ import com.nightbeam.omnivault.network.api.CraftingHooks;
 import com.nightbeam.omnivault.network.api.NetworkNode;
 import com.nightbeam.omnivault.network.api.StorageProvider;
 import com.nightbeam.omnivault.network.api.TickingNode;
+import com.nightbeam.omnivault.network.api.NetworkBlock;
+import com.nightbeam.omnivault.network.block.DriveBlockEntity;
+import com.nightbeam.omnivault.network.block.InventoryCableBlock;
 import com.nightbeam.omnivault.network.block.NexusCoreBlockEntity;
+import com.nightbeam.omnivault.platform.Services;
+import com.nightbeam.omnivault.storage.FluidAccessStorage;
+import com.nightbeam.omnivault.storage.SlotAccessStorage;
+import net.minecraft.core.Direction;
+import net.minecraft.world.level.block.ChestBlock;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.properties.ChestType;
 import com.nightbeam.omnivault.network.block.WirelessTransmitterBlockEntity;
 import com.nightbeam.omnivault.storage.FluidKey;
 import com.nightbeam.omnivault.storage.FluidStorage;
@@ -41,6 +51,11 @@ public class StorageNetwork {
     private final List<TickingNode> tickingNodes = new ArrayList<>();
     private final List<WirelessTransmitterBlockEntity> transmitters = new ArrayList<>();
     private final Map<String, Integer> deviceCounts = new HashMap<>();
+    /** Inventory Cables (and a Storage Hub) whose neighbouring inventories join the network. */
+    private final List<Anchor> inventoryAnchors = new ArrayList<>();
+
+    private record Anchor(ServerLevel level, BlockPos pos) {
+    }
     private final Map<Object, Object> attachments = new HashMap<>();
     private boolean topologyDirty = true;
     private boolean storagesDirty = true;
@@ -66,6 +81,16 @@ public class StorageNetwork {
 
     public BlockPos corePos() {
         return core.getBlockPos();
+    }
+
+    /** True for an early-game Storage Hub network: plain inventories only. */
+    public boolean isBasic() {
+        return core.isBasic();
+    }
+
+    /** Autocrafting and wireless need a Nexus Core. */
+    public boolean supportsAdvancedFeatures() {
+        return !core.isBasic();
     }
 
     public void markDirty() {
@@ -170,16 +195,15 @@ public class StorageNetwork {
 
     /** Whether {@code player} may use this network wirelessly from where they stand. */
     public boolean inWirelessRange(Player player) {
-        if (player.level() != level) {
-            return false;
-        }
         double coreRange = NetworkConfig.CORE_RANGE.get();
-        if (player.distanceToSqr(core.getBlockPos().getCenter()) <= coreRange * coreRange) {
+        if (player.level() == level && player.distanceToSqr(core.getBlockPos().getCenter()) <= coreRange * coreRange) {
             return true;
         }
+        // Transmitters reached through a Quantum Bridge cover their own dimension.
         for (WirelessTransmitterBlockEntity transmitter : transmitters) {
             double range = transmitter.range();
-            if (!transmitter.isRemoved() && player.distanceToSqr(transmitter.getBlockPos().getCenter()) <= range * range) {
+            if (!transmitter.isRemoved() && transmitter.getLevel() == player.level()
+                    && player.distanceToSqr(transmitter.getBlockPos().getCenter()) <= range * range) {
                 return true;
             }
         }
@@ -217,15 +241,24 @@ public class StorageNetwork {
                 node.networkTick(this, gameTime);
             }
         }
-        CraftingHooks.get().tick(this, gameTime);
+        if (supportsAdvancedFeatures()) {
+            CraftingHooks.get().tick(this, gameTime);
+        }
     }
 
     private void rebuild() {
         topologyDirty = false;
         Set<NetworkNode> found = new LinkedHashSet<>();
         boolean[] otherCore = {false};
-        NetworkManager.walk(level, core.getBlockPos(), false, pos -> {
-            BlockEntity blockEntity = level.getBlockEntity(pos);
+        inventoryAnchors.clear();
+        if (core.isBasic()) {
+            inventoryAnchors.add(new Anchor(level, core.getBlockPos()));
+        }
+        NetworkManager.walk(level, core.getBlockPos(), false, (at, pos) -> {
+            if (at.getBlockState(pos).getBlock() instanceof InventoryCableBlock) {
+                inventoryAnchors.add(new Anchor(at, pos));
+            }
+            BlockEntity blockEntity = at.getBlockEntity(pos);
             if (blockEntity instanceof NexusCoreBlockEntity other && other != core) {
                 otherCore[0] = true;
             }
@@ -274,7 +307,12 @@ public class StorageNetwork {
         List<ItemStorage> collected = new ArrayList<>();
         List<FluidStorage> fluids = new ArrayList<>();
         long total = 0;
+        collectTouchingInventories(collected, fluids);
         for (NetworkNode node : nodes) {
+            // Storage Hub networks hold plain inventories only; cells need a Nexus Core.
+            if (core.isBasic() && node instanceof DriveBlockEntity) {
+                continue;
+            }
             if (node instanceof StorageProvider provider) {
                 provider.collectStorages(collected::add);
                 provider.collectFluidStorages(fluids::add);
@@ -287,6 +325,33 @@ public class StorageNetwork {
         capacity = total;
         storage.setStorages(collected);
         fluidStorage.setStorages(fluids);
+    }
+
+    /** Every inventory touching an Inventory Cable or the Storage Hub, each counted once. */
+    private void collectTouchingInventories(List<ItemStorage> items, List<FluidStorage> fluids) {
+        Set<net.minecraft.core.GlobalPos> seen = new java.util.HashSet<>();
+        for (Anchor anchor : inventoryAnchors) {
+            ServerLevel level = anchor.level();
+            for (Direction direction : Direction.values()) {
+                BlockPos target = anchor.pos().relative(direction);
+                if (!level.isLoaded(target) || level.getBlockState(target).getBlock() instanceof NetworkBlock
+                        || !seen.add(net.minecraft.core.GlobalPos.of(level.dimension(), target))) {
+                    continue;
+                }
+                // A double chest answers for both halves; skip the other half.
+                BlockState state = level.getBlockState(target);
+                if (state.getBlock() instanceof ChestBlock && state.getValue(ChestBlock.TYPE) != ChestType.SINGLE) {
+                    BlockPos other = target.relative(ChestBlock.getConnectedDirection(state));
+                    if (!seen.add(net.minecraft.core.GlobalPos.of(level.dimension(), other))) {
+                        continue;
+                    }
+                }
+                Services.PLATFORM.findSlotAccess(level, target, direction.getOpposite())
+                        .ifPresent(access -> items.add(new SlotAccessStorage(access)));
+                Services.PLATFORM.findFluidAccess(level, target, direction.getOpposite())
+                        .ifPresent(access -> fluids.add(new FluidAccessStorage(access)));
+            }
+        }
     }
 
     /** Called when the core is removed or unloaded. */

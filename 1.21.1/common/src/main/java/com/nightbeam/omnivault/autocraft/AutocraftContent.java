@@ -53,6 +53,11 @@ public final class AutocraftContent {
             () -> new AutocraftDeviceBlock(AssemblerBlockEntity::new, device().noOcclusion()
                     .lightLevel(state -> state.getValue(AutocraftDeviceBlock.WORKING) ? 13 : lit(state, 4))),
             (UnaryOperator<Item.Properties>) p -> p.rarity(Rarity.UNCOMMON));
+    /** Late game: the same machine, sixteen times the crafts per cycle. */
+    public static final Supplier<AutocraftDeviceBlock> QUANTUM_ASSEMBLER = ModRegistry.blockWithItem("quantum_assembler",
+            () -> new AutocraftDeviceBlock(AssemblerBlockEntity::new, device().noOcclusion()
+                    .lightLevel(state -> state.getValue(AutocraftDeviceBlock.WORKING) ? 15 : lit(state, 6))),
+            (UnaryOperator<Item.Properties>) p -> p.rarity(Rarity.EPIC));
     public static final Supplier<AutocraftDeviceBlock> CRAFTING_PROCESSOR = ModRegistry.blockWithItem("crafting_processor",
             () -> new AutocraftDeviceBlock(CraftingProcessorBlockEntity::new, device()
                     .lightLevel(state -> state.getValue(AutocraftDeviceBlock.WORKING) ? 10 : lit(state, 4))));
@@ -63,7 +68,7 @@ public final class AutocraftContent {
     public static final Supplier<BlockEntityType<PatternProviderBlockEntity>> PATTERN_PROVIDER_BE =
             ModRegistry.blockEntity("pattern_provider", PatternProviderBlockEntity::new, PATTERN_PROVIDER);
     public static final Supplier<BlockEntityType<AssemblerBlockEntity>> ASSEMBLER_BE =
-            ModRegistry.blockEntity("assembler", AssemblerBlockEntity::new, ASSEMBLER);
+            ModRegistry.blockEntity("assembler", AssemblerBlockEntity::new, ASSEMBLER, QUANTUM_ASSEMBLER);
     public static final Supplier<BlockEntityType<CraftingProcessorBlockEntity>> CRAFTING_PROCESSOR_BE =
             ModRegistry.blockEntity("crafting_processor", CraftingProcessorBlockEntity::new, CRAFTING_PROCESSOR);
 

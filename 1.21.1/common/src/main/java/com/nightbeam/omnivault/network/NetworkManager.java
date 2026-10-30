@@ -6,6 +6,8 @@ import com.nightbeam.omnivault.network.api.NetworkNode;
 import com.nightbeam.omnivault.network.block.NexusCoreBlockEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.GlobalPos;
+import com.nightbeam.omnivault.network.block.QuantumBridgeBlockEntity;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
@@ -19,7 +21,6 @@ import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
-import java.util.function.Consumer;
 
 /**
  * Notices topology changes (blocks placed, broken, loaded or unloaded) and tells the affected
@@ -66,8 +67,8 @@ public final class NetworkManager {
                     dirty.add(node.getNetwork());
                 }
                 // Walk outwards from the change and from each neighbour (a removed block splits the graph).
-                walk(level, pos, true, visited -> {
-                    BlockEntity blockEntity = level.getBlockEntity(visited);
+                walk(level, pos, true, (visitedLevel, visited) -> {
+                    BlockEntity blockEntity = visitedLevel.getBlockEntity(visited);
                     if (blockEntity instanceof NexusCoreBlockEntity core) {
                         dirty.add(core.network());
                     } else if (blockEntity instanceof NetworkNode node && node.getNetwork() != null) {
@@ -79,36 +80,59 @@ public final class NetworkManager {
         }
     }
 
+    /** Receives every network block a walk reaches, with the level it is in. */
+    @FunctionalInterface
+    public interface Visitor {
+        void visit(ServerLevel level, BlockPos pos);
+    }
+
+    private record Spot(ServerLevel level, BlockPos pos) {
+        GlobalPos key() {
+            return GlobalPos.of(level.dimension(), pos);
+        }
+    }
+
     /**
-     * Breadth-first walk over connected network blocks in loaded chunks.
+     * Breadth-first walk over connected network blocks in loaded chunks. Entangled Quantum Bridges
+     * carry the walk to their partner, even in another dimension.
      *
      * @param includeNeighbours also start from the six neighbours of {@code start}, connected or not
      */
-    public static void walk(ServerLevel level, BlockPos start, boolean includeNeighbours, Consumer<BlockPos> visitor) {
+    public static void walk(ServerLevel level, BlockPos start, boolean includeNeighbours, Visitor visitor) {
         int limit = NetworkConfig.MAX_NODES.get();
-        Set<BlockPos> seen = new HashSet<>();
-        ArrayDeque<BlockPos> queue = new ArrayDeque<>();
+        Set<GlobalPos> seen = new HashSet<>();
+        ArrayDeque<Spot> queue = new ArrayDeque<>();
         if (isNetworkBlock(level, start)) {
-            queue.add(start);
-            seen.add(start);
+            Spot first = new Spot(level, start);
+            queue.add(first);
+            seen.add(first.key());
         }
         if (includeNeighbours) {
             for (Direction direction : Direction.values()) {
-                BlockPos neighbour = start.relative(direction);
-                if (isNetworkBlock(level, neighbour) && seen.add(neighbour)) {
+                Spot neighbour = new Spot(level, start.relative(direction));
+                if (isNetworkBlock(level, neighbour.pos()) && seen.add(neighbour.key())) {
                     queue.add(neighbour);
                 }
             }
         }
         while (!queue.isEmpty() && seen.size() <= limit) {
-            BlockPos pos = queue.poll();
-            visitor.accept(pos);
-            BlockState state = level.getBlockState(pos);
+            Spot spot = queue.poll();
+            visitor.visit(spot.level(), spot.pos());
+            BlockState state = spot.level().getBlockState(spot.pos());
             for (Direction direction : Direction.values()) {
-                BlockPos next = pos.relative(direction);
-                if (!seen.contains(next) && connected(level, pos, state, direction)) {
-                    seen.add(next);
+                Spot next = new Spot(spot.level(), spot.pos().relative(direction));
+                if (!seen.contains(next.key()) && connected(spot.level(), spot.pos(), state, direction)) {
+                    seen.add(next.key());
                     queue.add(next);
+                }
+            }
+            if (spot.level().getBlockEntity(spot.pos()) instanceof QuantumBridgeBlockEntity bridge) {
+                QuantumBridgeBlockEntity partner = bridge.linkedPartner();
+                if (partner != null && partner.getLevel() instanceof ServerLevel partnerLevel) {
+                    Spot across = new Spot(partnerLevel, partner.getBlockPos());
+                    if (seen.add(across.key())) {
+                        queue.add(across);
+                    }
                 }
             }
         }

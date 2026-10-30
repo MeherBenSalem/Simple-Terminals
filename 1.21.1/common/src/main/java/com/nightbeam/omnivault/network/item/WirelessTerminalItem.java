@@ -53,8 +53,14 @@ public class WirelessTerminalItem extends Item {
     public InteractionResult useOn(UseOnContext context) {
         Player player = context.getPlayer();
         Level level = context.getLevel();
-        if (player == null || !player.isShiftKeyDown() || !(level.getBlockEntity(context.getClickedPos()) instanceof NexusCoreBlockEntity)) {
+        if (player == null || !player.isShiftKeyDown() || !(level.getBlockEntity(context.getClickedPos()) instanceof NexusCoreBlockEntity core)) {
             return InteractionResult.PASS;
+        }
+        if (core.isBasic()) {
+            if (!level.isClientSide) {
+                player.displayClientMessage(Component.translatable("message.omnivault.wireless.needs_core").withStyle(ChatFormatting.RED), true);
+            }
+            return InteractionResult.sidedSuccess(level.isClientSide);
         }
         if (!level.isClientSide) {
             context.getItemInHand().set(NetworkContent.NETWORK_LINK.get(), GlobalPos.of(level.dimension(), context.getClickedPos()));
@@ -123,7 +129,7 @@ public class WirelessTerminalItem extends Item {
             if (level == null || !level.isLoaded(link.pos())) {
                 return null;
             }
-            return level.getBlockEntity(link.pos()) instanceof NexusCoreBlockEntity core ? core.network() : null;
+            return level.getBlockEntity(link.pos()) instanceof NexusCoreBlockEntity core && !core.isBasic() ? core.network() : null;
         }
 
         boolean inRange(Player player) {

@@ -45,7 +45,10 @@ public class StorageCellItem extends Item implements CellItem {
 
     @Override
     public int typeLimit() {
-        return tier.isCreative() ? Integer.MAX_VALUE : NetworkConfig.CELL_TYPES.get();
+        if (tier.isCreative()) {
+            return Integer.MAX_VALUE;
+        }
+        return tier == CellTier.SINGULARITY ? NetworkConfig.SINGULARITY_TYPES.get() : NetworkConfig.CELL_TYPES.get();
     }
 
     /** The cell's id, assigning a new one the first time it is needed. */
@@ -125,7 +128,7 @@ public class StorageCellItem extends Item implements CellItem {
             tooltip.add(Component.translatable("tooltip.omnivault.cell.items_unbounded", Formatting.full(usage.stored())).withStyle(ChatFormatting.GRAY));
         } else {
             tooltip.add(Component.translatable("tooltip.omnivault.cell.items", Formatting.full(usage.stored()), Formatting.full(tier.capacity)).withStyle(ChatFormatting.GRAY));
-            tooltip.add(Component.translatable("tooltip.omnivault.cell.types", usage.types(), NetworkConfig.CELL_TYPES.get()).withStyle(ChatFormatting.GRAY));
+            tooltip.add(Component.translatable("tooltip.omnivault.cell.types", usage.types(), typeLimit()).withStyle(ChatFormatting.GRAY));
         }
         if (matrix != null && usage.stored() == 0) {
             tooltip.add(Component.translatable("tooltip.omnivault.cell.disassemble").withStyle(ChatFormatting.DARK_GRAY));

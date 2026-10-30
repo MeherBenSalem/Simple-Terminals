@@ -74,8 +74,12 @@ public class AssemblerBlockEntity extends NetworkNodeBlockEntity implements Menu
     }
 
     public int craftsPerCycle() {
-        return AutocraftConfig.ASSEMBLER_CRAFTS.get() << speedUpgrades();
+        int base = AutocraftConfig.ASSEMBLER_CRAFTS.get() << speedUpgrades();
+        return getBlockState().is(AutocraftContent.QUANTUM_ASSEMBLER.get()) ? base * QUANTUM_MULTIPLIER : base;
     }
+
+    /** How many times faster a Quantum Assembler crafts than a plain one. */
+    public static final int QUANTUM_MULTIPLIER = 16;
 
     public ItemStack display() {
         return display;

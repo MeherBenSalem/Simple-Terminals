@@ -139,7 +139,7 @@ public class TerminalMenu extends OVMenu {
     private void sync(ServerPlayer serverPlayer) {
         StorageNetwork network = network();
         boolean online = network != null && network.isActive();
-        Set<ItemKey> craftables = online ? CraftingHooks.get().craftables(network) : Collections.emptySet();
+        Set<ItemKey> craftables = online && network.supportsAdvancedFeatures() ? CraftingHooks.get().craftables(network) : Collections.emptySet();
         long counter = network == null ? -1 : network.changeCounter();
         if (sentOnce && online == sentOnline && counter == sentCounter && craftables.equals(sentCraftables)) {
             return;
@@ -281,7 +281,11 @@ public class TerminalMenu extends OVMenu {
                     }
                 }
             }
-            case ACTION_CRAFT -> CraftingHooks.get().requestCraft(player, network, key, containerId);
+            case ACTION_CRAFT -> {
+                if (network.supportsAdvancedFeatures()) {
+                    CraftingHooks.get().requestCraft(player, network, key, containerId);
+                }
+            }
             default -> {
             }
         }

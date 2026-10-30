@@ -48,7 +48,11 @@ public class NexusCoreBlock extends DeviceBlock {
     @Nullable
     @Override
     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState state, BlockEntityType<T> type) {
-        return level.isClientSide ? null : createTickerHelper(type, NetworkContent.NEXUS_CORE_BE.get(), NexusCoreBlockEntity::serverTick);
+        return level.isClientSide ? null : createTickerHelper(type, blockEntityType(), NexusCoreBlockEntity::serverTick);
+    }
+
+    protected BlockEntityType<? extends NexusCoreBlockEntity> blockEntityType() {
+        return NetworkContent.NEXUS_CORE_BE.get();
     }
 
     @Override
@@ -58,7 +62,7 @@ public class NexusCoreBlock extends DeviceBlock {
         }
         if (player instanceof ServerPlayer serverPlayer && level.getBlockEntity(pos) instanceof NexusCoreBlockEntity core) {
             Services.PLATFORM.openMenu(serverPlayer, new SimpleMenuProvider(
-                    (id, inventory, p) -> new CoreMenu(id, inventory, core), Component.translatable("block.omnivault.nexus_core")),
+                    (id, inventory, p) -> new CoreMenu(id, inventory, core), state.getBlock().getName()),
                     buf -> buf.writeBlockPos(pos));
         }
         return InteractionResult.CONSUME;

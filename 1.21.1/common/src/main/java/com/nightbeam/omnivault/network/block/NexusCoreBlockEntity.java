@@ -12,6 +12,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import org.jetbrains.annotations.Nullable;
 
@@ -22,7 +23,19 @@ public class NexusCoreBlockEntity extends BlockEntity implements NetworkNode, Mo
     private long energy;
 
     public NexusCoreBlockEntity(BlockPos pos, BlockState state) {
-        super(NetworkContent.NEXUS_CORE_BE.get(), pos, state);
+        this(NetworkContent.NEXUS_CORE_BE.get(), pos, state);
+    }
+
+    protected NexusCoreBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState state) {
+        super(type, pos, state);
+    }
+
+    /**
+     * Basic roots (the early-game Storage Hub) run a network of plain inventories: no cells, no
+     * autocrafting, no wireless and no energy. A Nexus Core lifts every limit.
+     */
+    public boolean isBasic() {
+        return false;
     }
 
     /** The network this core owns; created on first use on the server. */
@@ -64,7 +77,7 @@ public class NexusCoreBlockEntity extends BlockEntity implements NetworkNode, Mo
         if (net == null) {
             return;
         }
-        if (NetworkConfig.ENERGY.get()) {
+        if (NetworkConfig.ENERGY.get() && !core.isBasic()) {
             int usage = net.energyUsage();
             if (core.energy >= usage) {
                 core.energy -= usage;
@@ -99,7 +112,7 @@ public class NexusCoreBlockEntity extends BlockEntity implements NetworkNode, Mo
 
     @Override
     public int receiveEnergy(int amount, boolean simulate) {
-        if (!NetworkConfig.ENERGY.get()) {
+        if (!canReceiveEnergy()) {
             return 0;
         }
         long space = NetworkConfig.CORE_BUFFER.get() - energy;
@@ -123,7 +136,7 @@ public class NexusCoreBlockEntity extends BlockEntity implements NetworkNode, Mo
 
     @Override
     public boolean canReceiveEnergy() {
-        return NetworkConfig.ENERGY.get();
+        return NetworkConfig.ENERGY.get() && !isBasic();
     }
 
     @Override

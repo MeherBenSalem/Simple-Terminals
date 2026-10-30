@@ -10,6 +10,8 @@ public enum CellTier {
     T256K("256k", 262_144L, 0xFF5BE08A, Rarity.UNCOMMON),
     T1M("1m", 1_048_576L, 0xFFA46BFF, Rarity.RARE),
     T16M("16m", 16_777_216L, 0xFFFF6BD5, Rarity.EPIC),
+    /** Late game: over two billion items. */
+    SINGULARITY("singularity", 2_147_483_648L, 0xFFE9D7FF, Rarity.EPIC),
     CREATIVE("creative", Long.MAX_VALUE / 4, 0xFFFF4D4D, Rarity.EPIC);
 
     public final String id;

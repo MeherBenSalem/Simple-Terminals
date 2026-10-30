@@ -7,13 +7,18 @@ import com.nightbeam.omnivault.network.block.DirectionalDeviceBlock;
 import com.nightbeam.omnivault.network.block.DriveBlockEntity;
 import com.nightbeam.omnivault.network.block.ExportBusBlockEntity;
 import com.nightbeam.omnivault.network.block.ImportBusBlockEntity;
+import com.nightbeam.omnivault.network.block.InventoryCableBlock;
 import com.nightbeam.omnivault.network.block.NetworkPortBlockEntity;
 import com.nightbeam.omnivault.network.block.NexusCoreBlock;
 import com.nightbeam.omnivault.network.block.NexusCoreBlockEntity;
 import com.nightbeam.omnivault.network.block.OrientedDeviceBlock;
+import com.nightbeam.omnivault.network.block.QuantumBridgeBlock;
+import com.nightbeam.omnivault.network.block.QuantumBridgeBlockEntity;
 import com.nightbeam.omnivault.network.block.SignalEmitterBlock;
 import com.nightbeam.omnivault.network.block.SignalEmitterBlockEntity;
 import com.nightbeam.omnivault.network.block.StorageBusBlockEntity;
+import com.nightbeam.omnivault.network.block.StorageHubBlock;
+import com.nightbeam.omnivault.network.block.StorageHubBlockEntity;
 import com.nightbeam.omnivault.network.block.StorageMonitorBlock;
 import com.nightbeam.omnivault.network.block.StorageMonitorBlockEntity;
 import com.nightbeam.omnivault.network.block.TerminalBlock;
@@ -24,6 +29,7 @@ import com.nightbeam.omnivault.network.cell.CellTier;
 import com.nightbeam.omnivault.network.cell.CellUsage;
 import com.nightbeam.omnivault.network.cell.FluidCellItem;
 import com.nightbeam.omnivault.network.cell.StorageCellItem;
+import com.nightbeam.omnivault.network.item.QuantumLinkCardItem;
 import com.nightbeam.omnivault.network.item.WirelessTerminalItem;
 import com.nightbeam.omnivault.network.menu.BusMenu;
 import com.nightbeam.omnivault.network.menu.CoreMenu;
@@ -61,6 +67,8 @@ public final class NetworkContent {
             b -> b.persistent(UUIDUtil.CODEC).networkSynchronized(UUIDUtil.STREAM_CODEC));
     public static final Supplier<DataComponentType<CellUsage>> CELL_USAGE = ModRegistry.component("cell_usage",
             b -> b.persistent(CellUsage.CODEC).networkSynchronized(CellUsage.STREAM_CODEC));
+    public static final Supplier<DataComponentType<GlobalPos>> BRIDGE_LINK = ModRegistry.component("bridge_link",
+            b -> b.persistent(GlobalPos.CODEC).networkSynchronized(GlobalPos.STREAM_CODEC));
     public static final Supplier<DataComponentType<GlobalPos>> NETWORK_LINK = ModRegistry.component("network_link",
             b -> b.persistent(GlobalPos.CODEC).networkSynchronized(GlobalPos.STREAM_CODEC));
 
@@ -71,6 +79,13 @@ public final class NetworkContent {
     public static final Supplier<CableBlock> NEXUS_CABLE = ModRegistry.blockWithItem("nexus_cable",
             () -> new CableBlock(BlockBehaviour.Properties.of().mapColor(MapColor.METAL).strength(0.6f).sound(SoundType.COPPER)
                     .noOcclusion().lightLevel(state -> 4)));
+    // Early game: Tom's-Simple-Storage-style networks of plain inventories, vanilla materials only.
+    public static final Supplier<StorageHubBlock> STORAGE_HUB = ModRegistry.blockWithItem("storage_hub",
+            () -> new StorageHubBlock(BlockBehaviour.Properties.of().mapColor(MapColor.WOOD).strength(2.0f, 3.0f).sound(SoundType.WOOD)
+                    .lightLevel(state -> state.getValue(NexusCoreBlock.ACTIVE) ? 6 : 0)));
+    public static final Supplier<InventoryCableBlock> INVENTORY_CABLE = ModRegistry.blockWithItem("inventory_cable",
+            () -> new InventoryCableBlock(BlockBehaviour.Properties.of().mapColor(MapColor.WOOD).strength(0.5f).sound(SoundType.WOOD)
+                    .noOcclusion().lightLevel(state -> 2)));
     public static final Supplier<OrientedDeviceBlock> DRIVE = ModRegistry.blockWithItem("drive",
             () -> new OrientedDeviceBlock(DriveBlockEntity::new, device()));
     public static final Supplier<TerminalBlock> TERMINAL = ModRegistry.blockWithItem("terminal",
@@ -96,6 +111,10 @@ public final class NetworkContent {
             () -> new DirectionalDeviceBlock(ConstructorBlockEntity::new, BUS_SHAPE, device().noOcclusion()));
     public static final Supplier<StorageMonitorBlock> STORAGE_MONITOR = ModRegistry.blockWithItem("storage_monitor",
             () -> new StorageMonitorBlock(device().lightLevel(NetworkContent::screenLight)));
+    // Late game: entangled pairs that join network segments across any distance or dimension.
+    public static final Supplier<QuantumBridgeBlock> QUANTUM_BRIDGE = ModRegistry.blockWithItem("quantum_bridge",
+            () -> new QuantumBridgeBlock(device().lightLevel(state -> state.getValue(QuantumBridgeBlock.ACTIVE) ? 11 : 2)),
+            (UnaryOperator<Item.Properties>) p -> p.rarity(Rarity.EPIC));
     public static final Supplier<SignalEmitterBlock> SIGNAL_EMITTER = ModRegistry.blockWithItem("signal_emitter",
             () -> new SignalEmitterBlock(SignalEmitterBlockEntity::new, EMITTER_SHAPE, device().noOcclusion()));
     public static final Supplier<WirelessTransmitterBlock> WIRELESS_TRANSMITTER = ModRegistry.blockWithItem("wireless_transmitter",
@@ -130,6 +149,8 @@ public final class NetworkContent {
         }
     }
 
+    public static final Supplier<QuantumLinkCardItem> QUANTUM_LINK_CARD = ModRegistry.item("quantum_link_card",
+            () -> new QuantumLinkCardItem(new Item.Properties().rarity(Rarity.RARE)));
     public static final Supplier<WirelessTerminalItem> WIRELESS_TERMINAL = ModRegistry.item("wireless_terminal",
             () -> new WirelessTerminalItem(false, new Item.Properties().rarity(Rarity.UNCOMMON)));
     public static final Supplier<WirelessTerminalItem> QUANTUM_WIRELESS_TERMINAL = ModRegistry.item("quantum_wireless_terminal",
@@ -137,6 +158,7 @@ public final class NetworkContent {
 
     // -- block entities ------------------------------------------------------------------------------
     public static final Supplier<BlockEntityType<NexusCoreBlockEntity>> NEXUS_CORE_BE = ModRegistry.blockEntity("nexus_core", NexusCoreBlockEntity::new, NEXUS_CORE);
+    public static final Supplier<BlockEntityType<StorageHubBlockEntity>> STORAGE_HUB_BE = ModRegistry.blockEntity("storage_hub", StorageHubBlockEntity::new, STORAGE_HUB);
     public static final Supplier<BlockEntityType<DriveBlockEntity>> DRIVE_BE = ModRegistry.blockEntity("drive", DriveBlockEntity::new, DRIVE);
     public static final Supplier<BlockEntityType<TerminalBlockEntity>> TERMINAL_BE = ModRegistry.blockEntity("terminal", TerminalBlockEntity::new, TERMINAL, CRAFTING_TERMINAL);
     public static final Supplier<BlockEntityType<ImportBusBlockEntity>> IMPORT_BUS_BE = ModRegistry.blockEntity("import_bus", ImportBusBlockEntity::new, IMPORT_BUS);
@@ -146,6 +168,7 @@ public final class NetworkContent {
     public static final Supplier<BlockEntityType<DestructorBlockEntity>> DESTRUCTOR_BE = ModRegistry.blockEntity("destructor", DestructorBlockEntity::new, DESTRUCTOR);
     public static final Supplier<BlockEntityType<ConstructorBlockEntity>> CONSTRUCTOR_BE = ModRegistry.blockEntity("constructor", ConstructorBlockEntity::new, CONSTRUCTOR);
     public static final Supplier<BlockEntityType<StorageMonitorBlockEntity>> STORAGE_MONITOR_BE = ModRegistry.blockEntity("storage_monitor", StorageMonitorBlockEntity::new, STORAGE_MONITOR);
+    public static final Supplier<BlockEntityType<QuantumBridgeBlockEntity>> QUANTUM_BRIDGE_BE = ModRegistry.blockEntity("quantum_bridge", QuantumBridgeBlockEntity::new, QUANTUM_BRIDGE);
     public static final Supplier<BlockEntityType<SignalEmitterBlockEntity>> SIGNAL_EMITTER_BE = ModRegistry.blockEntity("signal_emitter", SignalEmitterBlockEntity::new, SIGNAL_EMITTER);
     public static final Supplier<BlockEntityType<WirelessTransmitterBlockEntity>> WIRELESS_TRANSMITTER_BE = ModRegistry.blockEntity("wireless_transmitter", WirelessTransmitterBlockEntity::new, WIRELESS_TRANSMITTER);
 

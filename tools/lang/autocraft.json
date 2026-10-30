@@ -85,5 +85,6 @@
   "gui.omnivault.status.state.invalid_pattern": "Bad pattern",
   "gui.omnivault.status.state.invalid_pattern.long": "A crafting pattern no longer matches its recipe",
   "gui.omnivault.status.state.returning": "Storing",
-  "gui.omnivault.status.state.returning.long": "Putting the results and leftovers into storage"
+  "gui.omnivault.status.state.returning.long": "Putting the results and leftovers into storage",
+  "block.omnivault.quantum_assembler": "Quantum Assembler"
 }

@@ -83,6 +83,9 @@ public class CellStorage implements ItemStorage {
     }
 
     public int typeLimit() {
-        return tier.isCreative() ? Integer.MAX_VALUE : NetworkConfig.CELL_TYPES.get();
+        if (tier.isCreative()) {
+            return Integer.MAX_VALUE;
+        }
+        return tier == CellTier.SINGULARITY ? NetworkConfig.SINGULARITY_TYPES.get() : NetworkConfig.CELL_TYPES.get();
     }
 }

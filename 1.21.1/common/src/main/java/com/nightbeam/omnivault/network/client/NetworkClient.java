@@ -46,6 +46,10 @@ public final class NetworkClient {
             r.blockColor((state, level, pos, tintIndex) -> tintIndex == 0 ? 0xFF000000 | state.getValue(CableBlock.COLOR).rgb : -1,
                     NetworkContent.NEXUS_CABLE);
             r.itemColor((stack, tintIndex) -> tintIndex == 0 ? 0xFF000000 | CableBlock.CableColor.NONE.rgb : -1, NetworkContent.NEXUS_CABLE);
+            // Inventory Cable glows amber until dyed.
+            r.blockColor((state, level, pos, tintIndex) -> tintIndex != 0 ? -1 : state.getValue(CableBlock.COLOR) == CableBlock.CableColor.NONE
+                    ? 0xFFF2B33D : 0xFF000000 | state.getValue(CableBlock.COLOR).rgb, NetworkContent.INVENTORY_CABLE);
+            r.itemColor((stack, tintIndex) -> tintIndex == 0 ? 0xFFF2B33D : -1, NetworkContent.INVENTORY_CABLE);
             // Tint index 0 on cell item models is the tier stripe.
             for (CellTier tier : CellTier.values()) {
                 r.itemColor((stack, tintIndex) -> tintIndex == 0 ? tier.color : -1, NetworkContent.CELLS.get(tier));
