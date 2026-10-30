@@ -1,6 +1,16 @@
 # The OmniVault storage network
 
-Everything here runs on one rule: **one Nexus Core per network, any number of devices, no channels.**
+Everything here runs on one rule: **one root per network, any number of devices, no channels.** The root is a
+cheap **Storage Hub** early on (plain inventories only) or a **Nexus Core** for everything. See
+[the progression guide](PROGRESSION.md) for the whole path.
+
+## Starting with a Storage Hub
+
+Before you have any Omnium: place a **Storage Hub**, run **Inventory Cable** past your chests and add a
+**Storage Terminal**. Every inventory touching the hub or an inventory cable (chests, barrels, drawers, vaults,
+other mods' storage) appears in the terminal as one storage; double chests count once. Hub networks don't use
+storage cells, autocrafting or wireless terminals; replace the hub with a Nexus Core when you want those, and
+everything else keeps working. Inventory Cable works on Nexus networks too.
 
 ## Getting started
 
@@ -20,6 +30,9 @@ the sides, top, bottom or back.
 | Device | What it does |
 | --- | --- |
 | Nexus Core | Runs the network. Right-click for the overview: online state, devices, items stored vs. capacity, energy. Two cores on one network put it in conflict until one is removed. |
+| Storage Hub | Early-game root (see above). Right-click for the same overview as the core. |
+| Inventory Cable | A cable that also adds every inventory it touches to the network. Dyeable like Nexus Cable. |
+| Quantum Bridge | Entangle two bridges with a Quantum Link Card (use it on one, then the other) and the network continues through the pair across any distance and between dimensions, while both are loaded. Right-click shows the link; the OmniTool breaks it. |
 | Nexus Cable | Carries the network. Dye it to keep parallel networks apart: two different colours never connect; uncoloured cable connects to any colour. A water bucket or sponge washes the dye off. Waterloggable. |
 | Cell Drive | Ten bays for item and fluid cells. Each bay's LED shows the cell: green with room to spare, amber when nearly full, red when full, dark while the network is offline. Has a priority. |
 | Storage Terminal | The whole network in a searchable, sortable grid. |
@@ -46,9 +59,11 @@ Cells are a Cell Housing plus a Storage Matrix (shapeless). Take an empty cell a
 | 256K | 262,144 | 65,536 buckets |
 | 1M | 1,048,576 | 262,144 buckets |
 | 16M | 16,777,216 | 4,194,304 buckets |
+| Singularity | 2,147,483,648 | 536,870,912 buckets |
 | Creative | practically unlimited | practically unlimited |
 
-An item cell holds up to 128 different items and a fluid cell up to 32 fluids (both configurable). A cell's
+An item cell holds up to 128 different items and a fluid cell up to 32 fluids; Singularity cells hold 1,024 (all
+configurable). A cell's
 contents live in the world save, not on the item, so even a full 16M cell never bloats packets or chunk data. Its
 tooltip and fill bar show how full it is.
 

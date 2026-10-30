@@ -12,6 +12,7 @@ Teach the network recipes and it crafts what you ask for, sub-ingredients includ
 | Pattern Encoding Terminal | A terminal with a pattern editor: set a 3×3 grid (and outputs in processing mode), put in a blank pattern, press Encode. Put an encoded pattern back in to edit it. |
 | Pattern Provider | Holds 9 patterns. Pushes processing inputs into the block it faces; the results come back through an Import Bus, a pipe, or by inserting them into the provider. |
 | Assembler | Carries out crafting-pattern steps. Faster with Speed Upgrades (up to 4). |
+| Quantum Assembler | Late game: sixteen times the crafts per cycle of an Assembler, before Speed Upgrades. |
 | Crafting Processor | Each one lets the network run one crafting job at a time. No processor, no autocrafting. Right-click it for the Crafting Status screen. |
 
 ## Requesting a craft

@@ -22,6 +22,7 @@ The network's options are listed below. Each feature adds its own section to the
 | --- | --- | --- |
 | `typeLimit` | 128 | Different items one storage cell can hold. |
 | `fluidTypeLimit` | 32 | Different fluids one fluid cell can hold. |
+| `singularityTypeLimit` | 1024 | Different items (or fluids) one Singularity cell can hold. |
 
 ## `[wireless]`
 
