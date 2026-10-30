@@ -480,6 +480,17 @@ def quantum_assembler_textures():
         t.save('block/' + name)
 
 
+    # The renderer's rings in violet with a white crest, animated like the Assembler's.
+    frames = []
+    for f in range(8):
+        t = Tex(seed=148)
+        for x in range(16):
+            for y in range(16):
+                d = (x + y + f * 2) % 8
+                t.set(x, y, white[5] if d == 0 else VIOLET[4] if d < 3 else VIOLET[3])
+        frames.append(t)
+    save_animation('block/quantum_assembler_ring', frames, frametime=2)
+
 def assembler_model(state: str, quantum: bool = False) -> Model:
     """state: 'off' (no network), 'on' (online, idle) or 'working'. quantum: the late-game Quantum Assembler,
     the same machine in the void/violet/white palette with extra singularity emitters."""
@@ -547,8 +558,9 @@ def assembler_model(state: str, quantum: bool = False) -> Model:
     return m.block_display()
 
 
-def assembler_ring_model() -> Model:
-    m = Model(parent=None, textures={'particle': 'block/assembler_ring', 'ring': 'block/assembler_ring',
+def assembler_ring_model(quantum: bool = False) -> Model:
+    ring = 'block/quantum_assembler_ring' if quantum else 'block/assembler_ring'
+    m = Model(parent=None, textures={'particle': ring, 'ring': ring,
                                      'crystal': 'block/omnium_crystal_on'}, ambient_occlusion=False)
     m.box((3, 7.5, 3), (13, 8.5, 4), tex='ring', emissive=True, name='ring_n')
     m.box((3, 7.5, 12), (13, 8.5, 13), tex='ring', emissive=True, name='ring_s')
@@ -791,6 +803,7 @@ def main():
     assembler_model('off', quantum=True).save('block/quantum_assembler')
     assembler_model('on', quantum=True).save('block/quantum_assembler_on')
     assembler_model('working', quantum=True).save('block/quantum_assembler_working')
+    assembler_ring_model(quantum=True).save('block/quantum_assembler_ring')
     blockstate_variants('quantum_assembler', {
         'active=false,working=false': 'block/quantum_assembler', 'active=true,working=false': 'block/quantum_assembler_on',
         'active=false,working=true': 'block/quantum_assembler_working', 'active=true,working=true': 'block/quantum_assembler_working',

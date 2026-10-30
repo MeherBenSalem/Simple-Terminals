@@ -4,6 +4,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Axis;
 import com.nightbeam.omnivault.OmniVault;
+import com.nightbeam.omnivault.autocraft.AutocraftContent;
 import com.nightbeam.omnivault.autocraft.block.AssemblerBlockEntity;
 import com.nightbeam.omnivault.autocraft.block.AutocraftDeviceBlock;
 import com.nightbeam.omnivault.client.ClientPlatform;
@@ -22,11 +23,13 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.state.BlockState;
 
 /**
- * Inside the Assembler's glass chamber: a pair of counter-rotating omnium rings that spin up while it
- * works, and the item it is making, floating and turning in the middle, lit full-bright.
+ * Inside the Assembler's glass chamber: a pair of counter-rotating omnium rings (violet in the Quantum
+ * Assembler) that spin up while it works, and the item it is making, floating and turning in the
+ * middle, lit full-bright.
  */
 public class AssemblerRenderer implements BlockEntityRenderer<AssemblerBlockEntity> {
     public static final ResourceLocation RING = OmniVault.id("block/assembler_ring");
+    public static final ResourceLocation QUANTUM_RING = OmniVault.id("block/quantum_assembler_ring");
 
     public AssemblerRenderer(BlockEntityRendererProvider.Context context) {
     }
@@ -43,6 +46,7 @@ public class AssemblerRenderer implements BlockEntityRenderer<AssemblerBlockEnti
         float speed = working ? 6.0f : active ? 0.6f : 0.0f;
         int glow = active ? LightTexture.FULL_BRIGHT : light;
         float tint = working ? 1.0f : active ? 0.7f : 0.35f;
+        ResourceLocation ringModel = state.is(AutocraftContent.QUANTUM_ASSEMBLER.get()) ? QUANTUM_RING : RING;
 
         ModelBlockRenderer renderer = Minecraft.getInstance().getBlockRenderer().getModelRenderer();
         VertexConsumer consumer = buffers.getBuffer(RenderType.translucent());
@@ -54,7 +58,7 @@ public class AssemblerRenderer implements BlockEntityRenderer<AssemblerBlockEnti
             float scale = ring == 0 ? 1.0f : 0.72f;
             pose.scale(scale, scale, scale);
             pose.translate(-0.5, -0.5, -0.5);
-            renderer.renderModel(pose.last(), consumer, null, ClientPlatform.INSTANCE.getStandaloneModel(RING), tint, tint, tint, glow, overlay);
+            renderer.renderModel(pose.last(), consumer, null, ClientPlatform.INSTANCE.getStandaloneModel(ringModel), tint, tint, tint, glow, overlay);
             pose.popPose();
         }
 

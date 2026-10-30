@@ -16,6 +16,7 @@ public final class AutocraftClient {
             r.screen(AutocraftContent.CRAFTING_STATUS_MENU, CraftingStatusScreen::new);
             r.blockEntityRenderer(AutocraftContent.ASSEMBLER_BE, AssemblerRenderer::new);
             r.standaloneModel(AssemblerRenderer.RING);
+            r.standaloneModel(AssemblerRenderer.QUANTUM_RING);
         });
     }
 }
