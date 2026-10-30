@@ -39,6 +39,8 @@ public class CraftRequestScreen extends AbstractContainerScreen<CraftRequestMenu
     private OVButton start;
     private int scrollRow;
     private boolean sentInitial;
+    /** The full status text while the line under the plan shows it cut short, for its tooltip. */
+    private Component clippedStatus;
 
     public CraftRequestScreen(CraftRequestMenu menu, Inventory inventory, Component title) {
         super(menu, inventory, title);
@@ -141,6 +143,10 @@ public class CraftRequestScreen extends AbstractContainerScreen<CraftRequestMenu
             graphics.drawString(font, Component.translatable("gui.omnivault.craft.amount"), leftPos + 12, topPos + 43, GuiStyle.TEXT_DIM, false);
         }
         renderTooltip(graphics, mouseX, mouseY);
+        int statusY = topPos + LIST_Y + ROWS * CELL_H + 5;
+        if (clippedStatus != null && mouseX >= leftPos + 8 && mouseX < leftPos + imageWidth - 8 && mouseY >= statusY && mouseY < statusY + 9) {
+            graphics.renderTooltip(font, clippedStatus, mouseX, mouseY);
+        }
     }
 
     @Override
@@ -237,7 +243,10 @@ public class CraftRequestScreen extends AbstractContainerScreen<CraftRequestMenu
             status = Component.translatable("gui.omnivault.craft.ready", plan.freeProcessors(), plan.processors());
             color = GuiStyle.GOOD;
         }
-        graphics.drawWordWrap(font, status, 8, statusY, imageWidth - 16, color);
+        // One line only: the Back and Start buttons sit right below it.
+        Component shown = GuiStyle.fit(font, status, imageWidth - 16);
+        clippedStatus = shown == status ? null : status;
+        graphics.drawString(font, shown, 8, statusY, color, false);
     }
 
     // -- input -------------------------------------------------------------------------------------
