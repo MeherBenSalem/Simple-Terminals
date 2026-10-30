@@ -86,6 +86,7 @@ jobs:
 
       - name: Verify source resources and release guard tests
         run: |
+          python3 -m pip install pillow==11.3.0
           python3 tools/assets/build_lang.py --check
           python3 -m unittest discover -s tests -v
 
@@ -143,7 +144,8 @@ jobs:
           const doModrinth = platforms === 'both' || platforms === 'modrinth';
           const doCurse = platforms === 'both' || platforms === 'curseforge';
           const manifest = JSON.parse(fs.readFileSync(process.env.RELEASE_MANIFEST, 'utf8'));
-          if (manifest.version !== version || manifest.artifacts.length !== 1) {
+          // The release guard has already checked that the manifest holds exactly the expected loader jars.
+          if (manifest.version !== version || manifest.artifacts.length === 0) {
             throw new Error('Missing or mismatched validated release manifest');
           }
           // Check every artifact before the first API request and reuse exactly these bytes.
