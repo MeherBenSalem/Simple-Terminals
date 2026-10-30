@@ -10,6 +10,7 @@ import com.nightbeam.omnivault.network.block.OrientedDeviceBlock;
 import com.nightbeam.omnivault.network.cell.CellItem;
 import com.nightbeam.omnivault.network.cell.StorageCellItem;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.LevelRenderer;
 import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
@@ -48,6 +49,10 @@ public class DriveRenderer implements BlockEntityRenderer<DriveBlockEntity> {
         ModelBlockRenderer renderer = Minecraft.getInstance().getBlockRenderer().getModelRenderer();
         VertexConsumer consumer = buffers.getBuffer(RenderType.cutout());
         Direction facing = drive.getBlockState().getValue(OrientedDeviceBlock.FACING);
+        // The light passed in is sampled inside the solid drive (always dark); the bays face the front.
+        if (drive.getLevel() != null) {
+            light = LevelRenderer.getLightColor(drive.getLevel(), drive.getBlockPos().relative(facing));
+        }
         pose.pushPose();
         pose.translate(0.5, 0.5, 0.5);
         pose.mulPose(Axis.YP.rotationDegrees(180 - facing.toYRot()));
