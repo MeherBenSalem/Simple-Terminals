@@ -237,6 +237,25 @@ public class PatternTerminalMenu extends TerminalMenu {
         updateResult();
     }
 
+    /** Loads a recipe sent by a recipe viewer: the mode, the inputs and (processing only) the outputs. */
+    public void transfer(boolean processing, List<ItemStack> inputs, List<ItemStack> outputs) {
+        setProcessing(processing);
+        for (int i = 0; i < PatternData.MAX_INPUTS; i++) {
+            bench.inputs().setItem(i, ghostStack(i < inputs.size() ? inputs.get(i) : ItemStack.EMPTY, processing));
+        }
+        for (int i = 0; i < PatternData.MAX_OUTPUTS; i++) {
+            bench.outputs().setItem(i, processing && i < outputs.size() ? ghostStack(outputs.get(i), true) : ItemStack.EMPTY);
+        }
+        updateResult();
+    }
+
+    private static ItemStack ghostStack(ItemStack stack, boolean amounts) {
+        if (stack.isEmpty()) {
+            return ItemStack.EMPTY;
+        }
+        return stack.copyWithCount(amounts ? Math.min(stack.getCount(), PatternData.MAX_SLOT_AMOUNT) : 1);
+    }
+
     private List<ItemStack> grid() {
         List<ItemStack> grid = new ArrayList<>(PatternData.MAX_INPUTS);
         for (int i = 0; i < PatternData.MAX_INPUTS; i++) {

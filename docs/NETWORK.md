@@ -79,7 +79,8 @@ tooltip and fill bar show how full it is.
   a full bucket to empty it.
 - **Craftable** items show "Craft"; middle-click or Ctrl + click asks for an amount (see Autocrafting).
 - **JEI**: in a crafting terminal, JEI's `+` button moves a recipe into the grid, taking ingredients from the
-  network first and your inventory second, and marks anything missing.
+  network first and your inventory second, and marks anything missing. In a Pattern Encoding Terminal it loads any recipe into
+  the pattern editor instead (see [Autocrafting](AUTOCRAFTING.md)).
 
 ## Wireless
 

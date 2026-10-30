@@ -5,6 +5,8 @@ import com.nightbeam.omnivault.OmniVaultCommon;
 import com.nightbeam.omnivault.autocraft.client.AutocraftClientHandlers;
 import com.nightbeam.omnivault.autocraft.job.CraftingJob;
 import com.nightbeam.omnivault.autocraft.menu.CraftingStatusMenu;
+import com.nightbeam.omnivault.autocraft.menu.PatternTerminalMenu;
+import com.nightbeam.omnivault.autocraft.pattern.PatternData;
 import com.nightbeam.omnivault.autocraft.pattern.ResolvedPattern;
 import com.nightbeam.omnivault.autocraft.plan.CraftingPlan;
 import com.nightbeam.omnivault.storage.ItemKey;
@@ -13,12 +15,13 @@ import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.world.item.ItemStack;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-/** Payloads for the craft request and crafting status screens. */
+/** Payloads for the craft request, crafting status and pattern encoding screens. */
 public final class AutocraftPackets {
     private AutocraftPackets() {
     }
@@ -145,6 +148,26 @@ public final class AutocraftPackets {
         }
     }
 
+    /**
+     * Client → server: load a recipe from a recipe viewer into an open Pattern Encoding Terminal.
+     * Crafting recipes fill the 3×3 grid; anything else becomes a processing recipe.
+     */
+    public record PatternTransfer(int containerId, boolean processing, List<ItemStack> inputs, List<ItemStack> outputs)
+            implements CustomPacketPayload {
+        public static final Type<PatternTransfer> TYPE = new Type<>(OmniVault.id("pattern_transfer"));
+        public static final StreamCodec<RegistryFriendlyByteBuf, PatternTransfer> CODEC = StreamCodec.composite(
+                ByteBufCodecs.VAR_INT, PatternTransfer::containerId,
+                ByteBufCodecs.BOOL, PatternTransfer::processing,
+                ItemStack.OPTIONAL_STREAM_CODEC.apply(ByteBufCodecs.list(PatternData.MAX_INPUTS)), PatternTransfer::inputs,
+                ItemStack.OPTIONAL_STREAM_CODEC.apply(ByteBufCodecs.list(PatternData.MAX_OUTPUTS)), PatternTransfer::outputs,
+                PatternTransfer::new);
+
+        @Override
+        public Type<? extends CustomPacketPayload> type() {
+            return TYPE;
+        }
+    }
+
     public static void init() {
         OmniVaultCommon.packets(registrar -> {
             registrar.toClient(PlanResult.TYPE, PlanResult.CODEC, payload -> AutocraftClientHandlers.plan(payload));
@@ -153,6 +176,12 @@ public final class AutocraftPackets {
                 if (player.containerMenu instanceof CraftingStatusMenu menu && menu.containerId == payload.containerId()
                         && menu.stillValid(player)) {
                     menu.cancel(payload.job());
+                }
+            });
+            registrar.toServer(PatternTransfer.TYPE, PatternTransfer.CODEC, (payload, player) -> {
+                if (player.containerMenu instanceof PatternTerminalMenu menu && menu.containerId == payload.containerId()
+                        && menu.stillValid(player)) {
+                    menu.transfer(payload.processing(), payload.inputs(), payload.outputs());
                 }
             });
         });

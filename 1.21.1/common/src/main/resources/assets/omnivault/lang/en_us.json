@@ -139,6 +139,8 @@
   "gui.omnivault.filter.allow": "Allow list: only listed items pass (empty = everything)",
   "gui.omnivault.filter.deny": "Deny list: listed items are blocked",
   "gui.omnivault.jei.missing": "Missing from the network and your inventory",
+  "gui.omnivault.jei.pattern_too_big": "Too many inputs or outputs for one pattern (9 in, 3 out)",
+  "gui.omnivault.jei.pattern_unsupported": "This recipe has no items to encode",
   "gui.omnivault.pattern.clear": "Clear the recipe",
   "gui.omnivault.pattern.encode": "Encode: write this recipe onto a blank pattern, or over the pattern in the output slot",
   "gui.omnivault.pattern.mode.crafting": "Crafting pattern: a 3×3 recipe run by an Assembler. Click for processing.",

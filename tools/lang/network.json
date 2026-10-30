@@ -75,6 +75,8 @@
   "gui.omnivault.core.devices": "%s connected devices · no channel limits",
   "gui.omnivault.core.energy": "Energy %s / %s FE · uses %s FE/t",
   "gui.omnivault.jei.missing": "Missing from the network and your inventory",
+  "gui.omnivault.jei.pattern_unsupported": "This recipe has no items to encode",
+  "gui.omnivault.jei.pattern_too_big": "Too many inputs or outputs for one pattern (9 in, 3 out)",
   "key.omnivault.open_wireless": "Open Wireless Terminal",
   "key.categories.omnivault": "OmniVault",
   "tooltip.omnivault.fluid_cell.buckets": "%s / %s buckets",

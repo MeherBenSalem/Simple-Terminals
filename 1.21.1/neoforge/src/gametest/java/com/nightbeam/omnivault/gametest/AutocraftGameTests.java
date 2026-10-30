@@ -45,6 +45,7 @@ import net.neoforged.neoforge.gametest.PrefixGameTestTemplate;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 @GameTestHolder(OmniVault.MOD_ID)
@@ -395,6 +396,36 @@ public class AutocraftGameTests {
         player.setItemInHand(InteractionHand.MAIN_HAND, processing.copy());
         ItemStack wiped = processing.getItem().use(helper.getLevel(), player, InteractionHand.MAIN_HAND).getObject();
         helper.assertTrue(wiped.is(AutocraftContent.BLANK_PATTERN.get()), "sneak-use clears the pattern");
+        helper.succeed();
+    }
+
+    @GameTest(template = "floor_9x9")
+    public static void recipeViewerTransfersLoadThePatternTerminal(GameTestHelper helper) {
+        network(helper, true, true);
+        BlockPos pos = new BlockPos(6, 1, 5);
+        helper.setBlock(pos, AutocraftContent.PATTERN_TERMINAL.get().defaultBlockState().setValue(OrientedDeviceBlock.FACING, Direction.SOUTH));
+        PatternTerminalBlockEntity terminal = (PatternTerminalBlockEntity) helper.getBlockEntity(pos);
+        ServerPlayer player = helper.makeMockServerPlayerInLevel();
+        PatternTerminalMenu menu = new PatternTerminalMenu(1, player.getInventory(), terminal);
+        // A furnace recipe arrives as a processing recipe, amounts capped at one pattern slot's limit.
+        menu.transfer(true, List.of(new ItemStack(Items.RAW_GOLD, 100)), List.of(new ItemStack(Items.GOLD_INGOT)));
+        helper.assertTrue(menu.processing() && terminal.processing(), "processing mode");
+        helper.assertTrue(terminal.inputs().getItem(0).is(Items.RAW_GOLD) && terminal.inputs().getItem(0).getCount() == PatternData.MAX_SLOT_AMOUNT,
+                "input amount clamped");
+        helper.assertTrue(terminal.outputs().getItem(0).is(Items.GOLD_INGOT), "output loaded");
+        // A crafting recipe switches back, keeps its shape, drops outputs and uses one of each item.
+        List<ItemStack> grid = new ArrayList<>(Collections.nCopies(9, ItemStack.EMPTY));
+        grid.set(0, new ItemStack(Items.OAK_PLANKS, 5));
+        grid.set(3, new ItemStack(Items.OAK_PLANKS));
+        menu.transfer(false, grid, List.of(new ItemStack(Items.DIAMOND)));
+        helper.assertFalse(menu.processing(), "crafting mode");
+        helper.assertTrue(terminal.inputs().getItem(0).getCount() == 1 && terminal.inputs().getItem(3).is(Items.OAK_PLANKS)
+                && terminal.inputs().getItem(1).isEmpty(), "grid shape kept, one item per cell");
+        helper.assertTrue(terminal.outputs().getItem(0).isEmpty(), "crafting transfers set no outputs");
+        terminal.patterns().setItem(0, new ItemStack(AutocraftContent.BLANK_PATTERN.get()));
+        menu.clickMenuButton(player, PatternTerminalMenu.BUTTON_ENCODE);
+        PatternData data = PatternItem.data(terminal.patterns().getItem(1));
+        helper.assertTrue(data != null && data.primaryOutput().is(Items.STICK), "the transferred grid encodes sticks");
         helper.succeed();
     }
 
