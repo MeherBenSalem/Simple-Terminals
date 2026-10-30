@@ -1,0 +1,30 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "EQE",
+    "CBC",
+    "ESE"
+  ],
+  "key": {
+    "E": {
+      "item": "minecraft:echo_shard"
+    },
+    "Q": {
+      "item": "omnivault:quantum_processor"
+    },
+    "C": {
+      "item": "minecraft:ender_chest"
+    },
+    "B": {
+      "item": "omnivault:omnium_block"
+    },
+    "S": {
+      "item": "minecraft:nether_star"
+    }
+  },
+  "result": {
+    "id": "omnivault:quantum_bridge",
+    "count": 1
+  }
+}

@@ -74,7 +74,8 @@ public final class NetworkContent {
 
     // -- blocks --------------------------------------------------------------------------------------
     public static final Supplier<NexusCoreBlock> NEXUS_CORE = ModRegistry.blockWithItem("nexus_core",
-            () -> new NexusCoreBlock(device().lightLevel(state -> state.getValue(NexusCoreBlock.ACTIVE) ? 12 : 3)),
+            // Glass windows: neighbours must not cull their faces against the core (no x-ray through it).
+            () -> new NexusCoreBlock(device().noOcclusion().lightLevel(state -> state.getValue(NexusCoreBlock.ACTIVE) ? 12 : 3)),
             (UnaryOperator<Item.Properties>) p -> p.rarity(Rarity.UNCOMMON));
     public static final Supplier<CableBlock> NEXUS_CABLE = ModRegistry.blockWithItem("nexus_cable",
             () -> new CableBlock(BlockBehaviour.Properties.of().mapColor(MapColor.METAL).strength(0.6f).sound(SoundType.COPPER)

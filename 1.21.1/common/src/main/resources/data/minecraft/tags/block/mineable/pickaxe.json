@@ -24,6 +24,8 @@
     "omnivault:omnium_vault",
     "omnivault:pattern_provider",
     "omnivault:pattern_terminal",
+    "omnivault:quantum_assembler",
+    "omnivault:quantum_bridge",
     "omnivault:signal_emitter",
     "omnivault:storage_bus",
     "omnivault:storage_monitor",

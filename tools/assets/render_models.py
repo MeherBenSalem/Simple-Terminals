@@ -51,9 +51,10 @@ MOD = 'omnivault'
 DEFAULT_TINT = 0x38E1FF  # tint index 0 without a preset: the default (undyed) cable glow
 # Tint presets for the contact sheet and CLI, matched against the model path (first match wins).
 TIER_COLOURS = {'4k': 0x9AA0A8, '16k': 0xF5C542, '64k': 0x4DE8E0, '256k': 0x5BE08A, '1m': 0xA46BFF,
-                '16m': 0xFF6BD5, 'creative': 0xFF4D4D}
+                '16m': 0xFF6BD5, 'singularity': 0xE9D7FF, 'creative': 0xFF4D4D}
 TINT_PRESETS = [
-    (r'(storage|fluid)_cell_(4k|16k|64k|256k|1m|16m)$', lambda m: {0: TIER_COLOURS[m.group(2)]}),
+    (r'(storage|fluid)_cell_(4k|16k|64k|256k|1m|16m|singularity)$', lambda m: {0: TIER_COLOURS[m.group(2)]}),
+    (r'inventory_cable', lambda m: {0: 0xF2B33D}),  # NetworkClient: amber until dyed
     (r'creative_(storage|fluid)_cell$', lambda m: {0: TIER_COLOURS['creative']}),
     (r'drive_cell_led$', lambda m: {0: 0x5BE08A}),
     (r'drive_cell$', lambda m: {0: TIER_COLOURS['16k']}),

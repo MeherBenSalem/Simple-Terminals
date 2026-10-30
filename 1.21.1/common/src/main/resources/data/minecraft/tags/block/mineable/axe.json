@@ -4,6 +4,8 @@
     "omnivault:drawer_1x1",
     "omnivault:drawer_1x2",
     "omnivault:drawer_2x2",
-    "omnivault:drawer_trim"
+    "omnivault:drawer_trim",
+    "omnivault:inventory_cable",
+    "omnivault:storage_hub"
   ]
 }
