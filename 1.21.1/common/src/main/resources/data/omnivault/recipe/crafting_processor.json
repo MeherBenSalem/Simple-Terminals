@@ -1,0 +1,27 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "OGO",
+    "ALA",
+    "OGO"
+  ],
+  "key": {
+    "O": {
+      "item": "omnivault:omnium_ingot"
+    },
+    "G": {
+      "item": "minecraft:gold_ingot"
+    },
+    "A": {
+      "item": "omnivault:advanced_processor"
+    },
+    "L": {
+      "item": "omnivault:logic_processor"
+    }
+  },
+  "result": {
+    "id": "omnivault:crafting_processor",
+    "count": 1
+  }
+}

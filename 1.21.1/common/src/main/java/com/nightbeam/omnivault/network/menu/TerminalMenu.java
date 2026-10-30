@@ -96,6 +96,12 @@ public class TerminalMenu extends OVMenu {
         return rows;
     }
 
+    /** What this terminal is opened from (a block or a handheld terminal); null on the client. */
+    @Nullable
+    public TerminalHost host() {
+        return host;
+    }
+
     public int gridBottom() {
         return GRID_Y + rows * 18;
     }

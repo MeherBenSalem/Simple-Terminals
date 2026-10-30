@@ -1,6 +1,7 @@
 package com.nightbeam.omnivault;
 
 import com.nightbeam.omnivault.backpack.BackpackContent;
+import com.nightbeam.omnivault.autocraft.AutocraftContent;
 import com.nightbeam.omnivault.config.OVConfig;
 import com.nightbeam.omnivault.content.CoreContent;
 import com.nightbeam.omnivault.network.NetworkContent;
@@ -39,6 +40,7 @@ public final class OmniVaultCommon {
         BackpackContent.init();
         InventorySorting.init();
         NetworkContent.init();
+        AutocraftContent.init();
         OVConfig.load(Services.PLATFORM.getConfigDir());
     }
 

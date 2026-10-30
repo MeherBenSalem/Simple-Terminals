@@ -1,0 +1,1394 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "particle": "omnivault:block/pattern_terminal_side",
+    "side": "omnivault:block/pattern_terminal_side",
+    "top": "omnivault:block/pattern_terminal_top",
+    "bottom": "omnivault:block/autocraft_casing_dark",
+    "back": "omnivault:block/pattern_terminal_back",
+    "trim": "omnivault:block/autocraft_trim",
+    "trimv": "omnivault:block/autocraft_trim_vertical",
+    "screen": "omnivault:block/pattern_terminal_screen_on",
+    "keys": "omnivault:block/pattern_terminal_keys_on",
+    "plate": "omnivault:block/pattern_glyph_plate_on",
+    "crystal": "omnivault:block/omnium_crystal_on",
+    "connector": "omnivault:block/autocraft_connector"
+  },
+  "elements": [
+    {
+      "from": [
+        0.5,
+        0,
+        2
+      ],
+      "to": [
+        15.5,
+        16,
+        16
+      ],
+      "name": "chassis",
+      "faces": {
+        "north": {
+          "uv": [
+            0.5,
+            0,
+            15.5,
+            16
+          ],
+          "texture": "#side"
+        },
+        "east": {
+          "uv": [
+            0,
+            0,
+            14,
+            16
+          ],
+          "texture": "#side"
+        },
+        "south": {
+          "uv": [
+            0.5,
+            0,
+            15.5,
+            16
+          ],
+          "texture": "#back",
+          "cullface": "south"
+        },
+        "west": {
+          "uv": [
+            2,
+            0,
+            16,
+            16
+          ],
+          "texture": "#side"
+        },
+        "up": {
+          "uv": [
+            0.5,
+            2,
+            15.5,
+            16
+          ],
+          "texture": "#top",
+          "cullface": "up"
+        },
+        "down": {
+          "uv": [
+            0.5,
+            0,
+            15.5,
+            14
+          ],
+          "texture": "#bottom",
+          "cullface": "down"
+        }
+      }
+    },
+    {
+      "from": [
+        0,
+        13,
+        0
+      ],
+      "to": [
+        16,
+        16,
+        2
+      ],
+      "name": "bezel_top",
+      "faces": {
+        "north": {
+          "uv": [
+            0,
+            0,
+            16,
+            3
+          ],
+          "texture": "#trim",
+          "cullface": "north"
+        },
+        "east": {
+          "uv": [
+            14,
+            0,
+            16,
+            3
+          ],
+          "texture": "#trim",
+          "cullface": "east"
+        },
+        "south": {
+          "uv": [
+            0,
+            0,
+            16,
+            3
+          ],
+          "texture": "#trim"
+        },
+        "west": {
+          "uv": [
+            0,
+            0,
+            2,
+            3
+          ],
+          "texture": "#trim",
+          "cullface": "west"
+        },
+        "up": {
+          "uv": [
+            0,
+            0,
+            16,
+            2
+          ],
+          "texture": "#trim",
+          "cullface": "up"
+        },
+        "down": {
+          "uv": [
+            0,
+            14,
+            16,
+            16
+          ],
+          "texture": "#trim"
+        }
+      }
+    },
+    {
+      "from": [
+        0,
+        0,
+        0
+      ],
+      "to": [
+        16,
+        3,
+        2
+      ],
+      "name": "bezel_bottom",
+      "faces": {
+        "north": {
+          "uv": [
+            0,
+            13,
+            16,
+            16
+          ],
+          "texture": "#trim",
+          "cullface": "north"
+        },
+        "east": {
+          "uv": [
+            14,
+            13,
+            16,
+            16
+          ],
+          "texture": "#trim",
+          "cullface": "east"
+        },
+        "south": {
+          "uv": [
+            0,
+            13,
+            16,
+            16
+          ],
+          "texture": "#trim"
+        },
+        "west": {
+          "uv": [
+            0,
+            13,
+            2,
+            16
+          ],
+          "texture": "#trim",
+          "cullface": "west"
+        },
+        "up": {
+          "uv": [
+            0,
+            0,
+            16,
+            2
+          ],
+          "texture": "#trim"
+        },
+        "down": {
+          "uv": [
+            0,
+            14,
+            16,
+            16
+          ],
+          "texture": "#trim",
+          "cullface": "down"
+        }
+      }
+    },
+    {
+      "from": [
+        0,
+        3,
+        0
+      ],
+      "to": [
+        2,
+        13,
+        2
+      ],
+      "name": "bezel_left",
+      "faces": {
+        "north": {
+          "uv": [
+            14,
+            3,
+            16,
+            13
+          ],
+          "texture": "#trimv",
+          "cullface": "north"
+        },
+        "east": {
+          "uv": [
+            14,
+            3,
+            16,
+            13
+          ],
+          "texture": "#trimv"
+        },
+        "south": {
+          "uv": [
+            0,
+            3,
+            2,
+            13
+          ],
+          "texture": "#trimv"
+        },
+        "west": {
+          "uv": [
+            0,
+            3,
+            2,
+            13
+          ],
+          "texture": "#trimv",
+          "cullface": "west"
+        },
+        "up": {
+          "uv": [
+            0,
+            0,
+            2,
+            2
+          ],
+          "texture": "#trimv"
+        },
+        "down": {
+          "uv": [
+            0,
+            14,
+            2,
+            16
+          ],
+          "texture": "#trimv"
+        }
+      }
+    },
+    {
+      "from": [
+        14,
+        3,
+        0
+      ],
+      "to": [
+        16,
+        13,
+        2
+      ],
+      "name": "bezel_right",
+      "faces": {
+        "north": {
+          "uv": [
+            0,
+            3,
+            2,
+            13
+          ],
+          "texture": "#trimv",
+          "cullface": "north"
+        },
+        "east": {
+          "uv": [
+            14,
+            3,
+            16,
+            13
+          ],
+          "texture": "#trimv",
+          "cullface": "east"
+        },
+        "south": {
+          "uv": [
+            14,
+            3,
+            16,
+            13
+          ],
+          "texture": "#trimv"
+        },
+        "west": {
+          "uv": [
+            0,
+            3,
+            2,
+            13
+          ],
+          "texture": "#trimv"
+        },
+        "up": {
+          "uv": [
+            14,
+            0,
+            16,
+            2
+          ],
+          "texture": "#trimv"
+        },
+        "down": {
+          "uv": [
+            14,
+            14,
+            16,
+            16
+          ],
+          "texture": "#trimv"
+        }
+      }
+    },
+    {
+      "from": [
+        2,
+        4.5,
+        1.5
+      ],
+      "to": [
+        14,
+        13,
+        2
+      ],
+      "name": "screen",
+      "faces": {
+        "north": {
+          "uv": [
+            2,
+            3,
+            14,
+            13
+          ],
+          "texture": "#screen"
+        }
+      },
+      "neoforge_data": {
+        "block_light": 15,
+        "sky_light": 15
+      }
+    },
+    {
+      "from": [
+        2,
+        3,
+        0.5
+      ],
+      "to": [
+        14,
+        4.5,
+        2
+      ],
+      "name": "deck",
+      "faces": {
+        "north": {
+          "uv": [
+            2,
+            11.5,
+            14,
+            13
+          ],
+          "texture": "#trim"
+        },
+        "up": {
+          "uv": [
+            2,
+            0.5,
+            14,
+            2
+          ],
+          "texture": "#keys"
+        }
+      }
+    },
+    {
+      "from": [
+        3,
+        4.5,
+        1.0
+      ],
+      "to": [
+        13,
+        4.75,
+        1.5
+      ],
+      "name": "deck_keys",
+      "faces": {
+        "north": {
+          "uv": [
+            3,
+            11.25,
+            13,
+            11.5
+          ],
+          "texture": "#keys"
+        },
+        "up": {
+          "uv": [
+            3,
+            1.0,
+            13,
+            1.5
+          ],
+          "texture": "#keys"
+        }
+      },
+      "neoforge_data": {
+        "block_light": 15,
+        "sky_light": 15
+      }
+    },
+    {
+      "from": [
+        0.5,
+        0.5,
+        -0.25
+      ],
+      "to": [
+        1.5,
+        1.5,
+        0
+      ],
+      "name": "rivet",
+      "faces": {
+        "north": {
+          "uv": [
+            14.5,
+            14.5,
+            15.5,
+            15.5
+          ],
+          "texture": "#trim"
+        },
+        "east": {
+          "uv": [
+            16,
+            14.5,
+            16.25,
+            15.5
+          ],
+          "texture": "#trim"
+        },
+        "south": {
+          "uv": [
+            0.5,
+            14.5,
+            1.5,
+            15.5
+          ],
+          "texture": "#trim"
+        },
+        "west": {
+          "uv": [
+            -0.25,
+            14.5,
+            0,
+            15.5
+          ],
+          "texture": "#trim"
+        },
+        "up": {
+          "uv": [
+            0.5,
+            -0.25,
+            1.5,
+            0
+          ],
+          "texture": "#trim"
+        },
+        "down": {
+          "uv": [
+            0.5,
+            16,
+            1.5,
+            16.25
+          ],
+          "texture": "#trim"
+        }
+      }
+    },
+    {
+      "from": [
+        0.5,
+        14.5,
+        -0.25
+      ],
+      "to": [
+        1.5,
+        15.5,
+        0
+      ],
+      "name": "rivet",
+      "faces": {
+        "north": {
+          "uv": [
+            14.5,
+            0.5,
+            15.5,
+            1.5
+          ],
+          "texture": "#trim"
+        },
+        "east": {
+          "uv": [
+            16,
+            0.5,
+            16.25,
+            1.5
+          ],
+          "texture": "#trim"
+        },
+        "south": {
+          "uv": [
+            0.5,
+            0.5,
+            1.5,
+            1.5
+          ],
+          "texture": "#trim"
+        },
+        "west": {
+          "uv": [
+            -0.25,
+            0.5,
+            0,
+            1.5
+          ],
+          "texture": "#trim"
+        },
+        "up": {
+          "uv": [
+            0.5,
+            -0.25,
+            1.5,
+            0
+          ],
+          "texture": "#trim"
+        },
+        "down": {
+          "uv": [
+            0.5,
+            16,
+            1.5,
+            16.25
+          ],
+          "texture": "#trim"
+        }
+      }
+    },
+    {
+      "from": [
+        14.5,
+        0.5,
+        -0.25
+      ],
+      "to": [
+        15.5,
+        1.5,
+        0
+      ],
+      "name": "rivet",
+      "faces": {
+        "north": {
+          "uv": [
+            0.5,
+            14.5,
+            1.5,
+            15.5
+          ],
+          "texture": "#trim"
+        },
+        "east": {
+          "uv": [
+            16,
+            14.5,
+            16.25,
+            15.5
+          ],
+          "texture": "#trim"
+        },
+        "south": {
+          "uv": [
+            14.5,
+            14.5,
+            15.5,
+            15.5
+          ],
+          "texture": "#trim"
+        },
+        "west": {
+          "uv": [
+            -0.25,
+            14.5,
+            0,
+            15.5
+          ],
+          "texture": "#trim"
+        },
+        "up": {
+          "uv": [
+            14.5,
+            -0.25,
+            15.5,
+            0
+          ],
+          "texture": "#trim"
+        },
+        "down": {
+          "uv": [
+            14.5,
+            16,
+            15.5,
+            16.25
+          ],
+          "texture": "#trim"
+        }
+      }
+    },
+    {
+      "from": [
+        14.5,
+        14.5,
+        -0.25
+      ],
+      "to": [
+        15.5,
+        15.5,
+        0
+      ],
+      "name": "rivet",
+      "faces": {
+        "north": {
+          "uv": [
+            0.5,
+            0.5,
+            1.5,
+            1.5
+          ],
+          "texture": "#trim"
+        },
+        "east": {
+          "uv": [
+            16,
+            0.5,
+            16.25,
+            1.5
+          ],
+          "texture": "#trim"
+        },
+        "south": {
+          "uv": [
+            14.5,
+            0.5,
+            15.5,
+            1.5
+          ],
+          "texture": "#trim"
+        },
+        "west": {
+          "uv": [
+            -0.25,
+            0.5,
+            0,
+            1.5
+          ],
+          "texture": "#trim"
+        },
+        "up": {
+          "uv": [
+            14.5,
+            -0.25,
+            15.5,
+            0
+          ],
+          "texture": "#trim"
+        },
+        "down": {
+          "uv": [
+            14.5,
+            16,
+            15.5,
+            16.25
+          ],
+          "texture": "#trim"
+        }
+      }
+    },
+    {
+      "from": [
+        15.5,
+        4,
+        5
+      ],
+      "to": [
+        16,
+        12,
+        13
+      ],
+      "name": "plate_east",
+      "faces": {
+        "north": {
+          "uv": [
+            0,
+            4,
+            0.5,
+            12
+          ],
+          "texture": "#trim"
+        },
+        "east": {
+          "uv": [
+            3,
+            4,
+            11,
+            12
+          ],
+          "texture": "#plate"
+        },
+        "south": {
+          "uv": [
+            15.5,
+            4,
+            16,
+            12
+          ],
+          "texture": "#trim"
+        },
+        "up": {
+          "uv": [
+            15.5,
+            5,
+            16,
+            13
+          ],
+          "texture": "#trim"
+        },
+        "down": {
+          "uv": [
+            15.5,
+            3,
+            16,
+            11
+          ],
+          "texture": "#trim"
+        }
+      },
+      "neoforge_data": {
+        "block_light": 15,
+        "sky_light": 15
+      }
+    },
+    {
+      "from": [
+        0,
+        4,
+        5
+      ],
+      "to": [
+        0.5,
+        12,
+        13
+      ],
+      "name": "plate_west",
+      "faces": {
+        "north": {
+          "uv": [
+            15.5,
+            4,
+            16,
+            12
+          ],
+          "texture": "#trim"
+        },
+        "south": {
+          "uv": [
+            0,
+            4,
+            0.5,
+            12
+          ],
+          "texture": "#trim"
+        },
+        "west": {
+          "uv": [
+            5,
+            4,
+            13,
+            12
+          ],
+          "texture": "#plate"
+        },
+        "up": {
+          "uv": [
+            0,
+            5,
+            0.5,
+            13
+          ],
+          "texture": "#trim"
+        },
+        "down": {
+          "uv": [
+            0,
+            3,
+            0.5,
+            11
+          ],
+          "texture": "#trim"
+        }
+      },
+      "neoforge_data": {
+        "block_light": 15,
+        "sky_light": 15
+      }
+    },
+    {
+      "from": [
+        3,
+        16,
+        5
+      ],
+      "to": [
+        13,
+        16.5,
+        12
+      ],
+      "name": "grille",
+      "faces": {
+        "north": {
+          "uv": [
+            3,
+            -0.5,
+            13,
+            0
+          ],
+          "texture": "#trim"
+        },
+        "east": {
+          "uv": [
+            4,
+            -0.5,
+            11,
+            0
+          ],
+          "texture": "#trim"
+        },
+        "south": {
+          "uv": [
+            3,
+            -0.5,
+            13,
+            0
+          ],
+          "texture": "#trim"
+        },
+        "west": {
+          "uv": [
+            5,
+            -0.5,
+            12,
+            0
+          ],
+          "texture": "#trim"
+        },
+        "up": {
+          "uv": [
+            3,
+            5,
+            13,
+            12
+          ],
+          "texture": "#top"
+        }
+      }
+    },
+    {
+      "from": [
+        10.5,
+        16,
+        12.5
+      ],
+      "to": [
+        13.5,
+        17,
+        15.5
+      ],
+      "name": "socket",
+      "faces": {
+        "north": {
+          "uv": [
+            2.5,
+            -1,
+            5.5,
+            0
+          ],
+          "texture": "#trim"
+        },
+        "east": {
+          "uv": [
+            0.5,
+            -1,
+            3.5,
+            0
+          ],
+          "texture": "#trim"
+        },
+        "south": {
+          "uv": [
+            10.5,
+            -1,
+            13.5,
+            0
+          ],
+          "texture": "#trim"
+        },
+        "west": {
+          "uv": [
+            12.5,
+            -1,
+            15.5,
+            0
+          ],
+          "texture": "#trim"
+        },
+        "up": {
+          "uv": [
+            10.5,
+            12.5,
+            13.5,
+            15.5
+          ],
+          "texture": "#trim"
+        },
+        "down": {
+          "uv": [
+            10.5,
+            0.5,
+            13.5,
+            3.5
+          ],
+          "texture": "#trim"
+        }
+      }
+    },
+    {
+      "from": [
+        11.25,
+        17,
+        13.25
+      ],
+      "to": [
+        12.75,
+        20,
+        14.75
+      ],
+      "name": "crystal",
+      "rotation": {
+        "angle": 45,
+        "axis": "y",
+        "origin": [
+          12,
+          18,
+          14
+        ]
+      },
+      "faces": {
+        "north": {
+          "uv": [
+            3.25,
+            -4,
+            4.75,
+            -1
+          ],
+          "texture": "#crystal"
+        },
+        "east": {
+          "uv": [
+            1.25,
+            -4,
+            2.75,
+            -1
+          ],
+          "texture": "#crystal"
+        },
+        "south": {
+          "uv": [
+            11.25,
+            -4,
+            12.75,
+            -1
+          ],
+          "texture": "#crystal"
+        },
+        "west": {
+          "uv": [
+            13.25,
+            -4,
+            14.75,
+            -1
+          ],
+          "texture": "#crystal"
+        },
+        "up": {
+          "uv": [
+            11.25,
+            13.25,
+            12.75,
+            14.75
+          ],
+          "texture": "#crystal"
+        },
+        "down": {
+          "uv": [
+            11.25,
+            1.25,
+            12.75,
+            2.75
+          ],
+          "texture": "#crystal"
+        }
+      },
+      "neoforge_data": {
+        "block_light": 15,
+        "sky_light": 15
+      }
+    },
+    {
+      "from": [
+        11.6,
+        20,
+        13.6
+      ],
+      "to": [
+        12.4,
+        21,
+        14.4
+      ],
+      "name": "crystal_tip",
+      "rotation": {
+        "angle": 45,
+        "axis": "y",
+        "origin": [
+          12,
+          18,
+          14
+        ]
+      },
+      "faces": {
+        "north": {
+          "uv": [
+            3.6,
+            -5,
+            4.4,
+            -4
+          ],
+          "texture": "#crystal"
+        },
+        "east": {
+          "uv": [
+            1.6,
+            -5,
+            2.4,
+            -4
+          ],
+          "texture": "#crystal"
+        },
+        "south": {
+          "uv": [
+            11.6,
+            -5,
+            12.4,
+            -4
+          ],
+          "texture": "#crystal"
+        },
+        "west": {
+          "uv": [
+            13.6,
+            -5,
+            14.4,
+            -4
+          ],
+          "texture": "#crystal"
+        },
+        "up": {
+          "uv": [
+            11.6,
+            13.6,
+            12.4,
+            14.4
+          ],
+          "texture": "#crystal"
+        },
+        "down": {
+          "uv": [
+            11.6,
+            1.6,
+            12.4,
+            2.4
+          ],
+          "texture": "#crystal"
+        }
+      },
+      "neoforge_data": {
+        "block_light": 15,
+        "sky_light": 15
+      }
+    },
+    {
+      "from": [
+        5,
+        5,
+        16
+      ],
+      "to": [
+        11,
+        11,
+        16.25
+      ],
+      "name": "connector",
+      "faces": {
+        "south": {
+          "uv": [
+            5,
+            5,
+            11,
+            11
+          ],
+          "texture": "#connector"
+        }
+      }
+    },
+    {
+      "from": [
+        0.25,
+        1,
+        3
+      ],
+      "to": [
+        0.5,
+        2,
+        15
+      ],
+      "name": "strip",
+      "faces": {
+        "east": {
+          "uv": [
+            1,
+            14,
+            13,
+            15
+          ],
+          "texture": "#plate"
+        },
+        "west": {
+          "uv": [
+            3,
+            14,
+            15,
+            15
+          ],
+          "texture": "#plate"
+        },
+        "up": {
+          "uv": [
+            0.25,
+            3,
+            0.5,
+            15
+          ],
+          "texture": "#plate"
+        }
+      },
+      "neoforge_data": {
+        "block_light": 15,
+        "sky_light": 15
+      }
+    },
+    {
+      "from": [
+        15.5,
+        1,
+        3
+      ],
+      "to": [
+        15.75,
+        2,
+        15
+      ],
+      "name": "strip",
+      "faces": {
+        "east": {
+          "uv": [
+            1,
+            14,
+            13,
+            15
+          ],
+          "texture": "#plate"
+        },
+        "west": {
+          "uv": [
+            3,
+            14,
+            15,
+            15
+          ],
+          "texture": "#plate"
+        },
+        "up": {
+          "uv": [
+            15.5,
+            3,
+            15.75,
+            15
+          ],
+          "texture": "#plate"
+        }
+      },
+      "neoforge_data": {
+        "block_light": 15,
+        "sky_light": 15
+      }
+    }
+  ],
+  "display": {
+    "gui": {
+      "rotation": [
+        30,
+        225,
+        0
+      ],
+      "translation": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        0.625,
+        0.625,
+        0.625
+      ]
+    },
+    "ground": {
+      "rotation": [
+        0,
+        0,
+        0
+      ],
+      "translation": [
+        0,
+        3,
+        0
+      ],
+      "scale": [
+        0.25,
+        0.25,
+        0.25
+      ]
+    },
+    "fixed": {
+      "rotation": [
+        0,
+        0,
+        0
+      ],
+      "translation": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        0.5,
+        0.5,
+        0.5
+      ]
+    },
+    "thirdperson_righthand": {
+      "rotation": [
+        75,
+        45,
+        0
+      ],
+      "translation": [
+        0,
+        2.5,
+        0
+      ],
+      "scale": [
+        0.375,
+        0.375,
+        0.375
+      ]
+    },
+    "firstperson_righthand": {
+      "rotation": [
+        0,
+        45,
+        0
+      ],
+      "translation": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        0.4,
+        0.4,
+        0.4
+      ]
+    },
+    "firstperson_lefthand": {
+      "rotation": [
+        0,
+        225,
+        0
+      ],
+      "translation": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        0.4,
+        0.4,
+        0.4
+      ]
+    }
+  }
+}

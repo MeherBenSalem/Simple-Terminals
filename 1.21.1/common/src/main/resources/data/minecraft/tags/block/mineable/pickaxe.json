@@ -8,6 +8,10 @@
     "omnivault:linked_vault",
     "omnivault:netherite_vault",
     "omnivault:omnium_vault",
-    "omnivault:trash_can"
+    "omnivault:trash_can",
+    "omnivault:assembler",
+    "omnivault:crafting_processor",
+    "omnivault:pattern_provider",
+    "omnivault:pattern_terminal"
   ]
 }

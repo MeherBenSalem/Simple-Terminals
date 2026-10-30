@@ -32,6 +32,12 @@ view-distance=8
 simulation-distance=6
 motd=OmniVault QA
 PROPS
+    # Skip the first-launch accessibility prompt (it blocks the auto-join) and keep captures quiet and stable.
+    mkdir -p "$WS/neoforge/runs/client"
+    if [ ! -f "$WS/neoforge/runs/client/options.txt" ]; then
+      printf 'onboardAccessibility:false\nguiScale:3\npauseOnLostFocus:false\nnarrator:0\nsoundCategory_master:0.0\nrenderDistance:8\ntutorialStep:none\njoinedFirstServer:true\n' \
+        > "$WS/neoforge/runs/client/options.txt"
+    fi
     # The QA server is a local development server for testing this mod.
     echo "eula=true" > "$WS/neoforge/runs/server/eula.txt"
     ;;
