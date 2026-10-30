@@ -2,7 +2,7 @@ package com.nightbeam.omnivault.physical.vault;
 
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import com.nightbeam.omnivault.physical.BlockUseOverride;
+import com.nightbeam.omnivault.content.BlockUseOverride;
 import com.nightbeam.omnivault.physical.PhysicalContent;
 import com.nightbeam.omnivault.platform.Services;
 import net.minecraft.core.BlockPos;

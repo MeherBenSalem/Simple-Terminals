@@ -1,6 +1,7 @@
 package com.nightbeam.omnivault.item;
 
 import com.nightbeam.omnivault.OmniVault;
+import com.nightbeam.omnivault.content.BlockUseOverride;
 import com.nightbeam.omnivault.content.Wrenchable;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
@@ -25,9 +26,19 @@ import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import java.util.List;
 
 /** Wrench: right-click rotates, sneak-right-click dismantles any OmniVault block into an item. */
-public class OmniToolItem extends Item {
+public class OmniToolItem extends Item implements BlockUseOverride {
     public OmniToolItem(Properties properties) {
         super(properties);
+    }
+
+    /** On our blocks the wrench wins over the block's own right-click (opening its screen). */
+    @Override
+    public boolean overridesBlockUse(ItemStack stack, Level level, BlockPos pos, BlockState state, Player player) {
+        return isOurs(state);
+    }
+
+    private static boolean isOurs(BlockState state) {
+        return OmniVault.MOD_ID.equals(BuiltInRegistries.BLOCK.getKey(state.getBlock()).getNamespace());
     }
 
     @Override
@@ -39,7 +50,7 @@ public class OmniToolItem extends Item {
         if (player == null) {
             return InteractionResult.PASS;
         }
-        boolean ours = OmniVault.MOD_ID.equals(BuiltInRegistries.BLOCK.getKey(state.getBlock()).getNamespace());
+        boolean ours = isOurs(state);
         if (player.isShiftKeyDown() && ours) {
             if (level instanceof ServerLevel serverLevel) {
                 Block.dropResources(state, serverLevel, pos, level.getBlockEntity(pos), player, context.getItemInHand());

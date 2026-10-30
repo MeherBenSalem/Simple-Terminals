@@ -1,8 +1,8 @@
 package com.nightbeam.omnivault.physical.linked;
 
 import com.mojang.serialization.MapCodec;
+import com.nightbeam.omnivault.content.BlockUseOverride;
 import com.nightbeam.omnivault.content.Wrenchable;
-import com.nightbeam.omnivault.physical.BlockUseOverride;
 import com.nightbeam.omnivault.physical.PhysicalConfig;
 import com.nightbeam.omnivault.physical.PhysicalContent;
 import net.minecraft.ChatFormatting;

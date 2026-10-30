@@ -3,6 +3,7 @@ package com.nightbeam.omnivault.gametest;
 import com.nightbeam.omnivault.OmniVault;
 import com.nightbeam.omnivault.autocraft.AutocraftContent;
 import com.nightbeam.omnivault.autocraft.block.AssemblerBlockEntity;
+import com.nightbeam.omnivault.content.CoreContent;
 import com.nightbeam.omnivault.network.NetworkContent;
 import com.nightbeam.omnivault.network.StorageNetwork;
 import com.nightbeam.omnivault.network.block.DriveBlockEntity;
@@ -17,6 +18,8 @@ import net.minecraft.core.GlobalPos;
 import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.InteractionHand;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
@@ -24,6 +27,8 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.ChestBlock;
 import net.minecraft.world.level.block.entity.ChestBlockEntity;
 import net.minecraft.world.level.block.state.properties.ChestType;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.gametest.GameTestHolder;
 import net.neoforged.neoforge.gametest.PrefixGameTestTemplate;
 
@@ -165,6 +170,47 @@ public class ProgressionGameTests {
         int normal = ((AssemblerBlockEntity) helper.getBlockEntity(new BlockPos(2, 2, 2))).craftsPerCycle();
         int quantum = ((AssemblerBlockEntity) helper.getBlockEntity(new BlockPos(4, 2, 2))).craftsPerCycle();
         helper.assertTrue(quantum == normal * 16, "quantum " + quantum + " vs normal " + normal);
+        helper.succeed();
+    }
+
+    /** A plain (not sneaking) right-click with the main hand, through the server's real interaction path. */
+    private static void rightClick(GameTestHelper helper, ServerPlayer player, BlockPos pos) {
+        BlockPos abs = helper.absolutePos(pos);
+        player.gameMode.useItemOn(player, helper.getLevel(), player.getMainHandItem(), InteractionHand.MAIN_HAND,
+                new BlockHitResult(Vec3.atCenterOf(abs), Direction.UP, abs, false));
+    }
+
+    @GameTest(template = "floor_9x9")
+    public static void plainRightClicksReachTheLinkCardAndOmniTool(GameTestHelper helper) {
+        BlockPos a = new BlockPos(2, 2, 2);
+        BlockPos b = new BlockPos(6, 2, 6);
+        helper.setBlock(a, NetworkContent.QUANTUM_BRIDGE.get());
+        helper.setBlock(b, NetworkContent.QUANTUM_BRIDGE.get());
+        ServerPlayer player = helper.makeMockServerPlayerInLevel();
+        player.setShiftKeyDown(false);
+        player.setItemInHand(InteractionHand.MAIN_HAND, new ItemStack(NetworkContent.QUANTUM_LINK_CARD.get(), 2));
+        rightClick(helper, player, a);
+        ItemStack recorded = ItemStack.EMPTY;
+        for (ItemStack stack : player.getInventory().items) {
+            if (stack.has(NetworkContent.BRIDGE_LINK.get())) {
+                recorded = stack;
+            }
+        }
+        helper.assertFalse(recorded.isEmpty(), "a plain right-click records the first bridge on a card");
+        player.setItemInHand(InteractionHand.MAIN_HAND, recorded.copy());
+        rightClick(helper, player, b);
+        QuantumBridgeBlockEntity first = (QuantumBridgeBlockEntity) helper.getBlockEntity(a);
+        QuantumBridgeBlockEntity second = (QuantumBridgeBlockEntity) helper.getBlockEntity(b);
+        helper.assertTrue(first.linkedPartner() == second && second.linkedPartner() == first, "clicking the second bridge entangles the pair");
+        // The OmniTool turns a terminal instead of opening it, and breaks the bridge link.
+        BlockPos terminal = new BlockPos(4, 2, 4);
+        helper.setBlock(terminal, NetworkContent.TERMINAL.get().defaultBlockState().setValue(OrientedDeviceBlock.FACING, Direction.SOUTH));
+        player.setItemInHand(InteractionHand.MAIN_HAND, new ItemStack(CoreContent.OMNI_TOOL.get()));
+        rightClick(helper, player, terminal);
+        helper.assertTrue(helper.getBlockState(terminal).getValue(OrientedDeviceBlock.FACING) != Direction.SOUTH, "the OmniTool rotated the terminal");
+        helper.assertTrue(player.containerMenu == player.inventoryMenu, "no terminal screen opened");
+        rightClick(helper, player, a);
+        helper.assertTrue(first.partner() == null && second.partner() == null, "the OmniTool unlinked both bridges");
         helper.succeed();
     }
 

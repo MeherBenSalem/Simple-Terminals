@@ -1,9 +1,11 @@
 package com.nightbeam.omnivault.network.item;
 
+import com.nightbeam.omnivault.content.BlockUseOverride;
 import com.nightbeam.omnivault.network.NetworkContent;
 import com.nightbeam.omnivault.network.block.QuantumBridgeBlock;
 import com.nightbeam.omnivault.network.block.QuantumBridgeBlockEntity;
 import net.minecraft.ChatFormatting;
+import net.minecraft.core.BlockPos;
 import net.minecraft.core.GlobalPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
@@ -16,15 +18,22 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.state.BlockState;
 
 import java.util.List;
 
 /**
  * Use on one Quantum Bridge to record it, then on another to entangle the pair (the card is used up).
  */
-public class QuantumLinkCardItem extends Item {
+public class QuantumLinkCardItem extends Item implements BlockUseOverride {
     public QuantumLinkCardItem(Properties properties) {
         super(properties.stacksTo(16));
+    }
+
+    /** A plain right-click on a bridge links it instead of showing the bridge's status. */
+    @Override
+    public boolean overridesBlockUse(ItemStack stack, Level level, BlockPos pos, BlockState state, Player player) {
+        return state.getBlock() instanceof QuantumBridgeBlock;
     }
 
     @Override

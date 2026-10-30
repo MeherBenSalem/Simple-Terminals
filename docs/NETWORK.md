@@ -101,6 +101,12 @@ Terminal**: any distance, any dimension, as long as the core's chunk is loaded. 
 | Redstone | The device only runs while it receives a redstone signal. |
 | Range | Adds wireless range to a Wireless Transmitter. |
 
+## OmniTool
+
+Right-click turns an OmniVault block; while you hold the tool, blocks with a screen turn instead of opening.
+Sneak-right-click dismantles the block into its item. On a Quantum Bridge it breaks the link, and drawers and
+Linked Vaults have their own uses for it (see [Storage](STORAGE.md)).
+
 ## Priorities
 
 Storage with a higher priority fills first and empties last. Drives and storage buses have one (−999 to 999;

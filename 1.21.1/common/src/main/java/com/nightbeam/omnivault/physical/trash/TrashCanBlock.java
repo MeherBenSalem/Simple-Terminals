@@ -1,7 +1,7 @@
 package com.nightbeam.omnivault.physical.trash;
 
 import com.mojang.serialization.MapCodec;
-import com.nightbeam.omnivault.physical.BlockUseOverride;
+import com.nightbeam.omnivault.content.BlockUseOverride;
 import com.nightbeam.omnivault.platform.Services;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;

@@ -1,6 +1,6 @@
 package com.nightbeam.omnivault.physical.relocator;
 
-import com.nightbeam.omnivault.physical.BlockUseOverride;
+import com.nightbeam.omnivault.content.BlockUseOverride;
 import com.nightbeam.omnivault.physical.PhysicalConfig;
 import com.nightbeam.omnivault.physical.PhysicalContent;
 import net.minecraft.ChatFormatting;
