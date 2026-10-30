@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "gDg",
+    "DVD",
+    "gDg"
+  ],
+  "key": {
+    "g": {
+      "item": "minecraft:glass"
+    },
+    "D": {
+      "item": "minecraft:diamond"
+    },
+    "V": {
+      "item": "omnivault:gold_vault"
+    }
+  },
+  "result": {
+    "id": "omnivault:diamond_vault",
+    "count": 1
+  }
+}

@@ -4,6 +4,7 @@ import com.nightbeam.omnivault.config.OVConfig;
 import com.nightbeam.omnivault.content.CoreContent;
 import com.nightbeam.omnivault.network.NetworkContent;
 import com.nightbeam.omnivault.packet.PacketRegistrar;
+import com.nightbeam.omnivault.physical.PhysicalContent;
 import com.nightbeam.omnivault.platform.Services;
 import com.nightbeam.omnivault.util.InventorySorting;
 import net.minecraft.server.MinecraftServer;
@@ -33,6 +34,7 @@ public final class OmniVaultCommon {
         OmniVault.LOG.info("Initializing {} on {}", OmniVault.MOD_NAME, Services.PLATFORM.getPlatformName());
         // Feature content classes register their entries from static initialisers.
         CoreContent.init();
+        PhysicalContent.init();
         InventorySorting.init();
         NetworkContent.init();
         OVConfig.load(Services.PLATFORM.getConfigDir());

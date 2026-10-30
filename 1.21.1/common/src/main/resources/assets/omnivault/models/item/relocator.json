@@ -1,0 +1,14 @@
+{
+  "parent": "minecraft:item/handheld",
+  "textures": {
+    "layer0": "omnivault:item/relocator"
+  },
+  "overrides": [
+    {
+      "predicate": {
+        "omnivault:full": 1
+      },
+      "model": "omnivault:item/relocator_full"
+    }
+  ]
+}
