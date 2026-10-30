@@ -17,6 +17,11 @@ public class SlotAccessStorage implements ItemStorage {
     }
 
     @Override
+    public boolean joinsTransactions() {
+        return access.joinsTransactions();
+    }
+
+    @Override
     public long insert(ItemKey key, long amount, boolean simulate) {
         long remaining = amount;
         int slots = access.getSlots();

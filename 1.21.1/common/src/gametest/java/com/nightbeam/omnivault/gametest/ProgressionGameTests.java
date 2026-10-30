@@ -49,7 +49,7 @@ public class ProgressionGameTests {
         return chest;
     }
 
-    @GameTest(template = "floor_9x9")
+    @GameTest(template = Templates.FLOOR)
     public static void storageHubJoinsTouchingChests(GameTestHelper helper) {
         BlockPos hub = new BlockPos(2, 2, 4);
         helper.setBlock(hub, NetworkContent.STORAGE_HUB.get());
@@ -72,7 +72,7 @@ public class ProgressionGameTests {
         });
     }
 
-    @GameTest(template = "floor_9x9")
+    @GameTest(template = Templates.FLOOR)
     public static void doubleChestCountsOnce(GameTestHelper helper) {
         BlockPos hub = new BlockPos(2, 2, 4);
         helper.setBlock(hub, NetworkContent.STORAGE_HUB.get());
@@ -88,7 +88,7 @@ public class ProgressionGameTests {
         });
     }
 
-    @GameTest(template = "floor_9x9")
+    @GameTest(template = Templates.FLOOR)
     public static void storageHubLimitsAdvancedFeatures(GameTestHelper helper) {
         BlockPos hub = new BlockPos(2, 2, 4);
         helper.setBlock(hub, NetworkContent.STORAGE_HUB.get());
@@ -102,7 +102,7 @@ public class ProgressionGameTests {
         });
     }
 
-    @GameTest(template = "floor_9x9")
+    @GameTest(template = Templates.FLOOR)
     public static void inventoryCableWorksOnNexusNetworks(GameTestHelper helper) {
         BlockPos core = new BlockPos(2, 2, 4);
         helper.setBlock(core, NetworkContent.NEXUS_CORE.get());
@@ -118,7 +118,7 @@ public class ProgressionGameTests {
         });
     }
 
-    @GameTest(template = "floor_9x9")
+    @GameTest(template = Templates.FLOOR)
     public static void singularityCellHoldsBillions(GameTestHelper helper) {
         BlockPos core = new BlockPos(2, 2, 4);
         helper.setBlock(core, NetworkContent.NEXUS_CORE.get());
@@ -131,7 +131,7 @@ public class ProgressionGameTests {
         });
     }
 
-    @GameTest(template = "floor_9x9")
+    @GameTest(template = Templates.FLOOR)
     public static void quantumBridgeCrossesDimensions(GameTestHelper helper) {
         BlockPos core = new BlockPos(2, 2, 4);
         helper.setBlock(core, NetworkContent.NEXUS_CORE.get());
@@ -163,7 +163,7 @@ public class ProgressionGameTests {
         });
     }
 
-    @GameTest(template = "floor_9x9")
+    @GameTest(template = Templates.FLOOR)
     public static void quantumAssemblerIsSixteenTimesFaster(GameTestHelper helper) {
         helper.setBlock(new BlockPos(2, 2, 2), AutocraftContent.ASSEMBLER.get());
         helper.setBlock(new BlockPos(4, 2, 2), AutocraftContent.QUANTUM_ASSEMBLER.get());
@@ -180,7 +180,7 @@ public class ProgressionGameTests {
                 new BlockHitResult(Vec3.atCenterOf(abs), Direction.UP, abs, false));
     }
 
-    @GameTest(template = "floor_9x9")
+    @GameTest(template = Templates.FLOOR)
     public static void plainRightClicksReachTheLinkCardAndOmniTool(GameTestHelper helper) {
         BlockPos a = new BlockPos(2, 2, 2);
         BlockPos b = new BlockPos(6, 2, 6);
@@ -214,7 +214,7 @@ public class ProgressionGameTests {
         helper.succeed();
     }
 
-    @GameTest(template = "floor_9x9")
+    @GameTest(template = Templates.FLOOR)
     public static void storageBusAndInventoryCableDoNotDoubleCount(GameTestHelper helper) {
         BlockPos hub = new BlockPos(2, 2, 4);
         helper.setBlock(hub, NetworkContent.STORAGE_HUB.get());

@@ -17,6 +17,7 @@ import com.nightbeam.omnivault.backpack.upgrade.BackpackUpgrades;
 import com.nightbeam.omnivault.backpack.upgrade.UpgradeConfig;
 import com.nightbeam.omnivault.backpack.upgrade.UpgradeType;
 import com.nightbeam.omnivault.platform.Services;
+import com.nightbeam.omnivault.storage.SlotAccess;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.gametest.framework.GameTest;
@@ -34,11 +35,8 @@ import net.minecraft.world.item.crafting.SmithingRecipeInput;
 import net.minecraft.world.level.GameType;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.phys.AABB;
-import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.gametest.GameTestHolder;
 import net.neoforged.neoforge.gametest.PrefixGameTestTemplate;
-import net.neoforged.neoforge.items.IItemHandler;
-import net.neoforged.neoforge.items.ItemHandlerHelper;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -82,7 +80,7 @@ public class BackpackGameTests {
     }
 
     /** The UUID on the item is the only link to the contents: copies (and serialised copies) see the same items. */
-    @GameTest(template = "floor_9x9")
+    @GameTest(template = Templates.FLOOR)
     public static void contentsPersistByUuid(GameTestHelper helper) {
         ServerLevel level = helper.getLevel();
         ItemStack stack = backpack(BackpackTier.LEATHER);
@@ -118,7 +116,7 @@ public class BackpackGameTests {
     }
 
     /** A placed backpack exposes the same inventory as an item handler, and breaking it returns the same backpack. */
-    @GameTest(template = "floor_9x9")
+    @GameTest(template = Templates.FLOOR)
     public static void placedBackpackCapabilityAndDrop(GameTestHelper helper) {
         ServerLevel level = helper.getLevel();
         ItemStack stack = backpack(BackpackTier.LEATHER);
@@ -137,7 +135,7 @@ public class BackpackGameTests {
         }
         blockEntity.setBackpack(stack);
 
-        IItemHandler handler = level.getCapability(Capabilities.ItemHandler.BLOCK, abs, null);
+        SlotAccess handler = TestPlatform.INSTANCE.items(level, abs, null);
         check(helper, handler != null, "placed backpack exposes no item handler");
         check(helper, handler.getSlots() == 27, "handler has " + handler.getSlots() + " slots");
         int diamonds = 0;
@@ -147,9 +145,9 @@ public class BackpackGameTests {
             }
         }
         check(helper, diamonds == 5, "handler does not show the backpack's diamonds");
-        ItemStack rest = ItemHandlerHelper.insertItem(handler, new ItemStack(Items.IRON_INGOT, 10), false);
+        ItemStack rest = TestInventories.insert(handler, new ItemStack(Items.IRON_INGOT, 10));
         check(helper, rest.isEmpty() && count(data, Items.IRON_INGOT) == 10, "items inserted through the handler did not reach the backpack");
-        ItemStack rejected = ItemHandlerHelper.insertItem(handler, backpack(BackpackTier.IRON), false);
+        ItemStack rejected = TestInventories.insert(handler, backpack(BackpackTier.IRON));
         check(helper, rejected.getCount() == 1, "the handler accepted a backpack");
         check(helper, Services.PLATFORM.findSlotAccess(level, abs, null).isPresent(), "common slot access lookup failed");
 
@@ -173,7 +171,7 @@ public class BackpackGameTests {
     }
 
     /** Pickup takes what passes its filter, Void destroys what passes its filter, everything else is left alone. */
-    @GameTest(template = "floor_9x9")
+    @GameTest(template = Templates.FLOOR)
     public static void pickupAndVoidFilters(GameTestHelper helper) {
         Player player = helper.makeMockPlayer(GameType.SURVIVAL);
         ItemStack stack = backpack(BackpackTier.IRON);
@@ -216,7 +214,7 @@ public class BackpackGameTests {
     }
 
     /** Compacting crafts 9 iron ingots into a block with the server's recipes, chaining nuggets -> ingots -> blocks. */
-    @GameTest(template = "floor_9x9")
+    @GameTest(template = Templates.FLOOR)
     public static void compactingMakesBlocks(GameTestHelper helper) {
         BackpackData data = data(helper, backpack(BackpackTier.COPPER));
         UpgradeConfig config = UpgradeConfig.DEFAULT;
@@ -238,7 +236,7 @@ public class BackpackGameTests {
     }
 
     /** Upgrading the tier (crafting and smithing) keeps the UUID, so every item stays inside. */
-    @GameTest(template = "floor_9x9")
+    @GameTest(template = Templates.FLOOR)
     public static void tierUpgradeKeepsContents(GameTestHelper helper) {
         ServerLevel level = helper.getLevel();
         ItemStack leather = backpack(BackpackTier.LEATHER);
@@ -276,7 +274,7 @@ public class BackpackGameTests {
     }
 
     /** Backpacks (and shulker boxes) never go inside backpacks: not by rule, slot, shift-click or automation. */
-    @GameTest(template = "floor_9x9")
+    @GameTest(template = Templates.FLOOR)
     public static void backpackInBackpackRejected(GameTestHelper helper) {
         Player player = helper.makeMockPlayer(GameType.SURVIVAL);
         ItemStack stack = backpack(BackpackTier.LEATHER);
@@ -312,7 +310,7 @@ public class BackpackGameTests {
     }
 
     /** Big backpacks scroll: the visible slots swap which backing slot they show. */
-    @GameTest(template = "floor_9x9")
+    @GameTest(template = Templates.FLOOR)
     public static void virtualSlotsFollowScroll(GameTestHelper helper) {
         Player player = helper.makeMockPlayer(GameType.SURVIVAL);
         ItemStack stack = backpack(BackpackTier.NETHERITE);
@@ -342,7 +340,7 @@ public class BackpackGameTests {
     }
 
     /** Feeding eats safe food when hungry and never poisonous food; Restock tops up the hotbar. */
-    @GameTest(template = "floor_9x9")
+    @GameTest(template = Templates.FLOOR)
     public static void feedingAndRestock(GameTestHelper helper) {
         Player player = helper.makeMockPlayer(GameType.SURVIVAL);
         ItemStack stack = backpack(BackpackTier.IRON);
@@ -363,7 +361,7 @@ public class BackpackGameTests {
     }
 
     /** Deposit empties filtered items into a container; Everlasting makes a dropped backpack indestructible. */
-    @GameTest(template = "floor_9x9")
+    @GameTest(template = Templates.FLOOR)
     public static void depositAndEverlasting(GameTestHelper helper) {
         ServerLevel level = helper.getLevel();
         ItemStack stack = backpack(BackpackTier.GOLD);

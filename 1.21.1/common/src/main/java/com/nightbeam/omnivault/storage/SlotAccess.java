@@ -1,6 +1,7 @@
 package com.nightbeam.omnivault.storage;
 
 import net.minecraft.world.item.ItemStack;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * A slotted inventory, mirroring the loader item-handler contract (insert returns the remainder,
@@ -20,6 +21,23 @@ public interface SlotAccess {
 
     default boolean isItemValid(int slot, ItemStack stack) {
         return true;
+    }
+
+    /**
+     * When this inventory is a window onto a storage network, the network's storage counted as a whole;
+     * null otherwise. Inserted items can go straight to a waiting crafting job and extracted ones can
+     * come from other blocks, so a change can't simply be undone: loaders with transactions (Fabric)
+     * apply such changes only when the transaction commits, and move whole amounts through this view
+     * instead of a stack per slot.
+     */
+    @Nullable
+    default ItemStorage networkStorage() {
+        return null;
+    }
+
+    /** True for another mod's storage that takes part in loader transactions (see {@link ItemStorage#joinsTransactions()}). */
+    default boolean joinsTransactions() {
+        return false;
     }
 
     /** Replaces a slot outright; used by menus. Defaults to extract-then-insert. */

@@ -133,6 +133,11 @@ public class StorageBusBlockEntity extends BusBlockEntity implements StorageProv
         }
 
         @Override
+        public boolean joinsTransactions() {
+            return inner.joinsTransactions();
+        }
+
+        @Override
         public long insert(FluidKey key, long amount, boolean simulate) {
             return access != Access.EXTRACT_ONLY && passesFluid(key) ? inner.insert(key, amount, simulate) : 0;
         }
@@ -161,6 +166,11 @@ public class StorageBusBlockEntity extends BusBlockEntity implements StorageProv
 
         Filtered(ItemStorage inner) {
             this.inner = inner;
+        }
+
+        @Override
+        public boolean joinsTransactions() {
+            return inner.joinsTransactions();
         }
 
         @Override

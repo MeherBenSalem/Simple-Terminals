@@ -1,0 +1,14 @@
+{
+    "required": true,
+    "minVersion": "0.8",
+    "package": "com.nightbeam.omnivault.fabric.mixin",
+    "refmap": "${mod_id}.refmap.json",
+    "compatibilityLevel": "JAVA_21",
+    "mixins": [
+        "BlockStateBaseMixin",
+        "ItemEntityMixin"
+    ],
+    "injectors": {
+        "defaultRequire": 1
+    }
+}

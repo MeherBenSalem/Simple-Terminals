@@ -1,0 +1,25 @@
+{
+    "schemaVersion": 1,
+    "id": "omnivault-gametest",
+    "version": "1.0.0",
+    "name": "OmniVault GameTests",
+    "description": "In-world tests for OmniVault. Development only; never shipped.",
+    "environment": "*",
+    "entrypoints": {
+        "fabric-gametest": [
+            "com.nightbeam.omnivault.gametest.AutocraftGameTests",
+            "com.nightbeam.omnivault.gametest.BackpackGameTests",
+            "com.nightbeam.omnivault.gametest.CoreGameTests",
+            "com.nightbeam.omnivault.gametest.DrawerGameTests",
+            "com.nightbeam.omnivault.gametest.FabricTransferGameTests",
+            "com.nightbeam.omnivault.gametest.NetworkGameTests",
+            "com.nightbeam.omnivault.gametest.PhysicalGameTests",
+            "com.nightbeam.omnivault.gametest.ProgressionGameTests",
+            "com.nightbeam.omnivault.gametest.ResourceGameTests"
+        ]
+    },
+    "depends": {
+        "omnivault": "*",
+        "fabric-gametest-api-v1": "*"
+    }
+}

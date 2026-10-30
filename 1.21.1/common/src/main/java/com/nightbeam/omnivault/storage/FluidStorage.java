@@ -27,4 +27,9 @@ public interface FluidStorage {
     default boolean isPreferredFor(FluidKey key) {
         return getAmount(key) > 0;
     }
+
+    /** As {@link ItemStorage#joinsTransactions()}. */
+    default boolean joinsTransactions() {
+        return false;
+    }
 }

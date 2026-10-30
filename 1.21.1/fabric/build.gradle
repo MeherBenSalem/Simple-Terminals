@@ -1,0 +1,86 @@
+plugins {
+    id 'multiloader-loader'
+    id 'fabric-loom'
+}
+
+sourceSets {
+    // In-world GameTests: run with ./gradlew :fabric:runGametest. Not part of the shipped jar.
+    // The tests themselves are shared with NeoForge and live in common/src/gametest.
+    gametest {
+        java.srcDir project(':common').file('src/gametest/java')
+        resources.srcDir project(':common').file('src/gametest/resources')
+        compileClasspath += main.compileClasspath + main.output
+        runtimeClasspath += main.runtimeClasspath + main.output
+    }
+}
+
+repositories {
+    maven {
+        name = 'BlameJared'
+        url = 'https://maven.blamejared.com'
+    }
+}
+
+dependencies {
+    minecraft "com.mojang:minecraft:${minecraft_version}"
+    mappings loom.layered {
+        officialMojangMappings()
+        parchment("org.parchmentmc.data:parchment-${parchment_minecraft}:${parchment_version}@zip")
+    }
+    modImplementation "net.fabricmc:fabric-loader:${fabric_loader_version}"
+    modImplementation "net.fabricmc.fabric-api:fabric-api:${fabric_version}"
+    // Optional integrations: only used when the mod is installed.
+    modCompileOnly "mezz.jei:jei-${minecraft_version}-fabric-api:${jei_version}"
+    modCompileOnly "teamreborn:energy:${reborn_energy_version}"
+}
+
+loom {
+    def aw = project(':common').file("src/main/resources/${mod_id}.accesswidener")
+    if (aw.exists()) {
+        accessWidenerPath.set(aw)
+    }
+    mixin {
+        defaultRefmapName.set("${mod_id}.refmap.json")
+    }
+    mods {
+        "${mod_id}" {
+            sourceSet sourceSets.main
+        }
+        "${mod_id}-gametest" {
+            sourceSet sourceSets.gametest
+        }
+    }
+    runs {
+        client {
+            client()
+            setConfigName('Fabric Client')
+            ideConfigGenerated(true)
+            runDir('runs/client')
+        }
+        server {
+            server()
+            setConfigName('Fabric Server')
+            ideConfigGenerated(true)
+            runDir('runs/server')
+        }
+        // QA client: joins a dev server on localhost:25565 straight away (see tools/qa/).
+        qaClient {
+            client()
+            setConfigName('Fabric QA Client')
+            runDir('runs/client')
+            programArgs '--quickPlayMultiplayer', 'localhost:25565', '--username', 'Builder', '--width', '1920', '--height', '1080'
+        }
+        gametest {
+            server()
+            setConfigName('Fabric GameTest')
+            source(sourceSets.gametest)
+            vmArg '-Dfabric-api.gametest'
+            vmArg "-Dfabric-api.gametest.report-file=${project.layout.buildDirectory.get().asFile}/gametest/junit.xml"
+            runDir('runs/gametest')
+        }
+    }
+}
+
+tasks.named('compileGametestJava', JavaCompile) {
+    dependsOn(configurations.commonJava)
+}

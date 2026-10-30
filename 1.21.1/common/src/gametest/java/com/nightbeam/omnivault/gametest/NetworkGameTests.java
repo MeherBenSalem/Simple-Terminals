@@ -62,7 +62,7 @@ public class NetworkGameTests {
         return relative;
     }
 
-    @GameTest(template = "floor_9x9")
+    @GameTest(template = Templates.FLOOR)
     public static void cellsStoreAndReturnItems(GameTestHelper helper) {
         spine(helper);
         driveWithCell(helper, new BlockPos(3, 1, 5), CellTier.T4K);
@@ -78,7 +78,7 @@ public class NetworkGameTests {
         });
     }
 
-    @GameTest(template = "floor_9x9")
+    @GameTest(template = Templates.FLOOR)
     public static void cellTypeLimitIsEnforced(GameTestHelper helper) {
         spine(helper);
         driveWithCell(helper, new BlockPos(3, 1, 5), CellTier.T64K);
@@ -101,7 +101,7 @@ public class NetworkGameTests {
         });
     }
 
-    @GameTest(template = "floor_9x9")
+    @GameTest(template = Templates.FLOOR)
     public static void cellContentsSurviveRemovalAndReinsertion(GameTestHelper helper) {
         spine(helper);
         DriveBlockEntity drive = driveWithCell(helper, new BlockPos(3, 1, 5), CellTier.T16K);
@@ -123,7 +123,7 @@ public class NetworkGameTests {
         });
     }
 
-    @GameTest(template = "floor_9x9")
+    @GameTest(template = Templates.FLOOR)
     public static void storageBusSeesAndUsesChest(GameTestHelper helper) {
         spine(helper);
         // Bus at (5,1,5) facing south into a chest at (5,1,6); the cable at (5,1,4) touches its back.
@@ -142,7 +142,7 @@ public class NetworkGameTests {
         });
     }
 
-    @GameTest(template = "floor_9x9")
+    @GameTest(template = Templates.FLOOR)
     public static void importBusPullsIntoCells(GameTestHelper helper) {
         spine(helper);
         driveWithCell(helper, new BlockPos(3, 1, 5), CellTier.T4K);
@@ -156,7 +156,7 @@ public class NetworkGameTests {
         });
     }
 
-    @GameTest(template = "floor_9x9")
+    @GameTest(template = Templates.FLOOR)
     public static void exportBusPushesFilteredItems(GameTestHelper helper) {
         spine(helper);
         driveWithCell(helper, new BlockPos(3, 1, 5), CellTier.T4K);
@@ -187,7 +187,7 @@ public class NetworkGameTests {
         });
     }
 
-    @GameTest(template = "floor_9x9")
+    @GameTest(template = Templates.FLOOR)
     public static void networkPortAcceptsAndProvidesItems(GameTestHelper helper) {
         spine(helper);
         driveWithCell(helper, new BlockPos(3, 1, 5), CellTier.T4K);
@@ -210,7 +210,7 @@ public class NetworkGameTests {
         });
     }
 
-    @GameTest(template = "floor_9x9")
+    @GameTest(template = Templates.FLOOR)
     public static void signalEmitterFollowsThreshold(GameTestHelper helper) {
         spine(helper);
         driveWithCell(helper, new BlockPos(3, 1, 5), CellTier.T4K);
@@ -230,7 +230,7 @@ public class NetworkGameTests {
         });
     }
 
-    @GameTest(template = "floor_9x9")
+    @GameTest(template = Templates.FLOOR)
     public static void twoCoresConflict(GameTestHelper helper) {
         spine(helper);
         helper.setBlock(new BlockPos(7, 1, 5), NetworkContent.NEXUS_CORE.get());
@@ -241,7 +241,7 @@ public class NetworkGameTests {
         });
     }
 
-    @GameTest(template = "floor_9x9")
+    @GameTest(template = Templates.FLOOR)
     public static void differentCableColoursDoNotConnect(GameTestHelper helper) {
         helper.setBlock(CORE, NetworkContent.NEXUS_CORE.get());
         helper.setBlock(new BlockPos(2, 1, 4), NetworkContent.NEXUS_CABLE.get().defaultBlockState().setValue(CableBlock.COLOR, CableBlock.CableColor.of(DyeColor.RED)));
@@ -257,7 +257,7 @@ public class NetworkGameTests {
         });
     }
 
-    @GameTest(template = "floor_9x9")
+    @GameTest(template = Templates.FLOOR)
     public static void breakingCableSplitsNetwork(GameTestHelper helper) {
         spine(helper);
         driveWithCell(helper, new BlockPos(6, 1, 5), CellTier.T4K);
@@ -273,7 +273,7 @@ public class NetworkGameTests {
         });
     }
 
-    @GameTest(template = "floor_9x9")
+    @GameTest(template = Templates.FLOOR)
     public static void craftingTerminalTransfersAndRefills(GameTestHelper helper) {
         spine(helper);
         driveWithCell(helper, new BlockPos(3, 1, 5), CellTier.T4K);
@@ -311,7 +311,7 @@ public class NetworkGameTests {
         return drive;
     }
 
-    @GameTest(template = "floor_9x9")
+    @GameTest(template = Templates.FLOOR)
     public static void fluidCellsStoreFluids(GameTestHelper helper) {
         spine(helper);
         driveWithFluidCell(helper, new BlockPos(3, 1, 5), CellTier.T4K);
@@ -325,7 +325,7 @@ public class NetworkGameTests {
         });
     }
 
-    @GameTest(template = "floor_9x9")
+    @GameTest(template = Templates.FLOOR)
     public static void importBusDrainsCauldron(GameTestHelper helper) {
         spine(helper);
         driveWithFluidCell(helper, new BlockPos(3, 1, 5), CellTier.T4K);
@@ -338,7 +338,7 @@ public class NetworkGameTests {
         });
     }
 
-    @GameTest(template = "floor_9x9")
+    @GameTest(template = Templates.FLOOR)
     public static void networkPortExposesFluids(GameTestHelper helper) {
         spine(helper);
         driveWithFluidCell(helper, new BlockPos(3, 1, 5), CellTier.T4K);
@@ -353,7 +353,7 @@ public class NetworkGameTests {
         });
     }
 
-    @GameTest(template = "floor_9x9")
+    @GameTest(template = Templates.FLOOR)
     public static void terminalFillsAndEmptiesBuckets(GameTestHelper helper) {
         spine(helper);
         driveWithFluidCell(helper, new BlockPos(3, 1, 5), CellTier.T4K);
@@ -379,7 +379,7 @@ public class NetworkGameTests {
         });
     }
 
-    @GameTest(template = "floor_9x9")
+    @GameTest(template = Templates.FLOOR)
     public static void destructorBreaksBlocksIntoTheNetwork(GameTestHelper helper) {
         spine(helper);
         driveWithCell(helper, new BlockPos(3, 1, 5), CellTier.T4K);
@@ -391,7 +391,7 @@ public class NetworkGameTests {
         });
     }
 
-    @GameTest(template = "floor_9x9")
+    @GameTest(template = Templates.FLOOR)
     public static void destructorLeavesContainersAlone(GameTestHelper helper) {
         spine(helper);
         driveWithCell(helper, new BlockPos(3, 1, 5), CellTier.T4K);
@@ -403,7 +403,7 @@ public class NetworkGameTests {
         });
     }
 
-    @GameTest(template = "floor_9x9")
+    @GameTest(template = Templates.FLOOR)
     public static void constructorPlacesBlocksFromTheNetwork(GameTestHelper helper) {
         spine(helper);
         driveWithCell(helper, new BlockPos(3, 1, 5), CellTier.T4K);
@@ -419,7 +419,7 @@ public class NetworkGameTests {
         });
     }
 
-    @GameTest(template = "floor_9x9")
+    @GameTest(template = Templates.FLOOR)
     public static void storageMonitorTracksCount(GameTestHelper helper) {
         spine(helper);
         driveWithCell(helper, new BlockPos(3, 1, 5), CellTier.T4K);

@@ -19,6 +19,12 @@ public final class DrawerAccess implements SlotAccess, ItemStorage {
         this.drawer = drawer;
     }
 
+    @Override
+    public boolean joinsTransactions() {
+        // Our own storage: a transaction journal records its changes.
+        return false;
+    }
+
     public AbstractDrawerBlockEntity drawer() {
         return drawer;
     }
