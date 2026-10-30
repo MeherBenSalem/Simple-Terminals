@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    " E ",
+    "OUO",
+    " O "
+  ],
+  "key": {
+    "E": {
+      "item": "minecraft:ender_pearl"
+    },
+    "O": {
+      "item": "minecraft:obsidian"
+    },
+    "U": {
+      "item": "omnivault:upgrade_base"
+    }
+  },
+  "result": {
+    "id": "omnivault:void_upgrade",
+    "count": 1
+  }
+}

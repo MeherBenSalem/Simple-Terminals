@@ -1,5 +1,6 @@
 package com.nightbeam.omnivault;
 
+import com.nightbeam.omnivault.backpack.BackpackContent;
 import com.nightbeam.omnivault.config.OVConfig;
 import com.nightbeam.omnivault.content.CoreContent;
 import com.nightbeam.omnivault.packet.PacketRegistrar;
@@ -32,6 +33,7 @@ public final class OmniVaultCommon {
         OmniVault.LOG.info("Initializing {} on {}", OmniVault.MOD_NAME, Services.PLATFORM.getPlatformName());
         // Feature content classes register their entries from static initialisers.
         CoreContent.init();
+        BackpackContent.init();
         InventorySorting.init();
         OVConfig.load(Services.PLATFORM.getConfigDir());
     }

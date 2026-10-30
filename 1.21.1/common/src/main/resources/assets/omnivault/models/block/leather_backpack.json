@@ -1,0 +1,13 @@
+{
+  "parent": "omnivault:block/backpack_template_dyeable",
+  "textures": {
+    "body": "omnivault:block/backpack/leather/body",
+    "front": "omnivault:block/backpack/leather/front",
+    "lid": "omnivault:block/backpack/leather/lid",
+    "strap": "omnivault:block/backpack/leather/strap",
+    "trim": "omnivault:block/backpack/leather/trim",
+    "back": "omnivault:block/backpack/leather/back",
+    "gem": "omnivault:block/backpack/omnium_gem",
+    "particle": "omnivault:block/backpack/leather/body"
+  }
+}

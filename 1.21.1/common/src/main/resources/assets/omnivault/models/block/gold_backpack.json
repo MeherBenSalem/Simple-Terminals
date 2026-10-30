@@ -1,0 +1,13 @@
+{
+  "parent": "omnivault:block/backpack_template",
+  "textures": {
+    "body": "omnivault:block/backpack/gold/body",
+    "front": "omnivault:block/backpack/gold/front",
+    "lid": "omnivault:block/backpack/gold/lid",
+    "strap": "omnivault:block/backpack/gold/strap",
+    "trim": "omnivault:block/backpack/gold/trim",
+    "back": "omnivault:block/backpack/gold/back",
+    "gem": "omnivault:block/backpack/omnium_gem",
+    "particle": "omnivault:block/backpack/gold/body"
+  }
+}

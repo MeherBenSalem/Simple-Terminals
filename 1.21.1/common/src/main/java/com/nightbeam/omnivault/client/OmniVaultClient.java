@@ -1,5 +1,7 @@
 package com.nightbeam.omnivault.client;
 
+import com.nightbeam.omnivault.backpack.client.BackpackClient;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
@@ -18,6 +20,7 @@ public final class OmniVaultClient {
             return;
         }
         initialised = true;
+        BackpackClient.init();
     }
 
     public static void registration(Consumer<ClientRegistrar> registration) {

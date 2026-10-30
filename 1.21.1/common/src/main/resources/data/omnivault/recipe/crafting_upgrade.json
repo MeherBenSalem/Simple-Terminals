@@ -1,0 +1,20 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "T",
+    "U"
+  ],
+  "key": {
+    "T": {
+      "item": "minecraft:crafting_table"
+    },
+    "U": {
+      "item": "omnivault:upgrade_base"
+    }
+  },
+  "result": {
+    "id": "omnivault:crafting_upgrade",
+    "count": 1
+  }
+}

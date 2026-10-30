@@ -1,0 +1,30 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    " G ",
+    "AUB",
+    " C "
+  ],
+  "key": {
+    "G": {
+      "item": "minecraft:golden_carrot"
+    },
+    "A": {
+      "item": "minecraft:apple"
+    },
+    "B": {
+      "item": "minecraft:bread"
+    },
+    "U": {
+      "item": "omnivault:upgrade_base"
+    },
+    "C": {
+      "item": "omnivault:logic_processor"
+    }
+  },
+  "result": {
+    "id": "omnivault:feeding_upgrade",
+    "count": 1
+  }
+}
