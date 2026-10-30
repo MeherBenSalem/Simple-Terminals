@@ -1,0 +1,29 @@
+{
+  "replace": false,
+  "values": [
+    "omnivault:nexus_core",
+    "omnivault:nexus_cable",
+    "omnivault:drive",
+    "omnivault:terminal",
+    "omnivault:crafting_terminal",
+    "omnivault:import_bus",
+    "omnivault:export_bus",
+    "omnivault:storage_bus",
+    "omnivault:network_port",
+    "omnivault:signal_emitter",
+    "omnivault:wireless_transmitter",
+    "omnivault:omnium_block",
+    {
+      "id": "omnivault:destructor",
+      "required": false
+    },
+    {
+      "id": "omnivault:constructor",
+      "required": false
+    },
+    {
+      "id": "omnivault:storage_monitor",
+      "required": false
+    }
+  ]
+}

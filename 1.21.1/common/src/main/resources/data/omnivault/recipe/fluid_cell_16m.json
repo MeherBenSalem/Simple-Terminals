@@ -1,0 +1,26 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:item_exists",
+      "item": "omnivault:fluid_cell_16m"
+    },
+    {
+      "type": "neoforge:item_exists",
+      "item": "omnivault:fluid_cell_housing"
+    }
+  ],
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "omnivault:fluid_cell_housing"
+    },
+    {
+      "item": "omnivault:storage_matrix_16m"
+    }
+  ],
+  "result": {
+    "id": "omnivault:fluid_cell_16m",
+    "count": 1
+  }
+}

@@ -1,0 +1,29 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:item_exists",
+      "item": "omnivault:constructor"
+    }
+  ],
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "OXO",
+    " L "
+  ],
+  "key": {
+    "O": {
+      "item": "omnivault:omnium_ingot"
+    },
+    "X": {
+      "item": "minecraft:dispenser"
+    },
+    "L": {
+      "item": "omnivault:logic_processor"
+    }
+  },
+  "result": {
+    "id": "omnivault:constructor",
+    "count": 1
+  }
+}

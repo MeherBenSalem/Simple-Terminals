@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "###",
+    "###",
+    "###"
+  ],
+  "key": {
+    "#": {
+      "item": "omnivault:omnium_ingot"
+    }
+  },
+  "result": {
+    "id": "omnivault:omnium_block",
+    "count": 1
+  }
+}

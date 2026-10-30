@@ -1,0 +1,132 @@
+{
+  "render_type": "minecraft:cutout",
+  "textures": {
+    "particle": "omnivault:block/network/casing",
+    "p0": "omnivault:block/drive/parts"
+  },
+  "elements": [
+    {
+      "from": [
+        0.25,
+        0.25,
+        0.4
+      ],
+      "to": [
+        5.25,
+        1.75,
+        2.0
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            1.25,
+            7.25,
+            2.5,
+            7.625
+          ],
+          "texture": "#p0"
+        },
+        "east": {
+          "uv": [
+            5.5,
+            7.25,
+            5.9,
+            7.625
+          ],
+          "texture": "#p0"
+        },
+        "west": {
+          "uv": [
+            5.0,
+            7.25,
+            5.4,
+            7.625
+          ],
+          "texture": "#p0"
+        },
+        "up": {
+          "uv": [
+            3.75,
+            7.25,
+            5.0,
+            7.65
+          ],
+          "texture": "#p0"
+        },
+        "down": {
+          "uv": [
+            14.0,
+            4.0,
+            15.25,
+            4.4
+          ],
+          "texture": "#p0"
+        }
+      }
+    },
+    {
+      "from": [
+        0.55,
+        0.5,
+        0.3
+      ],
+      "to": [
+        3.75,
+        1.5,
+        0.4
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            6.0,
+            8.0,
+            6.8,
+            8.25
+          ],
+          "texture": "#p0",
+          "tintindex": 0
+        },
+        "east": {
+          "uv": [
+            12.25,
+            8.0,
+            12.275,
+            8.25
+          ],
+          "texture": "#p0",
+          "tintindex": 0
+        },
+        "west": {
+          "uv": [
+            12.0,
+            8.0,
+            12.025,
+            8.25
+          ],
+          "texture": "#p0",
+          "tintindex": 0
+        },
+        "up": {
+          "uv": [
+            7.0,
+            8.0,
+            7.8,
+            8.025
+          ],
+          "texture": "#p0",
+          "tintindex": 0
+        },
+        "down": {
+          "uv": [
+            5.0,
+            8.0,
+            5.8,
+            8.025
+          ],
+          "texture": "#p0",
+          "tintindex": 0
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "omnivault:cell_housing"
+    },
+    {
+      "item": "omnivault:storage_matrix_16m"
+    }
+  ],
+  "result": {
+    "id": "omnivault:storage_cell_16m",
+    "count": 1
+  }
+}

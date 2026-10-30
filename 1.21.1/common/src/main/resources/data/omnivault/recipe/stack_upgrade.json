@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "omnivault:upgrade_base"
+    },
+    {
+      "item": "minecraft:hopper"
+    },
+    {
+      "item": "omnivault:omnium_ingot"
+    }
+  ],
+  "result": {
+    "id": "omnivault:stack_upgrade",
+    "count": 1
+  }
+}

@@ -1,0 +1,27 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "DQD",
+    "OSO",
+    "DOD"
+  ],
+  "key": {
+    "D": {
+      "item": "minecraft:diamond"
+    },
+    "Q": {
+      "item": "omnivault:quantum_processor"
+    },
+    "O": {
+      "item": "omnivault:omnium_ingot"
+    },
+    "S": {
+      "item": "minecraft:echo_shard"
+    }
+  },
+  "result": {
+    "id": "omnivault:quantum_upgrade_template",
+    "count": 1
+  }
+}

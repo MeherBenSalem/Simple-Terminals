@@ -62,8 +62,12 @@ models; glowing parts use NeoForge's per-element `neoforge_data` light values, s
 Regenerate everything with:
 
 ```bash
-for f in tools/assets/*.py; do case "$f" in */kit.py) ;; *) python3 "$f" ;; esac; done
+for f in tools/assets/*.py; do case "$f" in */kit.py|*/render_models.py) ;; *) python3 "$f" ;; esac; done
 ```
+
+Preview models offline with `tools/assets/render_models.py` (Pillow + numpy): for example
+`python3 tools/assets/render_models.py block/drive --size 512 --out build/previews/drive.png`, or
+`--sheet` for a labelled contact sheet of every model. It is also importable for marketing renders.
 
 ## Testing
 

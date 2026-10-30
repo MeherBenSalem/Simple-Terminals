@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "active=false": {
+      "model": "omnivault:block/wireless_transmitter"
+    },
+    "active=true": {
+      "model": "omnivault:block/wireless_transmitter_active"
+    }
+  }
+}
