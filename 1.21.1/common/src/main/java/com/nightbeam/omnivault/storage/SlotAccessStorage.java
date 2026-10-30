@@ -44,12 +44,36 @@ public class SlotAccessStorage implements ItemStorage {
             if (!key.matches(existing)) {
                 continue;
             }
-            ItemStack extracted = access.extractItem(slot, (int) Math.min(remaining, Integer.MAX_VALUE), simulate);
-            if (key.matches(extracted)) {
-                remaining -= extracted.getCount();
-            }
+            remaining -= extractFromSlot(slot, existing, key, (int) Math.min(remaining, Integer.MAX_VALUE), simulate);
         }
         return amount - remaining;
+    }
+
+    /**
+     * Most handlers give out at most one stack per call, even from a slot holding thousands (drawers,
+     * barrels, deep storage). Keep asking the same slot until it has given what was wanted; a
+     * simulation, which can't repeat, counts on the slot's reported contents instead.
+     */
+    private long extractFromSlot(int slot, ItemStack existing, ItemKey key, int request, boolean simulate) {
+        ItemStack extracted = access.extractItem(slot, request, simulate);
+        if (!key.matches(extracted)) {
+            return 0;
+        }
+        long got = extracted.getCount();
+        if (got >= request || got < extracted.getMaxStackSize()) {
+            return got;
+        }
+        if (simulate) {
+            return Math.max(got, Math.min(request, existing.getCount()));
+        }
+        while (got < request) {
+            ItemStack more = access.extractItem(slot, (int) (request - got), false);
+            if (!key.matches(more)) {
+                break;
+            }
+            got += more.getCount();
+        }
+        return got;
     }
 
     @Override

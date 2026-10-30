@@ -15,6 +15,8 @@ import com.nightbeam.omnivault.autocraft.pattern.PatternItem;
 import com.nightbeam.omnivault.autocraft.plan.CraftingPlan;
 import com.nightbeam.omnivault.autocraft.plan.PlanError;
 import com.nightbeam.omnivault.content.CoreContent;
+import com.nightbeam.omnivault.drawer.DrawerBlockEntity;
+import com.nightbeam.omnivault.drawer.DrawerContent;
 import com.nightbeam.omnivault.network.NetworkContent;
 import com.nightbeam.omnivault.network.StorageNetwork;
 import com.nightbeam.omnivault.network.api.CraftingHooks;
@@ -194,6 +196,30 @@ public class AutocraftGameTests {
                 helper.assertTrue(count(helper, Items.OAK_LOG) == 2, "unreserved logs untouched");
                 helper.assertTrue(idle(helper), "processor is free again");
                 helper.assertBlockProperty(PROCESSOR, AutocraftDeviceBlock.WORKING, false);
+            });
+        });
+    }
+
+    @GameTest(template = "floor_9x9", timeoutTicks = 600)
+    public static void jobsReserveManyStacksFromADrawerBehindAStorageBus(GameTestHelper helper) {
+        network(helper, true, true);
+        provider(helper, PROVIDER, Direction.NORTH, chestPattern(helper));
+        // A drawer hands out one stack per extraction, however much it holds; 24 chests need three stacks of planks.
+        BlockPos drawerPos = new BlockPos(7, 1, 6);
+        helper.setBlock(drawerPos, DrawerContent.DRAWER_1X1.get());
+        DrawerBlockEntity drawer = (DrawerBlockEntity) helper.getBlockEntity(drawerPos);
+        helper.assertTrue(drawer.access().insertItem(0, new ItemStack(Items.OAK_PLANKS, 500), false).isEmpty(), "drawer stocked");
+        helper.setBlock(new BlockPos(7, 1, 5), NetworkContent.STORAGE_BUS.get().defaultBlockState().setValue(DirectionalDeviceBlock.FACING, Direction.SOUTH));
+        helper.runAfterDelay(25, () -> {
+            helper.assertTrue(count(helper, Items.OAK_PLANKS) == 500, "the network sees the drawer, got " + count(helper, Items.OAK_PLANKS));
+            CraftingManager.StartResult result = crafting(helper).start(key(Items.CHEST), 24, null);
+            helper.assertTrue(result.started(), "job should start, error " + result.plan().error());
+            helper.assertTrue(drawer.access().getStackInSlot(0).getCount() == 308, "192 planks reserved out of the drawer, left "
+                    + drawer.access().getStackInSlot(0).getCount());
+            helper.succeedWhen(() -> {
+                helper.assertTrue(count(helper, Items.CHEST) == 24, "24 chests crafted, got " + count(helper, Items.CHEST));
+                helper.assertTrue(count(helper, Items.OAK_PLANKS) == 308, "the rest of the planks stay in the drawer");
+                helper.assertTrue(idle(helper), "processor is free again");
             });
         });
     }
