@@ -28,9 +28,17 @@ neoForge {
         }
         client {
             client()
+            gameDirectory = project.file('runs/client')
         }
         server {
             server()
+            gameDirectory = project.file('runs/server')
+        }
+        // QA client: joins a dev server on localhost:25565 straight away (see tools/qa/).
+        qaClient {
+            client()
+            gameDirectory = project.file('runs/client')
+            programArguments.addAll '--quickPlayMultiplayer', 'localhost:25565', '--username', 'Builder', '--width', '1920', '--height', '1080'
         }
         gameTestServer {
             type = 'gameTestServer'
