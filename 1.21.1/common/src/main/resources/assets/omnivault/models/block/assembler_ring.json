@@ -1,0 +1,594 @@
+{
+  "ambientocclusion": false,
+  "textures": {
+    "particle": "omnivault:block/assembler_ring",
+    "ring": "omnivault:block/assembler_ring",
+    "crystal": "omnivault:block/omnium_crystal_on"
+  },
+  "elements": [
+    {
+      "from": [
+        3,
+        7.5,
+        3
+      ],
+      "to": [
+        13,
+        8.5,
+        4
+      ],
+      "name": "ring_n",
+      "faces": {
+        "north": {
+          "uv": [
+            3,
+            7.5,
+            13,
+            8.5
+          ],
+          "texture": "#ring"
+        },
+        "east": {
+          "uv": [
+            12,
+            7.5,
+            13,
+            8.5
+          ],
+          "texture": "#ring"
+        },
+        "south": {
+          "uv": [
+            3,
+            7.5,
+            13,
+            8.5
+          ],
+          "texture": "#ring"
+        },
+        "west": {
+          "uv": [
+            3,
+            7.5,
+            4,
+            8.5
+          ],
+          "texture": "#ring"
+        },
+        "up": {
+          "uv": [
+            3,
+            3,
+            13,
+            4
+          ],
+          "texture": "#ring"
+        },
+        "down": {
+          "uv": [
+            3,
+            12,
+            13,
+            13
+          ],
+          "texture": "#ring"
+        }
+      },
+      "neoforge_data": {
+        "block_light": 15,
+        "sky_light": 15
+      }
+    },
+    {
+      "from": [
+        3,
+        7.5,
+        12
+      ],
+      "to": [
+        13,
+        8.5,
+        13
+      ],
+      "name": "ring_s",
+      "faces": {
+        "north": {
+          "uv": [
+            3,
+            7.5,
+            13,
+            8.5
+          ],
+          "texture": "#ring"
+        },
+        "east": {
+          "uv": [
+            3,
+            7.5,
+            4,
+            8.5
+          ],
+          "texture": "#ring"
+        },
+        "south": {
+          "uv": [
+            3,
+            7.5,
+            13,
+            8.5
+          ],
+          "texture": "#ring"
+        },
+        "west": {
+          "uv": [
+            12,
+            7.5,
+            13,
+            8.5
+          ],
+          "texture": "#ring"
+        },
+        "up": {
+          "uv": [
+            3,
+            12,
+            13,
+            13
+          ],
+          "texture": "#ring"
+        },
+        "down": {
+          "uv": [
+            3,
+            3,
+            13,
+            4
+          ],
+          "texture": "#ring"
+        }
+      },
+      "neoforge_data": {
+        "block_light": 15,
+        "sky_light": 15
+      }
+    },
+    {
+      "from": [
+        3,
+        7.5,
+        4
+      ],
+      "to": [
+        4,
+        8.5,
+        12
+      ],
+      "name": "ring_w",
+      "faces": {
+        "north": {
+          "uv": [
+            12,
+            7.5,
+            13,
+            8.5
+          ],
+          "texture": "#ring"
+        },
+        "east": {
+          "uv": [
+            4,
+            7.5,
+            12,
+            8.5
+          ],
+          "texture": "#ring"
+        },
+        "south": {
+          "uv": [
+            3,
+            7.5,
+            4,
+            8.5
+          ],
+          "texture": "#ring"
+        },
+        "west": {
+          "uv": [
+            4,
+            7.5,
+            12,
+            8.5
+          ],
+          "texture": "#ring"
+        },
+        "up": {
+          "uv": [
+            3,
+            4,
+            4,
+            12
+          ],
+          "texture": "#ring"
+        },
+        "down": {
+          "uv": [
+            3,
+            4,
+            4,
+            12
+          ],
+          "texture": "#ring"
+        }
+      },
+      "neoforge_data": {
+        "block_light": 15,
+        "sky_light": 15
+      }
+    },
+    {
+      "from": [
+        12,
+        7.5,
+        4
+      ],
+      "to": [
+        13,
+        8.5,
+        12
+      ],
+      "name": "ring_e",
+      "faces": {
+        "north": {
+          "uv": [
+            3,
+            7.5,
+            4,
+            8.5
+          ],
+          "texture": "#ring"
+        },
+        "east": {
+          "uv": [
+            4,
+            7.5,
+            12,
+            8.5
+          ],
+          "texture": "#ring"
+        },
+        "south": {
+          "uv": [
+            12,
+            7.5,
+            13,
+            8.5
+          ],
+          "texture": "#ring"
+        },
+        "west": {
+          "uv": [
+            4,
+            7.5,
+            12,
+            8.5
+          ],
+          "texture": "#ring"
+        },
+        "up": {
+          "uv": [
+            12,
+            4,
+            13,
+            12
+          ],
+          "texture": "#ring"
+        },
+        "down": {
+          "uv": [
+            12,
+            4,
+            13,
+            12
+          ],
+          "texture": "#ring"
+        }
+      },
+      "neoforge_data": {
+        "block_light": 15,
+        "sky_light": 15
+      }
+    },
+    {
+      "from": [
+        2.5,
+        7,
+        2.5
+      ],
+      "to": [
+        4.5,
+        9,
+        4.5
+      ],
+      "name": "node",
+      "faces": {
+        "north": {
+          "uv": [
+            11.5,
+            7,
+            13.5,
+            9
+          ],
+          "texture": "#crystal"
+        },
+        "east": {
+          "uv": [
+            11.5,
+            7,
+            13.5,
+            9
+          ],
+          "texture": "#crystal"
+        },
+        "south": {
+          "uv": [
+            2.5,
+            7,
+            4.5,
+            9
+          ],
+          "texture": "#crystal"
+        },
+        "west": {
+          "uv": [
+            2.5,
+            7,
+            4.5,
+            9
+          ],
+          "texture": "#crystal"
+        },
+        "up": {
+          "uv": [
+            2.5,
+            2.5,
+            4.5,
+            4.5
+          ],
+          "texture": "#crystal"
+        },
+        "down": {
+          "uv": [
+            2.5,
+            11.5,
+            4.5,
+            13.5
+          ],
+          "texture": "#crystal"
+        }
+      },
+      "neoforge_data": {
+        "block_light": 15,
+        "sky_light": 15
+      }
+    },
+    {
+      "from": [
+        11.5,
+        7,
+        2.5
+      ],
+      "to": [
+        13.5,
+        9,
+        4.5
+      ],
+      "name": "node",
+      "faces": {
+        "north": {
+          "uv": [
+            2.5,
+            7,
+            4.5,
+            9
+          ],
+          "texture": "#crystal"
+        },
+        "east": {
+          "uv": [
+            11.5,
+            7,
+            13.5,
+            9
+          ],
+          "texture": "#crystal"
+        },
+        "south": {
+          "uv": [
+            11.5,
+            7,
+            13.5,
+            9
+          ],
+          "texture": "#crystal"
+        },
+        "west": {
+          "uv": [
+            2.5,
+            7,
+            4.5,
+            9
+          ],
+          "texture": "#crystal"
+        },
+        "up": {
+          "uv": [
+            11.5,
+            2.5,
+            13.5,
+            4.5
+          ],
+          "texture": "#crystal"
+        },
+        "down": {
+          "uv": [
+            11.5,
+            11.5,
+            13.5,
+            13.5
+          ],
+          "texture": "#crystal"
+        }
+      },
+      "neoforge_data": {
+        "block_light": 15,
+        "sky_light": 15
+      }
+    },
+    {
+      "from": [
+        2.5,
+        7,
+        11.5
+      ],
+      "to": [
+        4.5,
+        9,
+        13.5
+      ],
+      "name": "node",
+      "faces": {
+        "north": {
+          "uv": [
+            11.5,
+            7,
+            13.5,
+            9
+          ],
+          "texture": "#crystal"
+        },
+        "east": {
+          "uv": [
+            2.5,
+            7,
+            4.5,
+            9
+          ],
+          "texture": "#crystal"
+        },
+        "south": {
+          "uv": [
+            2.5,
+            7,
+            4.5,
+            9
+          ],
+          "texture": "#crystal"
+        },
+        "west": {
+          "uv": [
+            11.5,
+            7,
+            13.5,
+            9
+          ],
+          "texture": "#crystal"
+        },
+        "up": {
+          "uv": [
+            2.5,
+            11.5,
+            4.5,
+            13.5
+          ],
+          "texture": "#crystal"
+        },
+        "down": {
+          "uv": [
+            2.5,
+            2.5,
+            4.5,
+            4.5
+          ],
+          "texture": "#crystal"
+        }
+      },
+      "neoforge_data": {
+        "block_light": 15,
+        "sky_light": 15
+      }
+    },
+    {
+      "from": [
+        11.5,
+        7,
+        11.5
+      ],
+      "to": [
+        13.5,
+        9,
+        13.5
+      ],
+      "name": "node",
+      "faces": {
+        "north": {
+          "uv": [
+            2.5,
+            7,
+            4.5,
+            9
+          ],
+          "texture": "#crystal"
+        },
+        "east": {
+          "uv": [
+            2.5,
+            7,
+            4.5,
+            9
+          ],
+          "texture": "#crystal"
+        },
+        "south": {
+          "uv": [
+            11.5,
+            7,
+            13.5,
+            9
+          ],
+          "texture": "#crystal"
+        },
+        "west": {
+          "uv": [
+            11.5,
+            7,
+            13.5,
+            9
+          ],
+          "texture": "#crystal"
+        },
+        "up": {
+          "uv": [
+            11.5,
+            11.5,
+            13.5,
+            13.5
+          ],
+          "texture": "#crystal"
+        },
+        "down": {
+          "uv": [
+            11.5,
+            2.5,
+            13.5,
+            4.5
+          ],
+          "texture": "#crystal"
+        }
+      },
+      "neoforge_data": {
+        "block_light": 15,
+        "sky_light": 15
+      }
+    }
+  ]
+}

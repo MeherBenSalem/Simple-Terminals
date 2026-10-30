@@ -21,6 +21,7 @@ public class NetworkStorage implements ItemStorage {
 
     private final List<ItemStorage> storages = new ArrayList<>();
     private final List<ItemStorage> extractOrder = new ArrayList<>();
+    private final List<InsertInterceptor> interceptors = new ArrayList<>();
     private Object2LongOpenHashMap<ItemKey> cache = new Object2LongOpenHashMap<>();
     private boolean cacheValid;
     private boolean hasPolledStorage;
@@ -41,6 +42,16 @@ public class NetworkStorage implements ItemStorage {
 
     public List<ItemStorage> storages() {
         return storages;
+    }
+
+    /** Sees every insert before any storage does (autocrafting collects the items its jobs wait for). */
+    public void addInterceptor(InsertInterceptor interceptor) {
+        interceptors.add(interceptor);
+    }
+
+    public interface InsertInterceptor {
+        /** @return how many of {@code amount} it takes (or would take, when simulating). */
+        long intercept(ItemKey key, long amount, boolean simulate);
     }
 
     /** Increases whenever the visible contents change; terminals use it to skip work. */
@@ -100,6 +111,10 @@ public class NetworkStorage implements ItemStorage {
             return 0;
         }
         long remaining = amount;
+        for (int i = 0; i < interceptors.size() && remaining > 0; i++) {
+            remaining -= interceptors.get(i).intercept(key, remaining, simulate);
+        }
+        long intercepted = amount - remaining;
         for (ItemStorage storage : storages) {
             if (remaining <= 0) {
                 break;
@@ -115,8 +130,8 @@ public class NetworkStorage implements ItemStorage {
             remaining -= storage.insert(key, remaining, simulate);
         }
         long inserted = amount - remaining;
-        if (!simulate && inserted > 0) {
-            changed(key, inserted);
+        if (!simulate && inserted > intercepted) {
+            changed(key, inserted - intercepted);
         }
         return inserted;
     }

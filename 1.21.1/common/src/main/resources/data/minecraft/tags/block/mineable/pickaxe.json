@@ -1,0 +1,9 @@
+{
+  "replace": false,
+  "values": [
+    "omnivault:assembler",
+    "omnivault:crafting_processor",
+    "omnivault:pattern_provider",
+    "omnivault:pattern_terminal"
+  ]
+}

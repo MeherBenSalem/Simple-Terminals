@@ -1,0 +1,30 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "OAO",
+    "PCP",
+    "OGO"
+  ],
+  "key": {
+    "O": {
+      "item": "omnivault:omnium_ingot"
+    },
+    "A": {
+      "item": "omnivault:advanced_processor"
+    },
+    "P": {
+      "item": "minecraft:piston"
+    },
+    "C": {
+      "item": "minecraft:crafter"
+    },
+    "G": {
+      "item": "minecraft:glass"
+    }
+  },
+  "result": {
+    "id": "omnivault:assembler",
+    "count": 1
+  }
+}

@@ -38,6 +38,7 @@ public class StorageNetwork {
     private final List<TickingNode> tickingNodes = new ArrayList<>();
     private final List<WirelessTransmitterBlockEntity> transmitters = new ArrayList<>();
     private final Map<String, Integer> deviceCounts = new HashMap<>();
+    private final Map<Object, Object> attachments = new HashMap<>();
     private boolean topologyDirty = true;
     private boolean storagesDirty = true;
     private boolean conflict;
@@ -130,6 +131,12 @@ public class StorageNetwork {
 
     public Set<NetworkNode> nodes() {
         return Collections.unmodifiableSet(nodes);
+    }
+
+    /** Per-network state owned by a feature (for example the autocrafting scheduler); lives as long as this network. */
+    @SuppressWarnings("unchecked")
+    public <T> T attachment(Object key, java.util.function.Function<StorageNetwork, T> factory) {
+        return (T) attachments.computeIfAbsent(key, k -> factory.apply(this));
     }
 
     // -- convenience ------------------------------------------------------------------------------

@@ -1,0 +1,50 @@
+{
+  "variants": {
+    "facing=north,active=false": {
+      "model": "omnivault:block/pattern_provider"
+    },
+    "facing=north,active=true": {
+      "model": "omnivault:block/pattern_provider_on"
+    },
+    "facing=east,active=false": {
+      "model": "omnivault:block/pattern_provider",
+      "y": 90
+    },
+    "facing=east,active=true": {
+      "model": "omnivault:block/pattern_provider_on",
+      "y": 90
+    },
+    "facing=south,active=false": {
+      "model": "omnivault:block/pattern_provider",
+      "y": 180
+    },
+    "facing=south,active=true": {
+      "model": "omnivault:block/pattern_provider_on",
+      "y": 180
+    },
+    "facing=west,active=false": {
+      "model": "omnivault:block/pattern_provider",
+      "y": 270
+    },
+    "facing=west,active=true": {
+      "model": "omnivault:block/pattern_provider_on",
+      "y": 270
+    },
+    "facing=up,active=false": {
+      "model": "omnivault:block/pattern_provider",
+      "x": 270
+    },
+    "facing=up,active=true": {
+      "model": "omnivault:block/pattern_provider_on",
+      "x": 270
+    },
+    "facing=down,active=false": {
+      "model": "omnivault:block/pattern_provider",
+      "x": 90
+    },
+    "facing=down,active=true": {
+      "model": "omnivault:block/pattern_provider_on",
+      "x": 90
+    }
+  }
+}

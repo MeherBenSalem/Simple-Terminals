@@ -1,5 +1,6 @@
 package com.nightbeam.omnivault.client;
 
+import com.nightbeam.omnivault.autocraft.client.AutocraftClient;
 import com.nightbeam.omnivault.network.client.NetworkClient;
 
 import java.util.ArrayList;
@@ -21,6 +22,7 @@ public final class OmniVaultClient {
         }
         initialised = true;
         NetworkClient.init();
+        AutocraftClient.init();
     }
 
     public static void registration(Consumer<ClientRegistrar> registration) {
