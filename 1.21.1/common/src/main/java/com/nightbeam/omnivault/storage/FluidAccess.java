@@ -17,4 +17,9 @@ public interface FluidAccess {
     long fill(FluidKey key, long amount, boolean simulate);
 
     long drain(FluidKey key, long amount, boolean simulate);
+
+    /** True for another mod's tanks that take part in loader transactions (see {@link ItemStorage#joinsTransactions()}). */
+    default boolean joinsTransactions() {
+        return false;
+    }
 }

@@ -11,6 +11,11 @@ public class FluidAccessStorage implements FluidStorage {
     }
 
     @Override
+    public boolean joinsTransactions() {
+        return access.joinsTransactions();
+    }
+
+    @Override
     public long insert(FluidKey key, long amount, boolean simulate) {
         return access.fill(key, amount, simulate);
     }

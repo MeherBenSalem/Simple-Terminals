@@ -12,6 +12,7 @@ import com.nightbeam.omnivault.physical.trash.TrashCanBlockEntity;
 import com.nightbeam.omnivault.physical.vault.VaultBlock;
 import com.nightbeam.omnivault.physical.vault.VaultBlockEntity;
 import com.nightbeam.omnivault.physical.vault.VaultTier;
+import com.nightbeam.omnivault.storage.SlotAccess;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.gametest.framework.GameTest;
@@ -35,11 +36,8 @@ import net.minecraft.world.level.block.entity.HopperBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.gametest.GameTestHolder;
 import net.neoforged.neoforge.gametest.PrefixGameTestTemplate;
-import net.neoforged.neoforge.items.IItemHandler;
-import net.neoforged.neoforge.items.ItemHandlerHelper;
 
 import java.util.Optional;
 
@@ -68,8 +66,8 @@ public class PhysicalGameTests {
         return player;
     }
 
-    private static IItemHandler items(GameTestHelper helper, BlockPos rel, Direction side) {
-        IItemHandler handler = helper.getLevel().getCapability(Capabilities.ItemHandler.BLOCK, helper.absolutePos(rel), side);
+    private static SlotAccess items(GameTestHelper helper, BlockPos rel, Direction side) {
+        SlotAccess handler = TestPlatform.INSTANCE.items(helper.getLevel(), helper.absolutePos(rel), side);
         if (handler == null) {
             helper.fail("No item handler capability", rel);
         }
@@ -86,7 +84,7 @@ public class PhysicalGameTests {
         return total;
     }
 
-    private static int count(IItemHandler handler, Item item) {
+    private static int count(SlotAccess handler, Item item) {
         int total = 0;
         for (int i = 0; i < handler.getSlots(); i++) {
             if (handler.getStackInSlot(i).is(item)) {
@@ -102,7 +100,7 @@ public class PhysicalGameTests {
 
     // -- tiered vaults -----------------------------------------------------------------------------------
 
-    @GameTest(template = "floor_9x9")
+    @GameTest(template = Templates.FLOOR)
     public static void vaultUpgradeKeepsContents(GameTestHelper helper) {
         helper.setBlock(POS, PhysicalContent.vault(VaultTier.COPPER).defaultBlockState().setValue(VaultBlock.FACING, Direction.EAST));
         VaultBlockEntity copper = helper.getBlockEntity(POS);
@@ -139,7 +137,7 @@ public class PhysicalGameTests {
         helper.succeed();
     }
 
-    @GameTest(template = "floor_9x9")
+    @GameTest(template = Templates.FLOOR)
     public static void vanillaChestUpgradesToCopperVault(GameTestHelper helper) {
         helper.setBlock(POS, Blocks.CHEST.defaultBlockState().setValue(ChestBlock.FACING, Direction.WEST));
         ChestBlockEntity chest = helper.getBlockEntity(POS);
@@ -167,14 +165,14 @@ public class PhysicalGameTests {
         helper.succeed();
     }
 
-    @GameTest(template = "floor_9x9")
+    @GameTest(template = Templates.FLOOR)
     public static void vaultCapabilityInsertExtract(GameTestHelper helper) {
         helper.setBlock(POS, PhysicalContent.vault(VaultTier.GOLD));
-        IItemHandler handler = items(helper, POS, Direction.UP);
+        SlotAccess handler = items(helper, POS, Direction.UP);
         check(helper, handler.getSlots() == 81, "Gold vault should expose 81 slots, got " + handler.getSlots());
 
-        ItemStack remainder = ItemHandlerHelper.insertItemStacked(handler, new ItemStack(Items.IRON_INGOT, 64), false);
-        remainder = remainder.isEmpty() ? ItemHandlerHelper.insertItemStacked(handler, new ItemStack(Items.IRON_INGOT, 36), false) : remainder;
+        ItemStack remainder = TestInventories.insertStacked(handler, new ItemStack(Items.IRON_INGOT, 64));
+        remainder = remainder.isEmpty() ? TestInventories.insertStacked(handler, new ItemStack(Items.IRON_INGOT, 36)) : remainder;
         check(helper, remainder.isEmpty(), "Insert should be accepted completely");
         VaultBlockEntity vault = helper.getBlockEntity(POS);
         check(helper, count(vault, Items.IRON_INGOT) == 100, "Vault should hold 100 ingots, holds " + count(vault, Items.IRON_INGOT));
@@ -190,7 +188,7 @@ public class PhysicalGameTests {
         helper.succeed();
     }
 
-    @GameTest(template = "floor_9x9", timeoutTicks = 100)
+    @GameTest(template = Templates.FLOOR, timeoutTicks = 100)
     public static void hopperFillsVault(GameTestHelper helper) {
         helper.setBlock(POS, PhysicalContent.vault(VaultTier.COPPER));
         helper.setBlock(POS.above(), Blocks.HOPPER.defaultBlockState().setValue(HopperBlock.FACING, Direction.DOWN));
@@ -202,7 +200,7 @@ public class PhysicalGameTests {
         });
     }
 
-    @GameTest(template = "floor_9x9")
+    @GameTest(template = Templates.FLOOR)
     public static void vaultSortAndViewers(GameTestHelper helper) {
         helper.setBlock(POS, PhysicalContent.vault(VaultTier.COPPER));
         VaultBlockEntity vault = helper.getBlockEntity(POS);
@@ -221,7 +219,7 @@ public class PhysicalGameTests {
         helper.succeed();
     }
 
-    @GameTest(template = "floor_9x9")
+    @GameTest(template = Templates.FLOOR)
     public static void vaultBreakDropsContents(GameTestHelper helper) {
         helper.setBlock(POS, PhysicalContent.vault(VaultTier.COPPER));
         VaultBlockEntity vault = helper.getBlockEntity(POS);
@@ -238,7 +236,7 @@ public class PhysicalGameTests {
 
     // -- linked storage ----------------------------------------------------------------------------------
 
-    @GameTest(template = "floor_9x9")
+    @GameTest(template = Templates.FLOOR)
     public static void linkedVaultsShareContents(GameTestHelper helper) {
         BlockPos a = new BlockPos(2, ON_FLOOR, 2);
         BlockPos b = new BlockPos(6, ON_FLOOR, 6);
@@ -257,11 +255,11 @@ public class PhysicalGameTests {
         vaultB.setFrequency(frequency);
         vaultOther.setFrequency(frequency.withColor(2, DyeColor.YELLOW));
 
-        IItemHandler handlerA = items(helper, a, Direction.NORTH);
-        IItemHandler handlerB = items(helper, b, null);
-        IItemHandler handlerOther = items(helper, other, Direction.UP);
+        SlotAccess handlerA = items(helper, a, Direction.NORTH);
+        SlotAccess handlerB = items(helper, b, null);
+        SlotAccess handlerOther = items(helper, other, Direction.UP);
         check(helper, handlerA.getSlots() == LinkedVaultData.SIZE, "Linked vaults have 27 slots");
-        check(helper, ItemHandlerHelper.insertItemStacked(handlerA, new ItemStack(Items.EMERALD, 12), false).isEmpty(), "Insert into A failed");
+        check(helper, TestInventories.insertStacked(handlerA, new ItemStack(Items.EMERALD, 12)).isEmpty(), "Insert into A failed");
         check(helper, count(handlerB, Items.EMERALD) == 12, "Vault B should see A's emeralds");
         check(helper, count(handlerOther, Items.EMERALD) == 0, "A different channel must not see them");
         check(helper, helper.getLevel().getBlockState(helper.absolutePos(b)).getAnalogOutputSignal(helper.getLevel(), helper.absolutePos(b)) > 0,
@@ -293,10 +291,10 @@ public class PhysicalGameTests {
 
     // -- trash can -----------------------------------------------------------------------------------------
 
-    @GameTest(template = "floor_9x9")
+    @GameTest(template = Templates.FLOOR)
     public static void trashCanVoids(GameTestHelper helper) {
         helper.setBlock(POS, PhysicalContent.TRASH_CAN.get());
-        IItemHandler handler = items(helper, POS, Direction.UP);
+        SlotAccess handler = items(helper, POS, Direction.UP);
         check(helper, handler.insertItem(0, new ItemStack(Items.DIRT, 64), false).isEmpty(), "Trash should accept everything");
         check(helper, handler.getStackInSlot(0).isEmpty(), "Trash should stay empty");
         TrashCanBlockEntity trash = helper.getBlockEntity(POS);
@@ -320,7 +318,7 @@ public class PhysicalGameTests {
         helper.succeed();
     }
 
-    @GameTest(template = "floor_9x9", timeoutTicks = 100)
+    @GameTest(template = Templates.FLOOR, timeoutTicks = 100)
     public static void hopperEmptiesIntoTrash(GameTestHelper helper) {
         helper.setBlock(POS, PhysicalContent.TRASH_CAN.get());
         helper.setBlock(POS.above(), Blocks.HOPPER.defaultBlockState().setValue(HopperBlock.FACING, Direction.DOWN));
@@ -335,7 +333,7 @@ public class PhysicalGameTests {
 
     // -- relocator -----------------------------------------------------------------------------------------
 
-    @GameTest(template = "floor_9x9")
+    @GameTest(template = Templates.FLOOR)
     public static void relocatorMovesChestWithContents(GameTestHelper helper) {
         helper.setBlock(POS, Blocks.CHEST);
         ChestBlockEntity chest = helper.getBlockEntity(POS);
@@ -363,7 +361,7 @@ public class PhysicalGameTests {
         helper.succeed();
     }
 
-    @GameTest(template = "floor_9x9")
+    @GameTest(template = Templates.FLOOR)
     public static void relocatorMovesVaultAndRespectsDenylist(GameTestHelper helper) {
         helper.setBlock(POS, PhysicalContent.vault(VaultTier.DIAMOND));
         VaultBlockEntity vault = helper.getBlockEntity(POS);

@@ -331,6 +331,8 @@ class Model:
             out_faces[face] = entry
         element['faces'] = out_faces
         if emissive:
+            # Glowing faces: full-bright on NeoForge; on Fabric, unshaded faces get an emissive material.
+            element['shade'] = False
             element['neoforge_data'] = {'block_light': 15, 'sky_light': 15}
         self.elements.append(element)
         return self

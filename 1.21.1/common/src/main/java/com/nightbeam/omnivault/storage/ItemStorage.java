@@ -40,4 +40,12 @@ public interface ItemStorage {
     default long version() {
         return -1;
     }
+
+    /**
+     * True for storage that takes part in a loader transaction itself (another mod's Fabric storage):
+     * it rolls back on its own, so a {@link ChangeJournal} doesn't record its changes.
+     */
+    default boolean joinsTransactions() {
+        return false;
+    }
 }

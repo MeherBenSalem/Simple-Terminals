@@ -143,7 +143,7 @@ public class AutocraftGameTests {
 
     // -- tests -------------------------------------------------------------------------------------
 
-    @GameTest(template = "floor_9x9")
+    @GameTest(template = Templates.FLOOR)
     public static void craftablesListPatternOutputs(GameTestHelper helper) {
         network(helper, true, true);
         provider(helper, PROVIDER, Direction.NORTH, planksPattern(helper), chestPattern(helper),
@@ -159,7 +159,7 @@ public class AutocraftGameTests {
         });
     }
 
-    @GameTest(template = "floor_9x9")
+    @GameTest(template = Templates.FLOOR)
     public static void planUsesStockThenCraftsTheRest(GameTestHelper helper) {
         network(helper, true, true);
         provider(helper, PROVIDER, Direction.NORTH, chestPattern(helper), planksPattern(helper));
@@ -181,7 +181,7 @@ public class AutocraftGameTests {
         });
     }
 
-    @GameTest(template = "floor_9x9")
+    @GameTest(template = Templates.FLOOR)
     public static void jobCraftsChestsFromLogs(GameTestHelper helper) {
         network(helper, true, true);
         provider(helper, PROVIDER, Direction.NORTH, chestPattern(helper), planksPattern(helper));
@@ -200,7 +200,7 @@ public class AutocraftGameTests {
         });
     }
 
-    @GameTest(template = "floor_9x9", timeoutTicks = 600)
+    @GameTest(template = Templates.FLOOR, timeoutTicks = 600)
     public static void jobsReserveManyStacksFromADrawerBehindAStorageBus(GameTestHelper helper) {
         network(helper, true, true);
         provider(helper, PROVIDER, Direction.NORTH, chestPattern(helper));
@@ -224,7 +224,7 @@ public class AutocraftGameTests {
         });
     }
 
-    @GameTest(template = "floor_9x9")
+    @GameTest(template = Templates.FLOOR)
     public static void missingIngredientsBlockTheJob(GameTestHelper helper) {
         network(helper, true, true);
         provider(helper, PROVIDER, Direction.NORTH, chestPattern(helper), planksPattern(helper));
@@ -243,7 +243,7 @@ public class AutocraftGameTests {
         });
     }
 
-    @GameTest(template = "floor_9x9")
+    @GameTest(template = Templates.FLOOR)
     public static void requestsNeedACraftingProcessor(GameTestHelper helper) {
         network(helper, false, true);
         provider(helper, PROVIDER, Direction.NORTH, planksPattern(helper));
@@ -257,7 +257,7 @@ public class AutocraftGameTests {
         });
     }
 
-    @GameTest(template = "floor_9x9")
+    @GameTest(template = Templates.FLOOR)
     public static void cancellingReturnsReservedItems(GameTestHelper helper) {
         // No assembler: the job reserves its logs and then cannot make progress.
         network(helper, true, false);
@@ -286,7 +286,7 @@ public class AutocraftGameTests {
         });
     }
 
-    @GameTest(template = "floor_9x9")
+    @GameTest(template = Templates.FLOOR)
     public static void craftingRemaindersReturnToTheNetwork(GameTestHelper helper) {
         network(helper, true, true);
         Item m = Items.MILK_BUCKET;
@@ -307,7 +307,7 @@ public class AutocraftGameTests {
         });
     }
 
-    @GameTest(template = "floor_9x9")
+    @GameTest(template = Templates.FLOOR)
     public static void plannerPicksAWorkingPatternAndSurvivesCycles(GameTestHelper helper) {
         network(helper, true, true);
         provider(helper, PROVIDER, Direction.NORTH,
@@ -327,7 +327,7 @@ public class AutocraftGameTests {
         });
     }
 
-    @GameTest(template = "floor_9x9", timeoutTicks = 1200)
+    @GameTest(template = Templates.FLOOR, timeoutTicks = 1200)
     public static void providerSmeltsRawIronInAFurnace(GameTestHelper helper) {
         network(helper, true, false);
         // A furnace above the floor, fed from above by a provider and emptied from below by an import bus;
@@ -353,7 +353,7 @@ public class AutocraftGameTests {
         });
     }
 
-    @GameTest(template = "floor_9x9")
+    @GameTest(template = Templates.FLOOR)
     public static void machinesCanPushResultsIntoTheProvider(GameTestHelper helper) {
         network(helper, true, false);
         // The "machine" is a chest the test operates by hand: it turns 2 cobblestone into 1 gravel.
@@ -387,7 +387,7 @@ public class AutocraftGameTests {
         });
     }
 
-    @GameTest(template = "floor_9x9")
+    @GameTest(template = Templates.FLOOR)
     public static void patternTerminalEncodesPatterns(GameTestHelper helper) {
         network(helper, true, true);
         BlockPos pos = new BlockPos(6, 1, 5);
@@ -425,7 +425,7 @@ public class AutocraftGameTests {
         helper.succeed();
     }
 
-    @GameTest(template = "floor_9x9")
+    @GameTest(template = Templates.FLOOR)
     public static void recipeViewerTransfersLoadThePatternTerminal(GameTestHelper helper) {
         network(helper, true, true);
         BlockPos pos = new BlockPos(6, 1, 5);
@@ -455,7 +455,7 @@ public class AutocraftGameTests {
         helper.succeed();
     }
 
-    @GameTest(template = "floor_9x9")
+    @GameTest(template = Templates.FLOOR)
     public static void speedUpgradesMakeAssemblersFaster(GameTestHelper helper) {
         network(helper, true, true);
         AssemblerBlockEntity assembler = (AssemblerBlockEntity) helper.getBlockEntity(ASSEMBLER);

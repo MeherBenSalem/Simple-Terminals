@@ -551,6 +551,8 @@ class Shape:
                     entry['cullface'] = face
             el['faces'][face] = entry
         if emissive:
+            # Glowing faces: full-bright on NeoForge; on Fabric, unshaded faces get an emissive material.
+            el['shade'] = False
             el['neoforge_data'] = {'block_light': 15, 'sky_light': 15}
         self.elements.append(el)
         return self

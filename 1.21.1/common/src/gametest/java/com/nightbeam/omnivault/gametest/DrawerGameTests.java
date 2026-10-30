@@ -11,12 +11,12 @@ import com.nightbeam.omnivault.drawer.DrawerControllerBlockEntity;
 import com.nightbeam.omnivault.drawer.DrawerInteraction;
 import com.nightbeam.omnivault.drawer.DrawerLayout;
 import com.nightbeam.omnivault.storage.ItemKey;
+import com.nightbeam.omnivault.storage.SlotAccess;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.gametest.framework.GameTestAssertException;
 import net.minecraft.gametest.framework.GameTestHelper;
-import net.minecraft.network.protocol.game.ServerboundPlayerActionPacket;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
@@ -30,12 +30,8 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.neoforge.capabilities.Capabilities;
-import net.neoforged.neoforge.common.CommonHooks;
-import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
 import net.neoforged.neoforge.gametest.GameTestHolder;
 import net.neoforged.neoforge.gametest.PrefixGameTestTemplate;
-import net.neoforged.neoforge.items.IItemHandler;
 
 import java.util.List;
 
@@ -49,8 +45,8 @@ public class DrawerGameTests {
     // Helpers
     // ---------------------------------------------------------------------------------------------
 
-    private static IItemHandler handler(GameTestHelper helper, BlockPos pos) {
-        IItemHandler handler = helper.getLevel().getCapability(Capabilities.ItemHandler.BLOCK, helper.absolutePos(pos), Direction.UP);
+    private static SlotAccess handler(GameTestHelper helper, BlockPos pos) {
+        SlotAccess handler = TestPlatform.INSTANCE.items(helper.getLevel(), helper.absolutePos(pos), Direction.UP);
         if (handler == null) {
             throw new GameTestAssertException("No item handler at " + pos);
         }
@@ -85,7 +81,7 @@ public class DrawerGameTests {
         check(stack.is(item) && stack.getCount() == count, what + ": expected " + count + " " + item + " but was " + stack);
     }
 
-    private static int fill(IItemHandler handler, int slot, Item item, int total) {
+    private static int fill(SlotAccess handler, int slot, Item item, int total) {
         int remaining = total;
         int leftover = 0;
         while (remaining > 0) {
@@ -100,10 +96,10 @@ public class DrawerGameTests {
     // Standard drawers
     // ---------------------------------------------------------------------------------------------
 
-    @GameTest(template = "floor_9x9")
+    @GameTest(template = Templates.FLOOR)
     public static void drawerCapabilityInsertExtract(GameTestHelper helper) {
         helper.setBlock(POS, DrawerContent.DRAWER_1X1.get());
-        IItemHandler handler = handler(helper, POS);
+        SlotAccess handler = handler(helper, POS);
         int limit = DrawerConfig.SINGLE_STACKS.get() * 64;
         eq(handler.getSlots(), 1, "1x1 slots");
         eq(handler.getSlotLimit(0), limit, "1x1 slot limit");
@@ -114,7 +110,9 @@ public class DrawerGameTests {
 
         stack(handler.extractItem(0, 64, true), Items.COBBLESTONE, 64, "simulated extract");
         eq(handler.getStackInSlot(0).getCount(), 192, "count after simulated extract");
-        stack(handler.extractItem(0, 100, false), Items.COBBLESTONE, 64, "extract is capped at a stack");
+        // NeoForge handlers hand out one stack per call; Fabric storages give what was asked for.
+        int asked = TestPlatform.INSTANCE.extractionCappedAtAStack() ? 100 : 64;
+        stack(handler.extractItem(0, asked, false), Items.COBBLESTONE, 64, "extract gives at most a stack per call");
         eq(handler.getStackInSlot(0).getCount(), 128, "count after extract");
 
         int leftover = fill(handler, 0, Items.COBBLESTONE, limit);
@@ -124,7 +122,7 @@ public class DrawerGameTests {
         // A 2x2 drawer has four smaller compartments, and automation keeps one type in one compartment.
         BlockPos quadPos = POS.east(2);
         helper.setBlock(quadPos, DrawerContent.DRAWER_2X2.get());
-        IItemHandler quad = handler(helper, quadPos);
+        SlotAccess quad = handler(helper, quadPos);
         eq(quad.getSlots(), 4, "2x2 slots");
         eq(quad.getSlotLimit(3), DrawerConfig.QUAD_STACKS.get() * 64, "2x2 slot limit");
         eq(quad.getSlotLimit(0), DrawerConfig.QUAD_STACKS.get() * 64, "2x2 slot limit");
@@ -139,11 +137,11 @@ public class DrawerGameTests {
         helper.succeed();
     }
 
-    @GameTest(template = "floor_9x9")
+    @GameTest(template = Templates.FLOOR)
     public static void capacityUpgradeRaisesCapacity(GameTestHelper helper) {
         helper.setBlock(POS, DrawerContent.DRAWER_1X2.get());
         AbstractDrawerBlockEntity drawer = blockEntity(helper, POS, AbstractDrawerBlockEntity.class);
-        IItemHandler handler = handler(helper, POS);
+        SlotAccess handler = handler(helper, POS);
         int base = DrawerConfig.DOUBLE_STACKS.get() * 64;
         eq(handler.getSlotLimit(0), base, "base limit");
 
@@ -165,11 +163,11 @@ public class DrawerGameTests {
         helper.succeed();
     }
 
-    @GameTest(template = "floor_9x9")
+    @GameTest(template = Templates.FLOOR)
     public static void voidUpgradeVoidsOverflow(GameTestHelper helper) {
         helper.setBlock(POS, DrawerContent.DRAWER_2X2.get());
         AbstractDrawerBlockEntity drawer = blockEntity(helper, POS, AbstractDrawerBlockEntity.class);
-        IItemHandler handler = handler(helper, POS);
+        SlotAccess handler = handler(helper, POS);
         int limit = DrawerConfig.QUAD_STACKS.get() * 64;
         check(drawer.installUpgrade(new ItemStack(DrawerContent.VOID_UPGRADE.get())), "void upgrade installs");
         check(!drawer.installUpgrade(new ItemStack(DrawerContent.VOID_UPGRADE.get())), "only one void upgrade");
@@ -185,11 +183,11 @@ public class DrawerGameTests {
         helper.succeed();
     }
 
-    @GameTest(template = "floor_9x9")
+    @GameTest(template = Templates.FLOOR)
     public static void lockKeepsTypeWhenEmpty(GameTestHelper helper) {
         helper.setBlock(POS, DrawerContent.DRAWER_1X1.get());
         AbstractDrawerBlockEntity drawer = blockEntity(helper, POS, AbstractDrawerBlockEntity.class);
-        IItemHandler handler = handler(helper, POS);
+        SlotAccess handler = handler(helper, POS);
         handler.insertItem(0, new ItemStack(Items.IRON_INGOT, 10), false);
         drawer.setLocked(true);
         stack(handler.extractItem(0, 64, false), Items.IRON_INGOT, 10, "extract everything");
@@ -203,7 +201,7 @@ public class DrawerGameTests {
         helper.succeed();
     }
 
-    @GameTest(template = "floor_9x9")
+    @GameTest(template = Templates.FLOOR)
     public static void drawerKeepsContentsWhenBroken(GameTestHelper helper) {
         helper.setBlock(POS, DrawerContent.DRAWER_1X2.get());
         AbstractDrawerBlockEntity drawer = blockEntity(helper, POS, AbstractDrawerBlockEntity.class);
@@ -235,7 +233,7 @@ public class DrawerGameTests {
         helper.succeed();
     }
 
-    @GameTest(template = "floor_9x9")
+    @GameTest(template = Templates.FLOOR)
     public static void frontHitSelectsCompartment(GameTestHelper helper) {
         for (Direction facing : Direction.Plane.HORIZONTAL) {
             BlockPos pos = POS;
@@ -261,7 +259,7 @@ public class DrawerGameTests {
         helper.succeed();
     }
 
-    @GameTest(template = "floor_9x9")
+    @GameTest(template = Templates.FLOOR)
     public static void rightClickAndDoubleClickInsert(GameTestHelper helper) {
         helper.setBlock(POS, DrawerContent.DRAWER_1X1.get());
         AbstractDrawerBlockEntity drawer = blockEntity(helper, POS, AbstractDrawerBlockEntity.class);
@@ -291,7 +289,7 @@ public class DrawerGameTests {
         return player;
     }
 
-    @GameTest(template = "floor_9x9")
+    @GameTest(template = Templates.FLOOR)
     public static void leftClickExtractsAndCreativeDoesNotBreak(GameTestHelper helper) {
         BlockPos pos = POS;
         // The mock players stand (head height) in the two cells in front of the drawer: make sure they are air.
@@ -314,14 +312,10 @@ public class DrawerGameTests {
 
         // Creative: the click on the front is cancelled (so the drawer cannot break) and extracts instead.
         Player creative = lookingAtFront(helper, GameType.CREATIVE, abs);
-        PlayerInteractEvent.LeftClickBlock event = CommonHooks.onLeftClickBlock(creative, abs, Direction.NORTH,
-                ServerboundPlayerActionPacket.Action.START_DESTROY_BLOCK);
-        check(event.isCanceled(), "creative left click on the front is cancelled");
+        check(TestPlatform.INSTANCE.leftClickBlock(creative, abs, Direction.NORTH), "creative left click on the front is cancelled");
         eq(drawer.countAt(0), 0, "creative left click extracted the rest");
         eq(creative.getInventory().countItem(Items.COBBLESTONE), 63, "creative player received the items");
-        PlayerInteractEvent.LeftClickBlock side = CommonHooks.onLeftClickBlock(creative, abs, Direction.EAST,
-                ServerboundPlayerActionPacket.Action.START_DESTROY_BLOCK);
-        check(!side.isCanceled(), "creative left click on a side still breaks normally");
+        check(!TestPlatform.INSTANCE.leftClickBlock(creative, abs, Direction.EAST), "creative left click on a side still breaks normally");
         helper.assertBlockPresent(DrawerContent.DRAWER_1X1.get(), pos);
         helper.succeed();
     }
@@ -330,11 +324,11 @@ public class DrawerGameTests {
     // Compacting drawer
     // ---------------------------------------------------------------------------------------------
 
-    @GameTest(template = "floor_9x9")
+    @GameTest(template = Templates.FLOOR)
     public static void compactingDrawerConvertsIron(GameTestHelper helper) {
         helper.setBlock(POS, DrawerContent.COMPACTING_DRAWER.get());
         CompactingDrawerBlockEntity drawer = blockEntity(helper, POS, CompactingDrawerBlockEntity.class);
-        IItemHandler handler = handler(helper, POS);
+        SlotAccess handler = handler(helper, POS);
         eq(handler.getSlots(), 3, "compacting slots");
 
         stack(handler.insertItem(0, new ItemStack(Items.IRON_INGOT, 18), false), Items.IRON_INGOT, 0, "ingots set up the chain");
@@ -374,7 +368,7 @@ public class DrawerGameTests {
     // Controller
     // ---------------------------------------------------------------------------------------------
 
-    @GameTest(template = "floor_9x9")
+    @GameTest(template = Templates.FLOOR)
     public static void controllerRoutesToMatchingDrawer(GameTestHelper helper) {
         BlockPos controllerPos = POS;
         BlockPos emptyPos = POS.west();
@@ -394,7 +388,7 @@ public class DrawerGameTests {
 
         DrawerControllerBlockEntity controller = blockEntity(helper, controllerPos, DrawerControllerBlockEntity.class);
         eq(controller.drawers().size(), 4, "drawers connected (directly, through a trim and through another drawer)");
-        IItemHandler handler = handler(helper, controllerPos);
+        SlotAccess handler = handler(helper, controllerPos);
         eq(handler.getSlots(), 1 + 1 + 2 + 1 + 3, "routing slot plus every compartment");
 
         stack(handler.insertItem(0, new ItemStack(Items.COBBLESTONE, 64), false), Items.COBBLESTONE, 0, "cobblestone routed");

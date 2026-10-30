@@ -15,6 +15,7 @@ import com.nightbeam.omnivault.network.block.NetworkNodeBlockEntity;
 import com.nightbeam.omnivault.platform.Services;
 import com.nightbeam.omnivault.registry.ModCapabilities;
 import com.nightbeam.omnivault.storage.ItemKey;
+import com.nightbeam.omnivault.storage.ItemStorage;
 import com.nightbeam.omnivault.storage.SlotAccess;
 import com.nightbeam.omnivault.storage.SlotAccessStorage;
 import net.minecraft.core.BlockPos;
@@ -36,6 +37,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.ObjLongConsumer;
 
 /**
  * Holds nine encoded patterns and offers them to the network. For a processing pattern it hands
@@ -210,6 +212,37 @@ public class PatternProviderBlockEntity extends NetworkNodeBlockEntity implement
      */
     private final class ReturnSlot implements SlotAccess {
         private int depth;
+
+        /** Insert-only, like the slot: the network takes what machines push back. */
+        private final ItemStorage whole = new ItemStorage() {
+            @Override
+            public long insert(ItemKey key, long amount, boolean simulate) {
+                StorageNetwork network = getNetwork();
+                if (network == null || !network.isActive() || depth > 0) {
+                    return 0;
+                }
+                depth++;
+                try {
+                    return network.storage().insert(key, amount, simulate);
+                } finally {
+                    depth--;
+                }
+            }
+
+            @Override
+            public long extract(ItemKey key, long amount, boolean simulate) {
+                return 0;
+            }
+
+            @Override
+            public void forEach(ObjLongConsumer<ItemKey> consumer) {
+            }
+        };
+
+        @Override
+        public ItemStorage networkStorage() {
+            return whole;
+        }
 
         @Override
         public int getSlots() {

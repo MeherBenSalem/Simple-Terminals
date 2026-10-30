@@ -28,13 +28,32 @@ modId = "minecraft"
 type = "required"
 versionRange = "[1.21.1, 1.22)"
 '''
-MANIFEST = 'Manifest-Version: 1.0\nImplementation-Version: 2.0.0\nBuilt-On-Minecraft: 1.21.1\nImplementation-Title: neoforge\n\n'
+FABRIC = {
+    'schemaVersion': 1,
+    'id': 'omnivault',
+    'version': '2.0.0',
+    'icon': 'omnivault_logo.png',
+    'entrypoints': {
+        'main': ['com.nightbeam.omnivault.fabric.OmniVaultFabric'],
+        'client': ['com.nightbeam.omnivault.fabric.client.OmniVaultFabricClient'],
+    },
+    'mixins': ['omnivault.fabric.mixins.json'],
+    'depends': {'fabricloader': '>=0.16.14', 'fabric-api': '*', 'minecraft': '~1.21.1', 'java': '>=21'},
+}
+MIXINS = {'package': 'com.nightbeam.omnivault.fabric.mixin', 'refmap': 'omnivault.refmap.json', 'mixins': ['ItemEntityMixin']}
 
 
-def entries(**overrides):
+def manifest(loader):
+    return f'Manifest-Version: 1.0\nImplementation-Version: 2.0.0\nBuilt-On-Minecraft: 1.21.1\nImplementation-Title: {loader}\n\n'
+
+
+def fabric_json(**changes):
+    return json.dumps({**FABRIC, **changes})
+
+
+def entries(loader='neoforge', **overrides):
     files = {
-        'META-INF/neoforge.mods.toml': TOML,
-        'META-INF/MANIFEST.MF': MANIFEST,
+        'META-INF/MANIFEST.MF': manifest(loader),
         'assets/omnivault/lang/en_us.json': json.dumps({'block.omnivault.drive': 'Cell Drive', 'item.omnivault.omni_tool': 'OmniTool'}),
         'assets/omnivault/blockstates/drive.json': '{"variants": {}}',
         'assets/omnivault/models/item/drive.json': '{}',
@@ -43,7 +62,15 @@ def entries(**overrides):
         'data/omnivault/recipe/drive.json': '{}',
         'pack.mcmeta': '{"pack": {"pack_format": 34}}',
     }
-    for name in guard.REQUIRED_CLASSES:
+    if loader == 'neoforge':
+        files['META-INF/neoforge.mods.toml'] = TOML
+    else:
+        files['fabric.mod.json'] = fabric_json()
+        files['omnivault.fabric.mixins.json'] = json.dumps(MIXINS)
+        files['omnivault.refmap.json'] = '{"mappings": {}}'
+        files['omnivault_logo.png'] = b'\x89PNG'
+        files['com/nightbeam/omnivault/fabric/mixin/ItemEntityMixin.class'] = b'\xca\xfe\xba\xbe'
+    for name in guard.REQUIRED_CLASSES + guard.LOADER_CLASSES[loader]:
         files[name] = b'\xca\xfe\xba\xbe'
     for name in guard.REQUIRED_SERVICES:
         files[name] = 'com.example.Impl\n'
@@ -64,12 +91,18 @@ class ReleaseGuardTest(unittest.TestCase):
         self.tmp = tempfile.TemporaryDirectory()
         self.root = Path(self.tmp.name)
         self.libs = self.root / '1.21.1' / 'neoforge' / 'build' / 'libs'
+        self.fabric_libs = self.root / '1.21.1' / 'fabric' / 'build' / 'libs'
 
     def tearDown(self):
         self.tmp.cleanup()
 
     def build(self, **overrides):
+        """Both release jars; the overrides change the NeoForge one."""
+        self.build_fabric()
         return write_jar(self.libs / guard.filename('1.21.1', 'neoforge', VERSION), entries(**overrides))
+
+    def build_fabric(self, **overrides):
+        return write_jar(self.fabric_libs / guard.filename('1.21.1', 'fabric', VERSION), entries('fabric', **overrides))
 
     def validate(self):
         artifacts = guard.select_artifacts(self.root, VERSION, 'build')
@@ -79,11 +112,40 @@ class ReleaseGuardTest(unittest.TestCase):
         self.build()
         write_jar(self.libs / 'omnivault-1.21.1-neoforge-2.0.0-sources.jar', {'x': 'y'})
         hashes = self.validate()
-        self.assertEqual(len(hashes), 1)
+        self.assertEqual(len(hashes), 2)
         self.assertEqual(set(hashes[0]), {'sha256', 'sha1', 'sha512'})
 
     def test_missing_jar_blocks(self):
         with self.assertRaisesRegex(guard.ReleaseError, 'Missing release jars'):
+            self.validate()
+
+    def test_missing_fabric_jar_blocks(self):
+        write_jar(self.libs / guard.filename('1.21.1', 'neoforge', VERSION), entries())
+        with self.assertRaisesRegex(guard.ReleaseError, 'fabric'):
+            self.validate()
+
+    def test_wrong_fabric_identity_blocks(self):
+        self.build()
+        self.build_fabric(**{'fabric.mod.json': fabric_json(id='simple_terminals')})
+        with self.assertRaisesRegex(guard.ReleaseError, 'Fabric mod identity'):
+            self.validate()
+
+    def test_fabric_minecraft_dependency_is_checked(self):
+        self.build()
+        self.build_fabric(**{'fabric.mod.json': fabric_json(depends={**FABRIC['depends'], 'minecraft': '*'})})
+        with self.assertRaisesRegex(guard.ReleaseError, 'Minecraft dependency'):
+            self.validate()
+
+    def test_fabric_mixins_need_their_refmap(self):
+        self.build()
+        self.build_fabric(**{'omnivault.refmap.json': None})
+        with self.assertRaisesRegex(guard.ReleaseError, 'refmap'):
+            self.validate()
+
+    def test_fabric_test_stand_ins_must_not_ship(self):
+        self.build()
+        self.build_fabric(**{'net/neoforged/neoforge/gametest/GameTestHolder.class': b'\xca\xfe\xba\xbe'})
+        with self.assertRaisesRegex(guard.ReleaseError, 'stand-ins'):
             self.validate()
 
     def test_stale_jar_blocks(self):

@@ -5,7 +5,10 @@ plugins {
 
 sourceSets {
     // In-world GameTests: run with ./gradlew :neoforge:runGameTestServer. Not part of the shipped jar.
+    // The tests themselves are shared with Fabric and live in common/src/gametest.
     gametest {
+        java.srcDir project(':common').file('src/gametest/java')
+        resources.srcDir project(':common').file('src/gametest/resources')
     }
 }
 

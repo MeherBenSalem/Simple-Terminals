@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Writes the GameTest structure templates (gzipped NBT) used by 1.21.1/neoforge/src/gametest.
+"""Writes the GameTest structure templates (gzipped NBT) used by 1.21.1/common/src/gametest (both loaders).
 
 Each template is an open test floor of polished andesite; tests place everything else in code.
 Usage: python3 tools/assets/structures.py
@@ -9,7 +9,7 @@ import struct
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
-OUT = ROOT / '1.21.1' / 'neoforge' / 'src' / 'gametest' / 'resources' / 'data' / 'omnivault' / 'structure'
+OUT = ROOT / '1.21.1' / 'common' / 'src' / 'gametest' / 'resources' / 'data' / 'omnivault' / 'structure'
 DATA_VERSION = 3955  # Minecraft 1.21.1
 
 TAG_END, TAG_INT, TAG_STRING, TAG_LIST, TAG_COMPOUND = 0, 3, 8, 9, 10

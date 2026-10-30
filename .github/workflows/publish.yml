@@ -98,6 +98,7 @@ jobs:
         run: |
           bash gradlew clean build --no-daemon --stacktrace
           bash gradlew :neoforge:runGameTestServer --no-daemon --stacktrace
+          bash gradlew :fabric:runGametest --no-daemon --stacktrace
 
       - name: Validate complete packaged release and version-specific notes
         env:
@@ -194,7 +195,8 @@ jobs:
                   name: `${version} · ${loader} · ${gameVersions[0]}`,
                   version_number: `${version}+${loader}-${gameVersions[0]}`,
                   changelog,
-                  dependencies: [],
+                  // Fabric builds need Fabric API (Modrinth project P7dR8mSH).
+                  dependencies: loader === 'fabric' ? [{ project_id: 'P7dR8mSH', dependency_type: 'required' }] : [],
                   game_versions: gameVersions,
                   version_type: 'release',
                   loaders: [loader],
@@ -273,6 +275,7 @@ jobs:
                 releaseType: 'release',
               };
               if (gameVersionNames.length) meta.gameVersionNames = gameVersionNames;
+              if (loader === 'fabric') meta.relations = { projects: [{ slug: 'fabric-api', type: 'requiredDependency' }] };
               const cfForm = new FormData();
               cfForm.append('metadata', JSON.stringify(meta));
               cfForm.append('file', new Blob([artifact.bytes]), path.basename(jar));

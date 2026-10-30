@@ -37,7 +37,7 @@ public class ResourceGameTests {
         }
     }
 
-    @GameTest(template = "floor_9x9")
+    @GameTest(template = Templates.FLOOR)
     public static void everyBlockAndItemHasResources(GameTestHelper helper) throws Exception {
         JsonObject lang = lang();
         List<String> problems = new ArrayList<>();

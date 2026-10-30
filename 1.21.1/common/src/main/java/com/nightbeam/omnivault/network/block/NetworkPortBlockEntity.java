@@ -6,6 +6,7 @@ import com.nightbeam.omnivault.registry.ModCapabilities;
 import com.nightbeam.omnivault.storage.FluidAccess;
 import com.nightbeam.omnivault.storage.FluidKey;
 import com.nightbeam.omnivault.storage.ItemKey;
+import com.nightbeam.omnivault.storage.ItemStorage;
 import com.nightbeam.omnivault.storage.SlotAccess;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -15,6 +16,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.ObjLongConsumer;
 
 /**
  * Exposes the whole network as an ordinary inventory: hoppers, pipes and machines from any mod
@@ -104,6 +106,55 @@ public class NetworkPortBlockEntity extends NetworkNodeBlockEntity implements Mo
         private List<ItemKey> keys = List.of();
         private long seenCounter = Long.MIN_VALUE;
         private int depth;
+
+        private final ItemStorage whole = new ItemStorage() {
+            @Override
+            public long insert(ItemKey key, long amount, boolean simulate) {
+                StorageNetwork network = network();
+                if (network == null || depth > 0) {
+                    return 0;
+                }
+                depth++;
+                try {
+                    return network.storage().insert(key, amount, simulate);
+                } finally {
+                    depth--;
+                }
+            }
+
+            @Override
+            public long extract(ItemKey key, long amount, boolean simulate) {
+                StorageNetwork network = network();
+                if (network == null || depth > 0) {
+                    return 0;
+                }
+                depth++;
+                try {
+                    return network.storage().extract(key, amount, simulate);
+                } finally {
+                    depth--;
+                }
+            }
+
+            @Override
+            public void forEach(ObjLongConsumer<ItemKey> consumer) {
+                StorageNetwork network = network();
+                if (network == null || depth > 0) {
+                    return;
+                }
+                depth++;
+                try {
+                    network.storage().forEach(consumer);
+                } finally {
+                    depth--;
+                }
+            }
+        };
+
+        @Override
+        public ItemStorage networkStorage() {
+            return whole;
+        }
 
         @Nullable
         private StorageNetwork network() {

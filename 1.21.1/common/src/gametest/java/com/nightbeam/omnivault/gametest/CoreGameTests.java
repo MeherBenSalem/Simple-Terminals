@@ -11,7 +11,7 @@ import net.neoforged.neoforge.gametest.PrefixGameTestTemplate;
 @GameTestHolder(OmniVault.MOD_ID)
 @PrefixGameTestTemplate(false)
 public class CoreGameTests {
-    @GameTest(template = "floor_9x9")
+    @GameTest(template = Templates.FLOOR)
     public static void omniumBlockPlaces(GameTestHelper helper) {
         BlockPos pos = new BlockPos(4, 1, 4);
         helper.setBlock(pos, CoreContent.OMNIUM_BLOCK.get());
@@ -19,7 +19,7 @@ public class CoreGameTests {
         helper.succeed();
     }
 
-    @GameTest(template = "floor_9x9")
+    @GameTest(template = Templates.FLOOR)
     public static void legacySimpleTerminalsIdLoadsAsCraftingTerminal(GameTestHelper helper) {
         var legacy = net.minecraft.resources.ResourceLocation.fromNamespaceAndPath(OmniVault.LEGACY_MOD_ID, "crafting_terminal");
         helper.assertTrue(net.minecraft.core.registries.BuiltInRegistries.BLOCK.get(legacy)

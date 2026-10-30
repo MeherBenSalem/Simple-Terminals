@@ -78,5 +78,9 @@
   "gui.omnivault.backpack.mode.deposit.0": "All",
   "gui.omnivault.backpack.mode.deposit.0.tooltip": "Deposits every filtered item",
   "gui.omnivault.backpack.mode.deposit.1": "Merge",
-  "gui.omnivault.backpack.mode.deposit.1.tooltip": "Only deposits items the container already holds"
+  "gui.omnivault.backpack.mode.deposit.1.tooltip": "Only deposits items the container already holds",
+
+  "tag.item.omnivault.backpacks": "Backpacks",
+  "tag.item.omnivault.backpack_upgrades": "Backpack Upgrades",
+  "tag.item.omnivault.not_allowed_in_backpacks": "Not Allowed in Backpacks"
 }

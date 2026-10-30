@@ -6,7 +6,7 @@ storage cells, buses and full autocrafting, and finish with Singularity cells an
 network across dimensions. Along the way: six tiers of vaults, drawers with compacting and controllers, linked
 vaults, and backpacks you can wear, place and upgrade. Every block is a hand-built 3D model.
 
-NeoForge · Minecraft 1.21.1 · install on server and client · JEI optional
+NeoForge and Fabric · Minecraft 1.21.1 · install on server and client · JEI optional
 
 ![What's new in 2.0](https://raw.githubusercontent.com/MeherBenSalem/Simple-Terminals/main/marketing/images/header-whats-new.png)
 
@@ -218,24 +218,27 @@ Magnet, Pickup, Void and Compacting upgrades.
 
 OmniVault writes one commented `config/omnivault-common.toml`. Every value lists its default and allowed range; values
 out of range are clamped and invalid ones fall back to the default with a warning. Set `requireEnergy = true` under
-`[network]` and the Nexus Core runs on Forge Energy from any mod's cables. Restart after editing.
+`[network]` and the Nexus Core runs on energy from any mod's cables: Forge Energy on NeoForge, Team Reborn Energy on
+Fabric. Restart after editing.
 
 ![Downloads](https://raw.githubusercontent.com/MeherBenSalem/Simple-Terminals/main/marketing/images/header-compatibility.png)
 
 | Minecraft | Loader | Java | Also install |
 |-----------|--------|------|--------------|
 | 1.21.1 | NeoForge 21.1.80+ | 21 | Nothing (JEI optional) |
+| 1.21.1 | Fabric Loader 0.16.14+ | 21 | Fabric API (JEI optional) |
 
-- Install OmniVault on **both the server and every client**.
-- Storage Buses, Inventory Cable, buses and Pattern Providers work with any mod that exposes NeoForge item or fluid
-  handlers.
+- Install OmniVault on **both the server and every client**. Both loaders get the same content.
+- Storage Buses, Inventory Cable, buses and Pattern Providers work with any mod's item and fluid storage: NeoForge item
+  and fluid handlers, or Fabric's Transfer API.
 - Coming from Simple Terminals? Back up your world, then replace the jar: Crafting Terminals carry over.
-- Simple Terminals' Fabric builds and its 1.20.1 and 26.2 builds are not part of 2.0 for now; the code layout is ready
-  for other loaders and versions to return.
+- Simple Terminals' 1.20.1 and 26.2 builds are not part of 2.0 for now; the code layout is ready for other versions to
+  return.
 
 ![FAQ](https://raw.githubusercontent.com/MeherBenSalem/Simple-Terminals/main/marketing/images/header-faq.png)
 
-**Do I need power?** No. Forge Energy is off by default; turn on `requireEnergy` if your pack wants it.
+**Do I need power?** No. Energy is off by default; turn on `requireEnergy` if your pack wants it (Forge Energy on
+NeoForge, Team Reborn Energy on Fabric).
 
 **Are there channels?** No. One core runs any number of devices.
 
@@ -245,8 +248,9 @@ the Leather Backpack need only vanilla materials.
 **Will big cells or full backpacks lag my server?** Cell and backpack contents are stored in the world save under their
 own IDs, not on the item, so full items never bloat inventory data or network traffic.
 
-**Does it work with my other storage and machine mods?** Anything that exposes NeoForge item or fluid handlers can be
-reached by a Storage Bus or Inventory Cable, fed by buses and driven by Pattern Providers.
+**Does it work with my other storage and machine mods?** Anything that exposes item or fluid storage (NeoForge
+handlers, Fabric's Transfer API) can be reached by a Storage Bus or Inventory Cable, fed by buses and driven by Pattern
+Providers.
 
 **Is it needed on the server and the client?** Both.
 
@@ -286,7 +290,7 @@ reached by a Storage Bus or Inventory Cable, fed by buses and driven by Pattern 
 ---
 
 Every screenshot on this page is a single unedited frame captured in game (Minecraft 1.21.1, NeoForge, default
-resources, no shaders). The feature cards combine those captures with renders of the mod's own models from the project's
+resources, no shaders); the Fabric version shows the same blocks and screens. The feature cards combine those captures with renders of the mod's own models from the project's
 offline model renderer: the cell, device, upgrade and tool lineups, the banner's cells and the Nexus Core on the icon.
 OmniVault is licensed under Apache-2.0. The Barlow Condensed and Inter fonts used in this artwork are licensed under the
 SIL Open Font License 1.1.

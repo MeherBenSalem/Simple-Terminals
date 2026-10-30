@@ -94,6 +94,8 @@ processResources {
             'description'                  : project.description,
             'neoforge_version'             : neoforge_version,
             'neoforge_loader_version_range': neoforge_loader_version_range,
+            'fabric_version'               : fabric_version,
+            'fabric_loader_version'        : fabric_loader_version,
             'credits'                      : credits,
             'java_version'                 : java_version
     ]
@@ -106,7 +108,7 @@ processResources {
         expand expandProps
     }
 
-    filesMatching(['pack.mcmeta', '*.mixins.json']) {
+    filesMatching(['pack.mcmeta', 'fabric.mod.json', '*.mixins.json']) {
         expand jsonExpandProps
     }
     inputs.properties(expandProps)

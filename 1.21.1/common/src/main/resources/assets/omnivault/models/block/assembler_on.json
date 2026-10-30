@@ -282,6 +282,7 @@
           "texture": "#strip"
         }
       },
+      "shade": false,
       "neoforge_data": {
         "block_light": 15,
         "sky_light": 15
@@ -406,6 +407,7 @@
           "texture": "#strip"
         }
       },
+      "shade": false,
       "neoforge_data": {
         "block_light": 15,
         "sky_light": 15
@@ -530,6 +532,7 @@
           "texture": "#strip"
         }
       },
+      "shade": false,
       "neoforge_data": {
         "block_light": 15,
         "sky_light": 15
@@ -654,6 +657,7 @@
           "texture": "#strip"
         }
       },
+      "shade": false,
       "neoforge_data": {
         "block_light": 15,
         "sky_light": 15
@@ -682,6 +686,7 @@
           "texture": "#emitter"
         }
       },
+      "shade": false,
       "neoforge_data": {
         "block_light": 15,
         "sky_light": 15
@@ -710,6 +715,7 @@
           "texture": "#emitter"
         }
       },
+      "shade": false,
       "neoforge_data": {
         "block_light": 15,
         "sky_light": 15
@@ -921,6 +927,7 @@
           "texture": "#crystal"
         }
       },
+      "shade": false,
       "neoforge_data": {
         "block_light": 15,
         "sky_light": 15
@@ -1279,6 +1286,7 @@
           "texture": "#crystal"
         }
       },
+      "shade": false,
       "neoforge_data": {
         "block_light": 15,
         "sky_light": 15
@@ -1361,6 +1369,7 @@
           "texture": "#crystal"
         }
       },
+      "shade": false,
       "neoforge_data": {
         "block_light": 15,
         "sky_light": 15
@@ -1443,6 +1452,7 @@
           "texture": "#crystal"
         }
       },
+      "shade": false,
       "neoforge_data": {
         "block_light": 15,
         "sky_light": 15
@@ -1525,6 +1535,7 @@
           "texture": "#crystal"
         }
       },
+      "shade": false,
       "neoforge_data": {
         "block_light": 15,
         "sky_light": 15

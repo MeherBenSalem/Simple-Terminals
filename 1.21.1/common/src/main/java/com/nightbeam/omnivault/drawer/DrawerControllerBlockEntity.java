@@ -242,6 +242,12 @@ public class DrawerControllerBlockEntity extends BlockEntity implements ModCapab
         private ControllerAccess() {
         }
 
+        @Override
+        public boolean joinsTransactions() {
+            // Our own storage: a transaction journal records its changes.
+            return false;
+        }
+
         @Nullable
         private AbstractDrawerBlockEntity drawerFor(int slot) {
             int index = slot - 1;

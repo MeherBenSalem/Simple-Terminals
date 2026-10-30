@@ -67,8 +67,9 @@ function savePublishState() {
   fs.writeFileSync(statePath, `${JSON.stringify(publishState, null, 2)}\n`);
 }
 
-// OmniVault ships NeoForge for 1.21.1 first; add targets here as ports land.
+// One Modrinth version and one CurseForge file per jar; add targets here as ports land.
 const targets = [
+  { minecraft: '1.21.1', loader: 'fabric' },
   { minecraft: '1.21.1', loader: 'neoforge' },
 ];
 
@@ -141,7 +142,8 @@ async function publishModrinth(release, existing) {
     name: modrinthVersionName(release),
     version_number: versionNumber,
     changelog,
-    dependencies: [],
+    // Fabric builds need Fabric API (Modrinth project P7dR8mSH).
+    dependencies: release.loader === 'fabric' ? [{ project_id: 'P7dR8mSH', dependency_type: 'required' }] : [],
     game_versions: [release.minecraft],
     version_type: 'release',
     loaders: [release.loader],
@@ -211,7 +213,7 @@ async function publishCurseForge(release, versions, existingFiles) {
   const metadata = {
     changelog,
     changelogType: 'markdown',
-    displayName: `Simple Terminals ${version} · ${release.loader} · ${release.minecraft}`,
+    displayName: `OmniVault ${version} · ${release.loader} · ${release.minecraft}`,
     gameVersions: [
       curseForgeVersionId(versions, release.minecraft),
       curseForgeVersionId(versions, curseForgeLoaderName(release.loader), 68441),
@@ -219,6 +221,7 @@ async function publishCurseForge(release, versions, existingFiles) {
       curseForgeVersionId(versions, 'Server', 75208),
     ],
     releaseType: 'release',
+    ...(release.loader === 'fabric' ? { relations: { projects: [{ slug: 'fabric-api', type: 'requiredDependency' }] } } : {}),
   };
   const form = new FormData();
   form.append('metadata', JSON.stringify(metadata));

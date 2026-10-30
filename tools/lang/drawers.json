@@ -34,5 +34,7 @@
   "gui.omnivault.drawer.lock_hint": "Click to toggle. Locked compartments remember their item when empty.",
   "gui.omnivault.drawer.voiding": "Voids overflow",
   "gui.omnivault.drawer.empty": "Empty compartment",
-  "gui.omnivault.drawer.count": "%s / %s"
+  "gui.omnivault.drawer.count": "%s / %s",
+
+  "tag.item.omnivault.drawers": "Drawers"
 }
