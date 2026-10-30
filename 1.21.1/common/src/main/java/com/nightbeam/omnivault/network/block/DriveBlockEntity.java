@@ -5,6 +5,11 @@ import com.nightbeam.omnivault.network.StorageNetwork;
 import com.nightbeam.omnivault.network.api.StorageProvider;
 import com.nightbeam.omnivault.network.api.TickingNode;
 import com.nightbeam.omnivault.network.cell.CellData;
+import com.nightbeam.omnivault.network.cell.CellItem;
+import com.nightbeam.omnivault.network.cell.FluidCellData;
+import com.nightbeam.omnivault.network.cell.FluidCellItem;
+import com.nightbeam.omnivault.network.cell.FluidCellStorage;
+import com.nightbeam.omnivault.storage.FluidStorage;
 import com.nightbeam.omnivault.network.cell.CellStorage;
 import com.nightbeam.omnivault.network.cell.CellUsage;
 import com.nightbeam.omnivault.network.cell.StorageCellItem;
@@ -42,7 +47,7 @@ public class DriveBlockEntity extends NetworkNodeBlockEntity implements StorageP
 
         @Override
         public boolean canPlaceItem(int slot, ItemStack stack) {
-            return stack.getItem() instanceof StorageCellItem;
+            return stack.getItem() instanceof CellItem;
         }
     };
     private int priority;
@@ -119,6 +124,21 @@ public class DriveBlockEntity extends NetworkNodeBlockEntity implements StorageP
     }
 
     @Override
+    public void collectFluidStorages(Consumer<FluidStorage> out) {
+        if (level == null || level.getServer() == null) {
+            return;
+        }
+        FluidCellData data = FluidCellData.get(level.getServer());
+        for (int slot = 0; slot < SLOTS; slot++) {
+            ItemStack stack = cells.getItem(slot);
+            if (stack.getItem() instanceof FluidCellItem cell) {
+                FluidCellData.Tank tank = data.getOrCreate(StorageCellItem.getOrCreateId(stack));
+                out.accept(new FluidCellStorage(tank, cell, priority, () -> usageDirty = true));
+            }
+        }
+    }
+
+    @Override
     public long capacity() {
         long total = 0;
         for (int slot = 0; slot < SLOTS; slot++) {
@@ -143,12 +163,19 @@ public class DriveBlockEntity extends NetworkNodeBlockEntity implements StorageP
             return;
         }
         CellData data = CellData.get(level.getServer());
+        FluidCellData fluidData = FluidCellData.get(level.getServer());
         boolean changed = false;
         for (int slot = 0; slot < SLOTS; slot++) {
             ItemStack stack = cells.getItem(slot);
+            CellUsage usage = null;
             if (stack.getItem() instanceof StorageCellItem) {
                 CellData.CellInventory inventory = data.getOrCreate(StorageCellItem.getOrCreateId(stack));
-                CellUsage usage = new CellUsage(inventory.stored(), inventory.types());
+                usage = new CellUsage(inventory.stored(), inventory.types());
+            } else if (stack.getItem() instanceof FluidCellItem) {
+                FluidCellData.Tank tank = fluidData.getOrCreate(StorageCellItem.getOrCreateId(stack));
+                usage = new CellUsage(tank.stored(), tank.types());
+            }
+            if (usage != null) {
                 if (!usage.equals(stack.get(NetworkContent.CELL_USAGE.get()))) {
                     stack.set(NetworkContent.CELL_USAGE.get(), usage);
                     changed = true;

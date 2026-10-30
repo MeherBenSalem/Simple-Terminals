@@ -3,7 +3,7 @@ package com.nightbeam.omnivault.network.menu;
 import com.nightbeam.omnivault.menu.OVMenu;
 import com.nightbeam.omnivault.network.NetworkContent;
 import com.nightbeam.omnivault.network.block.DriveBlockEntity;
-import com.nightbeam.omnivault.network.cell.StorageCellItem;
+import com.nightbeam.omnivault.network.cell.CellItem;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.world.Container;
 import net.minecraft.world.SimpleContainer;
@@ -38,7 +38,7 @@ public class DriveMenu extends OVMenu {
             addSlot(new Slot(cells, i, CELL_X + (i % 2) * 18, CELL_Y + (i / 2) * 18) {
                 @Override
                 public boolean mayPlace(ItemStack stack) {
-                    return stack.getItem() instanceof StorageCellItem;
+                    return stack.getItem() instanceof CellItem;
                 }
 
                 @Override

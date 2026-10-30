@@ -7,6 +7,7 @@ import com.nightbeam.omnivault.OmniVault;
 import com.nightbeam.omnivault.client.ClientPlatform;
 import com.nightbeam.omnivault.network.block.DriveBlockEntity;
 import com.nightbeam.omnivault.network.block.OrientedDeviceBlock;
+import com.nightbeam.omnivault.network.cell.CellItem;
 import com.nightbeam.omnivault.network.cell.StorageCellItem;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.LightTexture;
@@ -53,7 +54,7 @@ public class DriveRenderer implements BlockEntityRenderer<DriveBlockEntity> {
         pose.translate(-0.5, -0.5, -0.5);
         for (int slot = 0; slot < DriveBlockEntity.SLOTS; slot++) {
             ItemStack stack = drive.cells().getItem(slot);
-            if (!(stack.getItem() instanceof StorageCellItem item)) {
+            if (!(stack.getItem() instanceof CellItem item)) {
                 continue;
             }
             pose.pushPose();

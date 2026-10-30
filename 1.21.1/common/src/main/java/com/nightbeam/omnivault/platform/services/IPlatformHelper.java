@@ -1,5 +1,6 @@
 package com.nightbeam.omnivault.platform.services;
 
+import com.nightbeam.omnivault.storage.FluidAccess;
 import com.nightbeam.omnivault.storage.SlotAccess;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -42,6 +43,9 @@ public interface IPlatformHelper {
 
     /** Item access for a block another mod (or vanilla) owns, e.g. a chest, drawer or machine. */
     Optional<SlotAccess> findSlotAccess(Level level, BlockPos pos, @Nullable Direction side);
+
+    /** Fluid tanks of a block another mod (or vanilla, e.g. a cauldron) owns. */
+    Optional<FluidAccess> findFluidAccess(Level level, BlockPos pos, @Nullable Direction side);
 
     /** Sends a payload registered in {@code ModPackets} to the server. Client only. */
     void sendToServer(CustomPacketPayload payload);

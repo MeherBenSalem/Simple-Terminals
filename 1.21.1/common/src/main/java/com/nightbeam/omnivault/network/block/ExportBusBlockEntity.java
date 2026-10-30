@@ -4,6 +4,9 @@ import com.nightbeam.omnivault.network.NetworkContent;
 import com.nightbeam.omnivault.network.StorageNetwork;
 import com.nightbeam.omnivault.network.api.TickingNode;
 import com.nightbeam.omnivault.network.menu.BusMenu;
+import com.nightbeam.omnivault.storage.FluidAccess;
+import com.nightbeam.omnivault.storage.FluidKey;
+import com.nightbeam.omnivault.storage.FluidStorage;
 import com.nightbeam.omnivault.storage.ItemKey;
 import com.nightbeam.omnivault.storage.ItemStorage;
 import com.nightbeam.omnivault.storage.SlotAccess;
@@ -33,6 +36,7 @@ public class ExportBusBlockEntity extends BusBlockEntity implements TickingNode 
         if (gameTime % interval() != 0 || !redstoneAllows() || filter.isEmpty()) {
             return;
         }
+        exportFluids(network);
         SlotAccess target = target().orElse(null);
         if (target == null) {
             return;
@@ -60,6 +64,33 @@ public class ExportBusBlockEntity extends BusBlockEntity implements TickingNode 
             budget -= (int) placed;
         }
         nextFilterSlot = wanted.isEmpty() ? 0 : (nextFilterSlot + 1) % wanted.size();
+    }
+
+    /** Fills the tanks it faces with the fluids whose filled buckets are in the filter. */
+    private void exportFluids(StorageNetwork network) {
+        FluidAccess tanks = fluidTarget().orElse(null);
+        if (tanks == null) {
+            return;
+        }
+        FluidStorage storage = network.fluidStorage();
+        long budget = itemsPerOperation() * 125L;
+        for (int slot = 0; slot < FILTER_SLOTS && budget > 0; slot++) {
+            FluidKey key = FluidKey.fromBucket(filter.getItem(slot).getItem());
+            if (key == null) {
+                continue;
+            }
+            long available = storage.extract(key, budget, true);
+            long fits = tanks.fill(key, available, true);
+            if (fits <= 0) {
+                continue;
+            }
+            long taken = storage.extract(key, fits, false);
+            long filled = tanks.fill(key, taken, false);
+            if (filled < taken) {
+                storage.insert(key, taken - filled, false);
+            }
+            budget -= filled;
+        }
     }
 
     private List<ItemKey> wantedKeys(ItemStorage storage) {

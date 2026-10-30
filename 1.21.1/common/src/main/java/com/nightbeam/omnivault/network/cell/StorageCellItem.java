@@ -22,7 +22,7 @@ import java.util.UUID;
 import java.util.function.Supplier;
 
 /** A storage cell. Its contents live in {@link CellData} under the UUID stored on the stack. */
-public class StorageCellItem extends Item {
+public class StorageCellItem extends Item implements CellItem {
     private final CellTier tier;
     @Nullable
     private final Supplier<? extends Item> matrix;
@@ -33,8 +33,19 @@ public class StorageCellItem extends Item {
         this.matrix = matrix;
     }
 
+    @Override
     public CellTier tier() {
         return tier;
+    }
+
+    @Override
+    public long capacity() {
+        return tier.capacity;
+    }
+
+    @Override
+    public int typeLimit() {
+        return tier.isCreative() ? Integer.MAX_VALUE : NetworkConfig.CELL_TYPES.get();
     }
 
     /** The cell's id, assigning a new one the first time it is needed. */
@@ -54,14 +65,14 @@ public class StorageCellItem extends Item {
 
     /** 0 = room left, 1 = nearly full, 2 = full (by items or types). Drives show it as LED colours. */
     public static int fillState(ItemStack stack) {
-        if (!(stack.getItem() instanceof StorageCellItem cell) || cell.tier.isCreative()) {
+        if (!(stack.getItem() instanceof CellItem cell) || cell.tier().isCreative()) {
             return 0;
         }
         CellUsage usage = usage(stack);
-        if (usage.stored() >= cell.tier.capacity || usage.types() >= NetworkConfig.CELL_TYPES.get()) {
+        if (usage.stored() >= cell.capacity() || usage.types() >= cell.typeLimit()) {
             return 2;
         }
-        return usage.stored() >= cell.tier.capacity * 3 / 4 ? 1 : 0;
+        return usage.stored() >= cell.capacity() * 3 / 4 ? 1 : 0;
     }
 
     @Override

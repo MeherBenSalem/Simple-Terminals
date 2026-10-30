@@ -18,6 +18,14 @@ public final class NetworkClientHandlers {
         }
     }
 
+    public static void fluidContents(NetworkPackets.FluidContents payload) {
+        if (Minecraft.getInstance().player != null
+                && Minecraft.getInstance().player.containerMenu instanceof TerminalMenu menu
+                && menu.containerId == payload.containerId()) {
+            menu.applyFluids(payload);
+        }
+    }
+
     public static void coreStats(NetworkPackets.CoreStats payload) {
         if (Minecraft.getInstance().player != null
                 && Minecraft.getInstance().player.containerMenu instanceof CoreMenu menu

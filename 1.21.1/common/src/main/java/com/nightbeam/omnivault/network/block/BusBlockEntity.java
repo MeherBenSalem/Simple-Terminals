@@ -1,5 +1,7 @@
 package com.nightbeam.omnivault.network.block;
 
+import com.nightbeam.omnivault.storage.FluidKey;
+import com.nightbeam.omnivault.storage.FluidAccess;
 import com.nightbeam.omnivault.item.UpgradeItem;
 import com.nightbeam.omnivault.network.NetworkConfig;
 import com.nightbeam.omnivault.network.menu.BusMenu;
@@ -123,6 +125,37 @@ public abstract class BusBlockEntity extends NetworkNodeBlockEntity implements M
             return true;
         }
         return denyList != listed;
+    }
+
+    /**
+     * Whether the filter lets a fluid through. Fluids are listed as filled buckets; a filter with no
+     * buckets lets every fluid through (deny list) or none (allow list with items only).
+     */
+    public boolean passesFluid(FluidKey key) {
+        boolean anyBucket = false;
+        boolean listed = false;
+        for (int slot = 0; slot < FILTER_SLOTS; slot++) {
+            ItemStack entry = filter.getItem(slot);
+            FluidKey listedFluid = FluidKey.fromBucket(entry.getItem());
+            if (listedFluid != null) {
+                anyBucket = true;
+                if (listedFluid.equals(key)) {
+                    listed = true;
+                }
+            }
+        }
+        if (!anyBucket) {
+            return filter.isEmpty() || denyList;
+        }
+        return denyList != listed;
+    }
+
+    protected Optional<FluidAccess> fluidTarget() {
+        if (level == null) {
+            return Optional.empty();
+        }
+        Direction facing = facing();
+        return Services.PLATFORM.findFluidAccess(level, worldPosition.relative(facing), facing.getOpposite());
     }
 
     public Direction facing() {

@@ -13,6 +13,8 @@ public final class NetworkConfig {
             "FE per tick used by the Nexus Core itself");
     public static final OVConfig.Value<Integer> CELL_TYPES = OVConfig.integer("cells", "typeLimit", 128, 1, 1_000_000,
             "Different item types one storage cell can hold");
+    public static final OVConfig.Value<Integer> FLUID_CELL_TYPES = OVConfig.integer("cells", "fluidTypeLimit", 32, 1, 1_000_000,
+            "Different fluids one fluid cell can hold");
     public static final OVConfig.Value<Integer> CORE_RANGE = OVConfig.integer("wireless", "coreRange", 32, 0, 1_000_000,
             "Blocks a wireless terminal reaches from the Nexus Core itself");
     public static final OVConfig.Value<Integer> TRANSMITTER_RANGE = OVConfig.integer("wireless", "transmitterRange", 64, 1, 1_000_000,

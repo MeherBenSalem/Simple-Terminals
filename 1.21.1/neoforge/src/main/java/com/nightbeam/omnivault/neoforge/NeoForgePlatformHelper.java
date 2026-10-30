@@ -1,6 +1,7 @@
 package com.nightbeam.omnivault.neoforge;
 
 import com.nightbeam.omnivault.platform.services.IPlatformHelper;
+import com.nightbeam.omnivault.storage.FluidAccess;
 import com.nightbeam.omnivault.storage.SlotAccess;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -20,6 +21,7 @@ import net.neoforged.fml.loading.FMLLoader;
 import net.neoforged.fml.loading.FMLPaths;
 import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.common.extensions.IMenuTypeExtension;
+import net.neoforged.neoforge.fluids.capability.IFluidHandler;
 import net.neoforged.neoforge.items.IItemHandler;
 import net.neoforged.neoforge.network.PacketDistributor;
 import org.jetbrains.annotations.Nullable;
@@ -82,6 +84,21 @@ public class NeoForgePlatformHelper implements IPlatformHelper {
             return Optional.of(ours.access());
         }
         return Optional.of(new ItemHandlerSlotAccess(handler));
+    }
+
+    @Override
+    public Optional<FluidAccess> findFluidAccess(Level level, BlockPos pos, @Nullable Direction side) {
+        IFluidHandler handler = level.getCapability(Capabilities.FluidHandler.BLOCK, pos, side);
+        if (handler == null && side != null) {
+            handler = level.getCapability(Capabilities.FluidHandler.BLOCK, pos, null);
+        }
+        if (handler == null || handler.getTanks() <= 0) {
+            return Optional.empty();
+        }
+        if (handler instanceof FluidAccessHandler ours) {
+            return Optional.of(ours.access());
+        }
+        return Optional.of(new FluidHandlerAccess(handler));
     }
 
     @Override

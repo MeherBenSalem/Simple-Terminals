@@ -1,5 +1,6 @@
 package com.nightbeam.omnivault.registry;
 
+import com.nightbeam.omnivault.storage.FluidAccess;
 import com.nightbeam.omnivault.storage.SlotAccess;
 import net.minecraft.core.Direction;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -18,6 +19,7 @@ import java.util.function.Supplier;
 public final class ModCapabilities {
     private static final List<Supplier<? extends BlockEntityType<? extends ItemProvider>>> ITEMS = new ArrayList<>();
     private static final List<Supplier<? extends BlockEntityType<? extends EnergyProvider>>> ENERGY = new ArrayList<>();
+    private static final List<Supplier<? extends BlockEntityType<? extends FluidProvider>>> FLUIDS = new ArrayList<>();
 
     private ModCapabilities() {
     }
@@ -28,6 +30,14 @@ public final class ModCapabilities {
 
     public static void exposeEnergy(Supplier<? extends BlockEntityType<? extends EnergyProvider>> type) {
         ENERGY.add(type);
+    }
+
+    public static void exposeFluids(Supplier<? extends BlockEntityType<? extends FluidProvider>> type) {
+        FLUIDS.add(type);
+    }
+
+    public static List<Supplier<? extends BlockEntityType<? extends FluidProvider>>> fluidProviders() {
+        return Collections.unmodifiableList(FLUIDS);
     }
 
     public static List<Supplier<? extends BlockEntityType<? extends ItemProvider>>> itemProviders() {
@@ -42,6 +52,12 @@ public final class ModCapabilities {
         /** @return the inventory seen from {@code side} ({@code null} = internal), or null for none. */
         @Nullable
         SlotAccess getSlotAccess(@Nullable Direction side);
+    }
+
+    public interface FluidProvider {
+        /** @return the tanks seen from {@code side}, or null for none. */
+        @Nullable
+        FluidAccess getFluidAccess(@Nullable Direction side);
     }
 
     /** Forge-Energy-style buffer, in FE. */

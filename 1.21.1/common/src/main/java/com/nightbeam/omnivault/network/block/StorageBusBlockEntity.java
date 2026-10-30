@@ -1,5 +1,10 @@
 package com.nightbeam.omnivault.network.block;
 
+import net.minecraft.core.Direction;
+import com.nightbeam.omnivault.storage.FluidStorage;
+import com.nightbeam.omnivault.storage.FluidKey;
+import com.nightbeam.omnivault.storage.FluidAccessStorage;
+import com.nightbeam.omnivault.platform.Services;
 import com.nightbeam.omnivault.item.UpgradeItem;
 import com.nightbeam.omnivault.network.NetworkContent;
 import com.nightbeam.omnivault.network.StorageNetwork;
@@ -104,6 +109,50 @@ public class StorageBusBlockEntity extends BusBlockEntity implements StorageProv
         super.loadAdditional(tag, registries);
         priority = tag.getInt("priority");
         access = Access.values()[Math.floorMod(tag.getInt("access"), Access.values().length)];
+    }
+
+    @Override
+    public void collectFluidStorages(Consumer<FluidStorage> out) {
+        if (level == null) {
+            return;
+        }
+        if (level.getBlockEntity(worldPosition.relative(facing())) instanceof NetworkNode node && node.getNetwork() == getNetwork()) {
+            return;
+        }
+        Direction facing = facing();
+        Services.PLATFORM.findFluidAccess(level, worldPosition.relative(facing), facing.getOpposite())
+                .ifPresent(access -> out.accept(new FilteredFluids(new FluidAccessStorage(access))));
+    }
+
+    /** Tanks behind the bus. Filled buckets in the filter list fluids for the allow/deny list. */
+    private final class FilteredFluids implements FluidStorage {
+        private final FluidStorage inner;
+
+        FilteredFluids(FluidStorage inner) {
+            this.inner = inner;
+        }
+
+        @Override
+        public long insert(FluidKey key, long amount, boolean simulate) {
+            return access != Access.EXTRACT_ONLY && passesFluid(key) ? inner.insert(key, amount, simulate) : 0;
+        }
+
+        @Override
+        public long extract(FluidKey key, long amount, boolean simulate) {
+            return access != Access.INSERT_ONLY ? inner.extract(key, amount, simulate) : 0;
+        }
+
+        @Override
+        public void forEach(ObjLongConsumer<FluidKey> consumer) {
+            if (access != Access.INSERT_ONLY) {
+                inner.forEach(consumer);
+            }
+        }
+
+        @Override
+        public int priority() {
+            return priority;
+        }
     }
 
     /** The target inventory with this bus's filter, priority and access mode applied. */

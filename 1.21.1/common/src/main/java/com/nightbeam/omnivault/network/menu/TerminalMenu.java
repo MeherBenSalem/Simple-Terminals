@@ -6,6 +6,7 @@ import com.nightbeam.omnivault.network.NetworkPackets;
 import com.nightbeam.omnivault.network.StorageNetwork;
 import com.nightbeam.omnivault.network.api.CraftingHooks;
 import com.nightbeam.omnivault.platform.Services;
+import com.nightbeam.omnivault.storage.FluidKey;
 import com.nightbeam.omnivault.storage.ItemKey;
 import com.nightbeam.omnivault.storage.ItemStorage;
 import net.minecraft.network.RegistryFriendlyByteBuf;
@@ -15,6 +16,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
@@ -56,7 +58,12 @@ public class TerminalMenu extends OVMenu {
     private boolean sentOnce;
     private int ticks;
 
+    private final Map<FluidKey, Long> sentFluids = new HashMap<>();
+    private long sentFluidCounter = Long.MIN_VALUE;
+    private boolean sentFluidsOnce;
+
     // Client side.
+    private final Map<FluidKey, Long> clientFluids = new LinkedHashMap<>();
     private final Map<ItemKey, ClientEntry> clientEntries = new LinkedHashMap<>();
     private boolean clientOnline;
     private int clientVersion;
@@ -119,6 +126,7 @@ public class TerminalMenu extends OVMenu {
         super.broadcastChanges();
         if (player instanceof ServerPlayer serverPlayer && (!sentOnce || ++ticks % SYNC_INTERVAL == 0)) {
             sync(serverPlayer);
+            syncFluids(serverPlayer);
         }
     }
 
@@ -163,6 +171,72 @@ public class TerminalMenu extends OVMenu {
         for (int from = 0; from < Math.max(1, changes.size()); from += MAX_ENTRIES_PER_PACKET) {
             List<NetworkPackets.GridEntry> part = changes.subList(from, Math.min(changes.size(), from + MAX_ENTRIES_PER_PACKET));
             Services.PLATFORM.sendToPlayer(serverPlayer, new NetworkPackets.GridContents(containerId, reset && from == 0, online, List.copyOf(part)));
+        }
+    }
+
+    private void syncFluids(ServerPlayer serverPlayer) {
+        StorageNetwork network = network();
+        long counter = network == null ? -1 : network.fluidChangeCounter();
+        if (sentFluidsOnce && counter == sentFluidCounter) {
+            return;
+        }
+        Map<FluidKey, Long> now = new HashMap<>();
+        if (network != null) {
+            network.fluidStorage().forEach(now::put);
+        }
+        Map<FluidKey, Long> changes = new HashMap<>();
+        now.forEach((key, amount) -> {
+            if (!amount.equals(sentFluids.get(key))) {
+                changes.put(key, amount);
+            }
+        });
+        sentFluids.keySet().forEach(key -> {
+            if (!now.containsKey(key)) {
+                changes.put(key, 0L);
+            }
+        });
+        boolean reset = !sentFluidsOnce;
+        sentFluidCounter = counter;
+        sentFluidsOnce = true;
+        sentFluids.clear();
+        sentFluids.putAll(now);
+        if (reset || !changes.isEmpty()) {
+            Services.PLATFORM.sendToPlayer(serverPlayer, new NetworkPackets.FluidContents(containerId, reset, changes));
+        }
+    }
+
+    /**
+     * Fluid view click: with {@code fill} set, fills one carried empty bucket with that fluid;
+     * without it, empties the carried filled bucket into the network.
+     */
+    public void handleFluidClick(ServerPlayer player, @Nullable FluidKey fill) {
+        StorageNetwork network = network();
+        ItemStack carried = getCarried();
+        if (network == null || !network.isActive() || !stillValid(player) || carried.isEmpty()) {
+            return;
+        }
+        ItemStack result;
+        if (fill != null) {
+            if (!carried.is(Items.BUCKET) || fill.fluid().getBucket() == Items.AIR
+                    || network.fluidStorage().extract(fill, FluidKey.BUCKET, true) < FluidKey.BUCKET) {
+                return;
+            }
+            network.fluidStorage().extract(fill, FluidKey.BUCKET, false);
+            result = new ItemStack(fill.fluid().getBucket());
+        } else {
+            FluidKey held = FluidKey.fromBucket(carried.getItem());
+            if (held == null || network.fluidStorage().insert(held, FluidKey.BUCKET, true) < FluidKey.BUCKET) {
+                return;
+            }
+            network.fluidStorage().insert(held, FluidKey.BUCKET, false);
+            result = new ItemStack(Items.BUCKET);
+        }
+        carried.shrink(1);
+        if (carried.isEmpty()) {
+            setCarried(result);
+        } else {
+            setCarried(carried);
+            player.getInventory().placeItemBackInInventory(result);
         }
     }
 
@@ -255,6 +329,24 @@ public class TerminalMenu extends OVMenu {
             }
         }
         clientVersion++;
+    }
+
+    public void applyFluids(NetworkPackets.FluidContents payload) {
+        if (payload.reset()) {
+            clientFluids.clear();
+        }
+        payload.fluids().forEach((key, amount) -> {
+            if (amount <= 0) {
+                clientFluids.remove(key);
+            } else {
+                clientFluids.put(key, amount);
+            }
+        });
+        clientVersion++;
+    }
+
+    public Map<FluidKey, Long> clientFluids() {
+        return clientFluids;
     }
 
     public Map<ItemKey, ClientEntry> clientEntries() {

@@ -304,4 +304,78 @@ public class NetworkGameTests {
             helper.succeed();
         });
     }
+
+    private static DriveBlockEntity driveWithFluidCell(GameTestHelper helper, BlockPos pos, CellTier tier) {
+        DriveBlockEntity drive = driveWithCell(helper, pos, CellTier.T4K);
+        drive.cells().setItem(0, new ItemStack(NetworkContent.FLUID_CELLS.get(tier).get()));
+        return drive;
+    }
+
+    @GameTest(template = "floor_9x9")
+    public static void fluidCellsStoreFluids(GameTestHelper helper) {
+        spine(helper);
+        driveWithFluidCell(helper, new BlockPos(3, 1, 5), CellTier.T4K);
+        helper.runAfterDelay(5, () -> {
+            var fluids = network(helper).fluidStorage();
+            var water = com.nightbeam.omnivault.storage.FluidKey.of(net.minecraft.world.level.material.Fluids.WATER);
+            helper.assertTrue(fluids.insert(water, 2_000_000, false) == 1_024_000, "a 4k fluid cell holds 1024 buckets");
+            helper.assertTrue(fluids.extract(water, 24_000, false) == 24_000, "fluid comes back out");
+            helper.assertTrue(fluids.getAmount(water) == 1_000_000, "remaining amount is tracked");
+            helper.succeed();
+        });
+    }
+
+    @GameTest(template = "floor_9x9")
+    public static void importBusDrainsCauldron(GameTestHelper helper) {
+        spine(helper);
+        driveWithFluidCell(helper, new BlockPos(3, 1, 5), CellTier.T4K);
+        facing(helper, new BlockPos(5, 1, 5), NetworkContent.IMPORT_BUS.get(), Direction.SOUTH);
+        helper.setBlock(new BlockPos(5, 1, 6), Blocks.WATER_CAULDRON.defaultBlockState().setValue(net.minecraft.world.level.block.LayeredCauldronBlock.LEVEL, 3));
+        var water = com.nightbeam.omnivault.storage.FluidKey.of(net.minecraft.world.level.material.Fluids.WATER);
+        helper.succeedWhen(() -> {
+            helper.assertBlockPresent(Blocks.CAULDRON, new BlockPos(5, 1, 6));
+            helper.assertTrue(network(helper).fluidStorage().getAmount(water) == 1000, "a bucket of water reached the network");
+        });
+    }
+
+    @GameTest(template = "floor_9x9")
+    public static void networkPortExposesFluids(GameTestHelper helper) {
+        spine(helper);
+        driveWithFluidCell(helper, new BlockPos(3, 1, 5), CellTier.T4K);
+        helper.setBlock(new BlockPos(6, 1, 5), NetworkContent.NETWORK_PORT.get());
+        helper.runAfterDelay(5, () -> {
+            var tanks = Services.PLATFORM.findFluidAccess(helper.getLevel(), helper.absolutePos(new BlockPos(6, 1, 5)), Direction.UP).orElseThrow();
+            var lava = com.nightbeam.omnivault.storage.FluidKey.of(net.minecraft.world.level.material.Fluids.LAVA);
+            helper.assertTrue(tanks.fill(lava, 3000, false) == 3000, "port accepts fluid");
+            helper.assertTrue(network(helper).fluidStorage().getAmount(lava) == 3000, "fluid lands in the network");
+            helper.assertTrue(tanks.drain(lava, 1000, false) == 1000, "port hands fluid out");
+            helper.succeed();
+        });
+    }
+
+    @GameTest(template = "floor_9x9")
+    public static void terminalFillsAndEmptiesBuckets(GameTestHelper helper) {
+        spine(helper);
+        driveWithFluidCell(helper, new BlockPos(3, 1, 5), CellTier.T4K);
+        helper.setBlock(new BlockPos(5, 1, 5), NetworkContent.TERMINAL.get().defaultBlockState().setValue(OrientedDeviceBlock.FACING, Direction.SOUTH));
+        helper.runAfterDelay(5, () -> {
+            var water = com.nightbeam.omnivault.storage.FluidKey.of(net.minecraft.world.level.material.Fluids.WATER);
+            network(helper).fluidStorage().insert(water, 5000, false);
+            net.minecraft.server.level.ServerPlayer player = helper.makeMockServerPlayerInLevel();
+            // Menus only accept clicks from players within reach of the terminal.
+            var standAt = helper.absoluteVec(new net.minecraft.world.phys.Vec3(5.5, 1, 6.5));
+            player.moveTo(standAt.x, standAt.y, standAt.z);
+            var terminal = (com.nightbeam.omnivault.network.block.TerminalBlockEntity) helper.getBlockEntity(new BlockPos(5, 1, 5));
+            var menu = new com.nightbeam.omnivault.network.menu.TerminalMenu(NetworkContent.TERMINAL_MENU.get(), 1, player.getInventory(), terminal);
+            player.containerMenu = menu;
+            menu.setCarried(new ItemStack(Items.BUCKET));
+            menu.handleFluidClick(player, water);
+            helper.assertTrue(menu.getCarried().is(Items.WATER_BUCKET), "empty bucket was filled");
+            helper.assertTrue(network(helper).fluidStorage().getAmount(water) == 4000, "a bucket left the network");
+            menu.handleFluidClick(player, null);
+            helper.assertTrue(menu.getCarried().is(Items.BUCKET), "full bucket was emptied");
+            helper.assertTrue(network(helper).fluidStorage().getAmount(water) == 5000, "the bucket came back");
+            helper.succeed();
+        });
+    }
 }

@@ -4,6 +4,9 @@ import com.nightbeam.omnivault.network.NetworkContent;
 import com.nightbeam.omnivault.network.StorageNetwork;
 import com.nightbeam.omnivault.network.api.TickingNode;
 import com.nightbeam.omnivault.network.menu.BusMenu;
+import com.nightbeam.omnivault.storage.FluidAccess;
+import com.nightbeam.omnivault.storage.FluidKey;
+import com.nightbeam.omnivault.storage.FluidStorage;
 import com.nightbeam.omnivault.storage.ItemKey;
 import com.nightbeam.omnivault.storage.ItemStorage;
 import com.nightbeam.omnivault.storage.SlotAccess;
@@ -27,6 +30,7 @@ public class ImportBusBlockEntity extends BusBlockEntity implements TickingNode 
         if (gameTime % interval() != 0 || !redstoneAllows()) {
             return;
         }
+        importFluids(network);
         SlotAccess target = target().orElse(null);
         if (target == null) {
             return;
@@ -54,6 +58,33 @@ public class ImportBusBlockEntity extends BusBlockEntity implements TickingNode 
                 target.insertItem(slot, extracted.copyWithCount((int) (extracted.getCount() - inserted)), false);
             }
             budget -= (int) inserted;
+        }
+    }
+
+    /** Drains passing fluids from the tanks it faces, an eighth of a bucket per item of budget. */
+    private void importFluids(StorageNetwork network) {
+        FluidAccess tanks = fluidTarget().orElse(null);
+        if (tanks == null) {
+            return;
+        }
+        FluidStorage storage = network.fluidStorage();
+        long budget = itemsPerOperation() * 125L;
+        for (int tank = 0; tank < tanks.getTanks() && budget > 0; tank++) {
+            FluidKey key = tanks.getFluid(tank);
+            if (key == null || !passesFluid(key)) {
+                continue;
+            }
+            long available = tanks.drain(key, Math.min(budget, tanks.getAmount(tank)), true);
+            long accepted = storage.insert(key, available, true);
+            if (accepted <= 0) {
+                continue;
+            }
+            long drained = tanks.drain(key, accepted, false);
+            long inserted = storage.insert(key, drained, false);
+            if (inserted < drained) {
+                tanks.fill(key, drained - inserted, false);
+            }
+            budget -= inserted;
         }
     }
 }

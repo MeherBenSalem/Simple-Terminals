@@ -5,6 +5,7 @@ import com.nightbeam.omnivault.OmniVaultCommon;
 import com.nightbeam.omnivault.network.client.NetworkClientHandlers;
 import com.nightbeam.omnivault.network.item.WirelessTerminalItem;
 import com.nightbeam.omnivault.network.menu.TerminalMenu;
+import com.nightbeam.omnivault.storage.FluidKey;
 import com.nightbeam.omnivault.storage.ItemKey;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
@@ -37,6 +38,35 @@ public final class NetworkPackets {
                 ByteBufCodecs.BOOL, GridContents::online,
                 GridEntry.CODEC.apply(ByteBufCodecs.list()), GridContents::entries,
                 GridContents::new);
+
+        @Override
+        public Type<? extends CustomPacketPayload> type() {
+            return TYPE;
+        }
+    }
+
+    /** Server → client: the network's fluids (millibuckets); amount 0 removes an entry. */
+    public record FluidContents(int containerId, boolean reset, Map<FluidKey, Long> fluids) implements CustomPacketPayload {
+        public static final Type<FluidContents> TYPE = new Type<>(OmniVault.id("fluid_contents"));
+        public static final StreamCodec<RegistryFriendlyByteBuf, FluidContents> CODEC = StreamCodec.composite(
+                ByteBufCodecs.VAR_INT, FluidContents::containerId,
+                ByteBufCodecs.BOOL, FluidContents::reset,
+                ByteBufCodecs.map(java.util.HashMap::new, FluidKey.STREAM_CODEC, ByteBufCodecs.VAR_LONG), FluidContents::fluids,
+                FluidContents::new);
+
+        @Override
+        public Type<? extends CustomPacketPayload> type() {
+            return TYPE;
+        }
+    }
+
+    /** Client → server: fill the carried empty bucket with a fluid, or empty the carried bucket (key absent). */
+    public record FluidClick(int containerId, java.util.Optional<FluidKey> fill) implements CustomPacketPayload {
+        public static final Type<FluidClick> TYPE = new Type<>(OmniVault.id("fluid_click"));
+        public static final StreamCodec<RegistryFriendlyByteBuf, FluidClick> CODEC = StreamCodec.composite(
+                ByteBufCodecs.VAR_INT, FluidClick::containerId,
+                ByteBufCodecs.optional(FluidKey.STREAM_CODEC), FluidClick::fill,
+                FluidClick::new);
 
         @Override
         public Type<? extends CustomPacketPayload> type() {
@@ -134,6 +164,12 @@ public final class NetworkPackets {
     public static void init() {
         OmniVaultCommon.packets(registrar -> {
             registrar.toClient(GridContents.TYPE, GridContents.CODEC, payload -> NetworkClientHandlers.gridContents(payload));
+            registrar.toClient(FluidContents.TYPE, FluidContents.CODEC, payload -> NetworkClientHandlers.fluidContents(payload));
+            registrar.toServer(FluidClick.TYPE, FluidClick.CODEC, (payload, player) -> {
+                if (player.containerMenu instanceof TerminalMenu menu && menu.containerId == payload.containerId()) {
+                    menu.handleFluidClick(player, payload.fill().orElse(null));
+                }
+            });
             registrar.toClient(CoreStats.TYPE, CoreStats.CODEC, payload -> NetworkClientHandlers.coreStats(payload));
             registrar.toServer(GridClick.TYPE, GridClick.CODEC, (payload, player) -> {
                 if (player.containerMenu instanceof TerminalMenu menu && menu.containerId == payload.containerId()) {

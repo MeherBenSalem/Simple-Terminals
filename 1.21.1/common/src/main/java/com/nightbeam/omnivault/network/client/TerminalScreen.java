@@ -5,6 +5,7 @@ import com.nightbeam.omnivault.client.gui.OVButton;
 import com.nightbeam.omnivault.network.NetworkPackets;
 import com.nightbeam.omnivault.network.menu.TerminalMenu;
 import com.nightbeam.omnivault.platform.Services;
+import com.nightbeam.omnivault.storage.FluidKey;
 import com.nightbeam.omnivault.storage.ItemKey;
 import com.nightbeam.omnivault.util.Formatting;
 import com.nightbeam.omnivault.util.InventorySorting;
@@ -18,12 +19,15 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import org.lwjgl.glfw.GLFW;
 
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
+import java.util.Optional;
 
 /**
  * The network grid: search ("@mod", "#tag" and plain words, all combined), sort by name, count,
@@ -37,9 +41,11 @@ public class TerminalScreen<T extends TerminalMenu> extends AbstractContainerScr
     private static boolean descending = true;
     private static ViewMode viewMode = ViewMode.ALL;
     private static String lastSearch = "";
+    private static boolean fluidMode;
 
     private EditBox search;
     private final List<TerminalMenu.ClientEntry> view = new ArrayList<>();
+    private final List<Map.Entry<FluidKey, Long>> fluidView = new ArrayList<>();
     private int seenVersion = -1;
     private String seenSearch = null;
     private int scrollRow;
@@ -86,6 +92,13 @@ public class TerminalScreen<T extends TerminalMenu> extends AbstractContainerScr
                     seenVersion = -1;
                     scrollRow = 0;
                 }));
+        addRenderableWidget(new OVButton(bx, by + 64, 18, 18, () -> Component.literal(fluidMode ? "\u2248" : "\u25A3"),
+                () -> Component.translatable(fluidMode ? "gui.omnivault.terminal.mode.fluids" : "gui.omnivault.terminal.mode.items"),
+                () -> {
+                    fluidMode = !fluidMode;
+                    seenVersion = -1;
+                    scrollRow = 0;
+                }));
     }
 
     // -- view ------------------------------------------------------------------------------------
@@ -98,6 +111,23 @@ public class TerminalScreen<T extends TerminalMenu> extends AbstractContainerScr
         seenSearch = search.getValue();
         view.clear();
         String[] terms = seenSearch.toLowerCase(Locale.ROOT).trim().split("\\s+");
+        fluidView.clear();
+        for (Map.Entry<FluidKey, Long> fluid : menu.clientFluids().entrySet()) {
+            String name = fluidName(fluid.getKey()).getString().toLowerCase(Locale.ROOT);
+            boolean ok = true;
+            for (String term : terms) {
+                if (!term.isEmpty() && !name.contains(term) && !fluid.getKey().id().toString().contains(term)) {
+                    ok = false;
+                }
+            }
+            if (ok) {
+                fluidView.add(Map.entry(fluid.getKey(), fluid.getValue()));
+            }
+        }
+        Comparator<Map.Entry<FluidKey, Long>> fluidOrder = sortMode == SortMode.COUNT
+                ? Map.Entry.comparingByValue()
+                : Comparator.comparing(e -> fluidName(e.getKey()).getString());
+        fluidView.sort(descending ? fluidOrder.reversed() : fluidOrder);
         for (TerminalMenu.ClientEntry entry : menu.clientEntries().values()) {
             if (viewMode == ViewMode.STORED && entry.count() <= 0 || viewMode == ViewMode.CRAFTABLE && !entry.craftable()) {
                 continue;
@@ -143,12 +173,25 @@ public class TerminalScreen<T extends TerminalMenu> extends AbstractContainerScr
         return true;
     }
 
+    public static Component fluidName(FluidKey key) {
+        var block = key.fluid().defaultFluidState().createLegacyBlock();
+        return block.isAir() ? key.icon().getHoverName() : block.getBlock().getName();
+    }
+
+    private static String bucketText(long millibuckets) {
+        return millibuckets < FluidKey.BUCKET ? millibuckets + "mB" : Formatting.compact(millibuckets / FluidKey.BUCKET) + "B";
+    }
+
+    private int viewSize() {
+        return fluidMode ? fluidView.size() : view.size();
+    }
+
     private static String modName(String namespace) {
         return namespace.replace('_', ' ');
     }
 
     private int totalRows() {
-        return (view.size() + TerminalMenu.COLUMNS - 1) / TerminalMenu.COLUMNS;
+        return (viewSize() + TerminalMenu.COLUMNS - 1) / TerminalMenu.COLUMNS;
     }
 
     private int maxScroll() {
@@ -162,7 +205,17 @@ public class TerminalScreen<T extends TerminalMenu> extends AbstractContainerScr
             return null;
         }
         int index = (scrollRow + row) * TerminalMenu.COLUMNS + column;
-        return index < view.size() ? view.get(index) : null;
+        return !fluidMode && index < view.size() ? view.get(index) : null;
+    }
+
+    private Map.Entry<FluidKey, Long> fluidAt(double mouseX, double mouseY) {
+        int column = (int) Math.floor((mouseX - leftPos - TerminalMenu.GRID_X) / 18);
+        int row = (int) Math.floor((mouseY - topPos - TerminalMenu.GRID_Y) / 18);
+        if (!fluidMode || column < 0 || column >= TerminalMenu.COLUMNS || row < 0 || row >= menu.rows()) {
+            return null;
+        }
+        int index = (scrollRow + row) * TerminalMenu.COLUMNS + column;
+        return index < fluidView.size() ? fluidView.get(index) : null;
     }
 
     private boolean overGrid(double mouseX, double mouseY) {
@@ -181,7 +234,12 @@ public class TerminalScreen<T extends TerminalMenu> extends AbstractContainerScr
             graphics.drawString(font, Component.translatable("gui.omnivault.terminal.search_hint"), leftPos + 92, topPos + 6, GuiStyle.TEXT_DIM, false);
         }
         TerminalMenu.ClientEntry hovered = entryAt(mouseX, mouseY);
-        if (hovered != null && menu.getCarried().isEmpty()) {
+        Map.Entry<FluidKey, Long> hoveredFluid = fluidAt(mouseX, mouseY);
+        if (hoveredFluid != null) {
+            graphics.renderComponentTooltip(font, List.of(fluidName(hoveredFluid.getKey()),
+                    Component.translatable("gui.omnivault.terminal.fluid_amount", Formatting.full(hoveredFluid.getValue())).withStyle(ChatFormatting.AQUA),
+                    Component.translatable("gui.omnivault.terminal.fluid_hint").withStyle(ChatFormatting.GRAY)), mouseX, mouseY);
+        } else if (hovered != null && menu.getCarried().isEmpty()) {
             List<Component> lines = new ArrayList<>(Screen.getTooltipFromItem(minecraft, hovered.key().view()));
             lines.add(Component.translatable("gui.omnivault.terminal.stored", Formatting.full(hovered.count())).withStyle(ChatFormatting.AQUA));
             if (hovered.craftable()) {
@@ -211,7 +269,18 @@ public class TerminalScreen<T extends TerminalMenu> extends AbstractContainerScr
 
     private void renderGrid(GuiGraphics graphics, int mouseX, int mouseY) {
         int start = scrollRow * TerminalMenu.COLUMNS;
-        for (int i = 0; i < menu.rows() * TerminalMenu.COLUMNS; i++) {
+        for (int i = 0; fluidMode && i < menu.rows() * TerminalMenu.COLUMNS; i++) {
+            int index = start + i;
+            if (index >= fluidView.size()) {
+                break;
+            }
+            Map.Entry<FluidKey, Long> fluid = fluidView.get(index);
+            int x = leftPos + TerminalMenu.GRID_X + (i % TerminalMenu.COLUMNS) * 18;
+            int y = topPos + TerminalMenu.GRID_Y + (i / TerminalMenu.COLUMNS) * 18;
+            graphics.renderItem(fluid.getKey().icon(), x, y);
+            GuiStyle.smallCount(graphics, font, bucketText(fluid.getValue()), x - 1, y - 1);
+        }
+        for (int i = 0; !fluidMode && i < menu.rows() * TerminalMenu.COLUMNS; i++) {
             int index = start + i;
             if (index >= view.size()) {
                 break;
@@ -250,7 +319,8 @@ public class TerminalScreen<T extends TerminalMenu> extends AbstractContainerScr
     protected void renderLabels(GuiGraphics graphics, int mouseX, int mouseY) {
         GuiStyle.title(graphics, font, title, 8, 6);
         GuiStyle.labelDim(graphics, font, playerInventoryTitle, 8, inventoryLabelY);
-        Component summary = Component.translatable("gui.omnivault.terminal.summary", Formatting.compact(view.size()));
+        Component summary = Component.translatable(fluidMode ? "gui.omnivault.terminal.fluid_summary" : "gui.omnivault.terminal.summary",
+                Formatting.compact(viewSize()));
         graphics.drawString(font, summary, imageWidth - 8 - font.width(summary), inventoryLabelY, GuiStyle.TEXT_DIM, false);
     }
 
@@ -262,6 +332,16 @@ public class TerminalScreen<T extends TerminalMenu> extends AbstractContainerScr
                 && mouseY >= topPos + TerminalMenu.GRID_Y && mouseY < topPos + menu.gridBottom()) {
             draggingScrollbar = true;
             scrollTo(mouseY);
+            return true;
+        }
+        if (overGrid(mouseX, mouseY) && menu.clientOnline() && fluidMode) {
+            ItemStack carried = menu.getCarried();
+            Map.Entry<FluidKey, Long> fluid = fluidAt(mouseX, mouseY);
+            if (FluidKey.fromBucket(carried.getItem()) != null) {
+                Services.PLATFORM.sendToServer(new NetworkPackets.FluidClick(menu.containerId, Optional.empty()));
+            } else if (carried.is(Items.BUCKET) && fluid != null) {
+                Services.PLATFORM.sendToServer(new NetworkPackets.FluidClick(menu.containerId, Optional.of(fluid.getKey())));
+            }
             return true;
         }
         if (overGrid(mouseX, mouseY) && menu.clientOnline()) {

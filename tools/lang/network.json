@@ -76,5 +76,12 @@
   "gui.omnivault.core.energy": "Energy %s / %s FE · uses %s FE/t",
   "gui.omnivault.jei.missing": "Missing from the network and your inventory",
   "key.omnivault.open_wireless": "Open Wireless Terminal",
-  "key.categories.omnivault": "OmniVault"
+  "key.categories.omnivault": "OmniVault",
+  "tooltip.omnivault.fluid_cell.buckets": "%s / %s buckets",
+  "tooltip.omnivault.fluid_cell.buckets_unbounded": "%s buckets",
+  "gui.omnivault.terminal.mode.items": "Showing items (click for fluids)",
+  "gui.omnivault.terminal.mode.fluids": "Showing fluids (click for items)",
+  "gui.omnivault.terminal.fluid_amount": "%s mB",
+  "gui.omnivault.terminal.fluid_hint": "Click with an empty bucket to fill it; click with a full bucket to empty it",
+  "gui.omnivault.terminal.fluid_summary": "%s fluids"
 }

@@ -3,6 +3,8 @@ package com.nightbeam.omnivault.network.block;
 import com.nightbeam.omnivault.network.NetworkContent;
 import com.nightbeam.omnivault.network.StorageNetwork;
 import com.nightbeam.omnivault.registry.ModCapabilities;
+import com.nightbeam.omnivault.storage.FluidAccess;
+import com.nightbeam.omnivault.storage.FluidKey;
 import com.nightbeam.omnivault.storage.ItemKey;
 import com.nightbeam.omnivault.storage.SlotAccess;
 import net.minecraft.core.BlockPos;
@@ -18,8 +20,9 @@ import java.util.List;
  * Exposes the whole network as an ordinary inventory: hoppers, pipes and machines from any mod
  * can insert into it, and pull from it, one slot per stored item type plus one empty slot.
  */
-public class NetworkPortBlockEntity extends NetworkNodeBlockEntity implements ModCapabilities.ItemProvider {
+public class NetworkPortBlockEntity extends NetworkNodeBlockEntity implements ModCapabilities.ItemProvider, ModCapabilities.FluidProvider {
     private final NetworkSlots slots = new NetworkSlots();
+    private final NetworkTanks tanks = new NetworkTanks();
 
     public NetworkPortBlockEntity(BlockPos pos, BlockState state) {
         super(NetworkContent.NETWORK_PORT_BE.get(), pos, state);
@@ -34,6 +37,67 @@ public class NetworkPortBlockEntity extends NetworkNodeBlockEntity implements Mo
     @Override
     public SlotAccess getSlotAccess(@Nullable Direction side) {
         return slots;
+    }
+
+    @Nullable
+    @Override
+    public FluidAccess getFluidAccess(@Nullable Direction side) {
+        return tanks;
+    }
+
+    /** The network's fluids as tanks: one per stored fluid plus an empty one that accepts anything. */
+    private final class NetworkTanks implements FluidAccess {
+        @Nullable
+        private StorageNetwork network() {
+            StorageNetwork network = getNetwork();
+            return network != null && network.isActive() ? network : null;
+        }
+
+        private List<FluidKey> keys() {
+            StorageNetwork network = network();
+            if (network == null) {
+                return List.of();
+            }
+            List<FluidKey> keys = new ArrayList<>();
+            network.fluidStorage().forEach((key, amount) -> keys.add(key));
+            return keys;
+        }
+
+        @Override
+        public int getTanks() {
+            return keys().size() + 1;
+        }
+
+        @Nullable
+        @Override
+        public FluidKey getFluid(int tank) {
+            List<FluidKey> keys = keys();
+            return tank >= 0 && tank < keys.size() ? keys.get(tank) : null;
+        }
+
+        @Override
+        public long getAmount(int tank) {
+            FluidKey key = getFluid(tank);
+            StorageNetwork network = network();
+            return key == null || network == null ? 0 : network.fluidStorage().getAmount(key);
+        }
+
+        @Override
+        public long getCapacity(int tank) {
+            return Integer.MAX_VALUE;
+        }
+
+        @Override
+        public long fill(FluidKey key, long amount, boolean simulate) {
+            StorageNetwork network = network();
+            return network == null ? 0 : network.fluidStorage().insert(key, amount, simulate);
+        }
+
+        @Override
+        public long drain(FluidKey key, long amount, boolean simulate) {
+            StorageNetwork network = network();
+            return network == null ? 0 : network.fluidStorage().extract(key, amount, simulate);
+        }
     }
 
     private final class NetworkSlots implements SlotAccess {

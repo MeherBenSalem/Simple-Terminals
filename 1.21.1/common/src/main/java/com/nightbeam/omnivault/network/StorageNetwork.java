@@ -6,6 +6,8 @@ import com.nightbeam.omnivault.network.api.StorageProvider;
 import com.nightbeam.omnivault.network.api.TickingNode;
 import com.nightbeam.omnivault.network.block.NexusCoreBlockEntity;
 import com.nightbeam.omnivault.network.block.WirelessTransmitterBlockEntity;
+import com.nightbeam.omnivault.storage.FluidKey;
+import com.nightbeam.omnivault.storage.FluidStorage;
 import com.nightbeam.omnivault.storage.ItemKey;
 import com.nightbeam.omnivault.storage.ItemStorage;
 import net.minecraft.core.BlockPos;
@@ -34,6 +36,7 @@ public class StorageNetwork {
     private final ServerLevel level;
     private final NexusCoreBlockEntity core;
     private final NetworkStorage storage = new NetworkStorage();
+    private final NetworkFluidStorage fluidStorage = new NetworkFluidStorage();
     private final Set<NetworkNode> nodes = new LinkedHashSet<>();
     private final List<TickingNode> tickingNodes = new ArrayList<>();
     private final List<WirelessTransmitterBlockEntity> transmitters = new ArrayList<>();
@@ -102,6 +105,15 @@ public class StorageNetwork {
 
     public NetworkStorage rawStorage() {
         return storage;
+    }
+
+    /** The network's combined fluid storage (millibuckets), or an empty view while offline. */
+    public FluidStorage fluidStorage() {
+        return isActive() ? fluidStorage : EmptyFluids.INSTANCE;
+    }
+
+    public long fluidChangeCounter() {
+        return fluidStorage.changeCounter() + (isActive() ? 0 : 1_000_000_000L);
     }
 
     public long changeCounter() {
@@ -190,6 +202,9 @@ public class StorageNetwork {
             return;
         }
         storage.tick();
+        if (gameTime % 20 == 0) {
+            fluidStorage.poll();
+        }
         for (TickingNode node : tickingNodes) {
             if (!(node instanceof BlockEntity be) || !be.isRemoved()) {
                 node.networkTick(this, gameTime);
@@ -250,10 +265,12 @@ public class StorageNetwork {
     private void collectStorages() {
         storagesDirty = false;
         List<ItemStorage> collected = new ArrayList<>();
+        List<FluidStorage> fluids = new ArrayList<>();
         long total = 0;
         for (NetworkNode node : nodes) {
             if (node instanceof StorageProvider provider) {
                 provider.collectStorages(collected::add);
+                provider.collectFluidStorages(fluids::add);
                 long cap = provider.capacity();
                 if (cap > 0) {
                     total += cap;
@@ -262,6 +279,7 @@ public class StorageNetwork {
         }
         capacity = total;
         storage.setStorages(collected);
+        fluidStorage.setStorages(fluids);
     }
 
     /** Called when the core is removed or unloaded. */
@@ -275,6 +293,24 @@ public class StorageNetwork {
         nodes.clear();
         tickingNodes.clear();
         transmitters.clear();
+    }
+
+    private enum EmptyFluids implements FluidStorage {
+        INSTANCE;
+
+        @Override
+        public long insert(FluidKey key, long amount, boolean simulate) {
+            return 0;
+        }
+
+        @Override
+        public long extract(FluidKey key, long amount, boolean simulate) {
+            return 0;
+        }
+
+        @Override
+        public void forEach(java.util.function.ObjLongConsumer<FluidKey> consumer) {
+        }
     }
 
     private enum EmptyStorage implements ItemStorage {

@@ -65,6 +65,9 @@ public class OmniVaultNeoForge {
         for (Supplier<? extends BlockEntityType<? extends ModCapabilities.EnergyProvider>> type : ModCapabilities.energyProviders()) {
             registerEnergy(event, type.get());
         }
+        for (Supplier<? extends BlockEntityType<? extends ModCapabilities.FluidProvider>> type : ModCapabilities.fluidProviders()) {
+            registerFluids(event, type.get());
+        }
     }
 
     private static <T extends net.minecraft.world.level.block.entity.BlockEntity & ModCapabilities.ItemProvider> void registerItems(RegisterCapabilitiesEvent event, BlockEntityType<?> type) {
@@ -73,6 +76,15 @@ public class OmniVaultNeoForge {
         event.registerBlockEntity(Capabilities.ItemHandler.BLOCK, typed, (blockEntity, side) -> {
             var access = blockEntity.getSlotAccess(side);
             return access == null ? null : new SlotAccessItemHandler(access);
+        });
+    }
+
+    private static <T extends net.minecraft.world.level.block.entity.BlockEntity & ModCapabilities.FluidProvider> void registerFluids(RegisterCapabilitiesEvent event, BlockEntityType<?> type) {
+        @SuppressWarnings("unchecked")
+        BlockEntityType<T> typed = (BlockEntityType<T>) type;
+        event.registerBlockEntity(Capabilities.FluidHandler.BLOCK, typed, (blockEntity, side) -> {
+            var access = blockEntity.getFluidAccess(side);
+            return access == null ? null : new FluidAccessHandler(access);
         });
     }
 

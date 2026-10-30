@@ -18,6 +18,7 @@ import com.nightbeam.omnivault.network.block.WirelessTransmitterBlock;
 import com.nightbeam.omnivault.network.block.WirelessTransmitterBlockEntity;
 import com.nightbeam.omnivault.network.cell.CellTier;
 import com.nightbeam.omnivault.network.cell.CellUsage;
+import com.nightbeam.omnivault.network.cell.FluidCellItem;
 import com.nightbeam.omnivault.network.cell.StorageCellItem;
 import com.nightbeam.omnivault.network.item.WirelessTerminalItem;
 import com.nightbeam.omnivault.network.menu.BusMenu;
@@ -108,6 +109,17 @@ public final class NetworkContent {
         }
     }
 
+    public static final Supplier<Item> FLUID_CELL_HOUSING = ModRegistry.item("fluid_cell_housing", () -> new Item(new Item.Properties()));
+    public static final Map<CellTier, Supplier<FluidCellItem>> FLUID_CELLS = new EnumMap<>(CellTier.class);
+
+    static {
+        for (CellTier tier : CellTier.values()) {
+            String name = tier.isCreative() ? "creative_fluid_cell" : "fluid_cell_" + tier.id;
+            Supplier<Item> matrix = MATRICES.get(tier);
+            FLUID_CELLS.put(tier, ModRegistry.item(name, () -> new FluidCellItem(tier, matrix, new Item.Properties())));
+        }
+    }
+
     public static final Supplier<WirelessTerminalItem> WIRELESS_TERMINAL = ModRegistry.item("wireless_terminal",
             () -> new WirelessTerminalItem(false, new Item.Properties().rarity(Rarity.UNCOMMON)));
     public static final Supplier<WirelessTerminalItem> QUANTUM_WIRELESS_TERMINAL = ModRegistry.item("quantum_wireless_terminal",
@@ -150,5 +162,6 @@ public final class NetworkContent {
         CraftingTransfer.init();
         ModCapabilities.exposeEnergy(NEXUS_CORE_BE);
         ModCapabilities.exposeItems(NETWORK_PORT_BE);
+        ModCapabilities.exposeFluids(NETWORK_PORT_BE);
     }
 }

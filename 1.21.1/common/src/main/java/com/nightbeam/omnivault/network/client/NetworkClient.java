@@ -48,6 +48,7 @@ public final class NetworkClient {
             // Tint index 0 on cell item models is the tier stripe.
             for (CellTier tier : CellTier.values()) {
                 r.itemColor((stack, tintIndex) -> tintIndex == 0 ? tier.color : -1, NetworkContent.CELLS.get(tier));
+                r.itemColor((stack, tintIndex) -> tintIndex == 0 ? tier.color : -1, NetworkContent.FLUID_CELLS.get(tier));
             }
         });
     }
