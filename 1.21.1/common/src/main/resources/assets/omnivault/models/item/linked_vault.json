@@ -490,6 +490,7 @@
           "texture": "#glow"
         }
       },
+      "shade": false,
       "neoforge_data": {
         "block_light": 15,
         "sky_light": 15
@@ -554,6 +555,7 @@
           "texture": "#glow"
         }
       },
+      "shade": false,
       "neoforge_data": {
         "block_light": 15,
         "sky_light": 15
@@ -618,6 +620,7 @@
           "texture": "#glow"
         }
       },
+      "shade": false,
       "neoforge_data": {
         "block_light": 15,
         "sky_light": 15
@@ -682,6 +685,7 @@
           "texture": "#glow"
         }
       },
+      "shade": false,
       "neoforge_data": {
         "block_light": 15,
         "sky_light": 15
@@ -746,6 +750,7 @@
           "texture": "#glow"
         }
       },
+      "shade": false,
       "neoforge_data": {
         "block_light": 15,
         "sky_light": 15
@@ -810,6 +815,7 @@
           "texture": "#glow"
         }
       },
+      "shade": false,
       "neoforge_data": {
         "block_light": 15,
         "sky_light": 15
@@ -1483,6 +1489,7 @@
           "texture": "#eye"
         }
       },
+      "shade": false,
       "neoforge_data": {
         "block_light": 15,
         "sky_light": 15
@@ -1883,6 +1890,7 @@
           "texture": "#glow"
         }
       },
+      "shade": false,
       "neoforge_data": {
         "block_light": 15,
         "sky_light": 15
@@ -2016,6 +2024,7 @@
           "texture": "#glow"
         }
       },
+      "shade": false,
       "neoforge_data": {
         "block_light": 15,
         "sky_light": 15
@@ -2149,6 +2158,7 @@
           "texture": "#glow"
         }
       },
+      "shade": false,
       "neoforge_data": {
         "block_light": 15,
         "sky_light": 15
@@ -2282,6 +2292,7 @@
           "texture": "#glow"
         }
       },
+      "shade": false,
       "neoforge_data": {
         "block_light": 15,
         "sky_light": 15
@@ -2706,6 +2717,7 @@
           "texture": "#lens"
         }
       },
+      "shade": false,
       "neoforge_data": {
         "block_light": 15,
         "sky_light": 15

@@ -32,6 +32,10 @@ dependencies {
     // Optional integrations: only used when the mod is installed.
     modCompileOnly "mezz.jei:jei-${minecraft_version}-fabric-api:${jei_version}"
     modCompileOnly "teamreborn:energy:${reborn_energy_version}"
+    // Dev runs only, on request: ./gradlew :fabric:runClient -PwithJei
+    if (project.hasProperty('withJei')) {
+        modLocalRuntime "mezz.jei:jei-${minecraft_version}-fabric:${jei_version}"
+    }
 }
 
 loom {

@@ -25,9 +25,10 @@ OmniVault is the successor of **Simple Terminals**: worlds that used its Craftin
 | Minecraft | Loader | Java | Also install |
 | --- | --- | --- | --- |
 | 1.21.1 | NeoForge 21.1.80+ | 21 | Nothing (JEI optional) |
+| 1.21.1 | Fabric Loader 0.16.14+ | 21 | [Fabric API](https://modrinth.com/mod/fabric-api) (JEI optional; Team Reborn Energy for networks that need power) |
 
-The project uses the MultiLoader layout (`common` + loader modules) so Fabric and other Minecraft versions can follow.
-Install on both the server and every client.
+Both loaders are built from one code base with the same content: the project uses the MultiLoader layout (`common` +
+loader modules), so other Minecraft versions can follow. Install on both the server and every client.
 
 ## Building
 
@@ -36,26 +37,30 @@ cd 1.21.1
 ./gradlew build
 ```
 
-The jar is written to `1.21.1/neoforge/build/libs/omnivault-1.21.1-neoforge-<version>.jar`.
+The jars are written to `1.21.1/neoforge/build/libs/omnivault-1.21.1-neoforge-<version>.jar` and
+`1.21.1/fabric/build/libs/omnivault-1.21.1-fabric-<version>.jar`.
 
 ## Testing
 
 ```bash
-cd 1.21.1 && ./gradlew :neoforge:runGameTestServer   # boots a dedicated server and runs every GameTest
+cd 1.21.1 && ./gradlew :neoforge:runGameTestServer   # boots a NeoForge dedicated server and runs every GameTest
+cd 1.21.1 && ./gradlew :fabric:runGametest            # the same GameTests, plus Fabric transfer tests, on Fabric
 python3 -m unittest discover -s tests                 # resource and release-guard checks (repository root)
 python3 tools/assets/build_lang.py --check            # en_us.json matches the lang fragments
 ```
 
 The GameTests build real networks, vaults, drawers, backpacks and autocrafting setups in a world and check the
 results, from cell capacities to a furnace smelting through a Pattern Provider and a drive in the Nether joined
-through a Quantum Bridge. `tools/qa/` drives a dev server and a headless client for in-game checks and screenshots.
+through a Quantum Bridge. The same tests run on both loaders. `tools/qa/` drives a dev server and a headless client
+(either loader, `QA_LOADER=fabric`) for in-game checks and screenshots.
 
 ## Project layout
 
 ```
 1.21.1/
-├── common/     # gameplay, menus, screens, renderers (vanilla APIs only)
-└── neoforge/   # NeoForge glue, plus src/gametest (not shipped)
+├── common/     # gameplay, menus, screens, renderers (vanilla APIs only), plus the shared GameTests
+├── fabric/     # Fabric glue: Transfer API storages, payloads, mixins, client setup
+└── neoforge/   # NeoForge glue: capabilities, payloads, events, client setup
 tools/
 ├── assets/     # generators for every texture, model, blockstate, recipe and loot table; offline model renderer
 ├── lang/       # lang fragments merged into en_us.json

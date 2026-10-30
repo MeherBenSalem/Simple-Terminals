@@ -17,15 +17,25 @@ import tomllib
 import zipfile
 
 MOD_ID = 'omnivault'
-TARGETS = (('1.21.1', 'neoforge'),)
-METADATA = {'neoforge': 'META-INF/neoforge.mods.toml'}
-MINECRAFT_RANGES = {'1.21.1': '[1.21.1, 1.22)'}
+TARGETS = (('1.21.1', 'fabric'), ('1.21.1', 'neoforge'))
+METADATA = {'fabric': 'fabric.mod.json', 'neoforge': 'META-INF/neoforge.mods.toml'}
+# The Minecraft dependency each loader's metadata must declare.
+MINECRAFT_RANGES = {
+    'neoforge': {'1.21.1': '[1.21.1, 1.22)'},
+    'fabric': {'1.21.1': '~1.21.1'},
+}
 REQUIRED_CLASSES = (
     'com/nightbeam/omnivault/OmniVault.class',
     'com/nightbeam/omnivault/OmniVaultCommon.class',
-    'com/nightbeam/omnivault/neoforge/OmniVaultNeoForge.class',
     'com/nightbeam/omnivault/network/StorageNetwork.class',
 )
+LOADER_CLASSES = {
+    'fabric': (
+        'com/nightbeam/omnivault/fabric/OmniVaultFabric.class',
+        'com/nightbeam/omnivault/fabric/client/OmniVaultFabricClient.class',
+    ),
+    'neoforge': ('com/nightbeam/omnivault/neoforge/OmniVaultNeoForge.class',),
+}
 REQUIRED_SERVICES = (
     'META-INF/services/com.nightbeam.omnivault.platform.services.IPlatformHelper',
     'META-INF/services/com.nightbeam.omnivault.platform.services.IRegistryHelper',
@@ -126,6 +136,56 @@ def validate_resources(jar, names):
     require(not any(re.match(rf'data/{MOD_ID}/structure/', name) for name in names), 'GameTest structures packaged')
 
 
+def validate_neoforge_metadata(jar, minecraft, version):
+    mod = tomllib.loads(jar.read(METADATA['neoforge']).decode())
+    require(mod.get('modLoader') == 'javafml', 'Wrong FML mod loader')
+    mods = mod.get('mods', [])
+    require(len(mods) == 1 and mods[0].get('modId') == MOD_ID, 'Wrong FML mod identity')
+    require(mods[0].get('version') == version, 'Wrong FML mod version')
+    dependencies = mod.get('dependencies', {}).get(MOD_ID, [])
+    by_id = {dependency.get('modId'): dependency for dependency in dependencies}
+    require(len(by_id) == len(dependencies), 'Duplicate FML dependency')
+    require('neoforge' in by_id and by_id['neoforge'].get('versionRange'), 'Missing neoforge dependency')
+    require(by_id.get('minecraft', {}).get('versionRange') == MINECRAFT_RANGES['neoforge'][minecraft],
+            'Wrong FML Minecraft version range')
+
+
+def class_file(name):
+    return name.replace('.', '/') + '.class'
+
+
+def validate_fabric_metadata(jar, names, minecraft, version):
+    mod = json.loads(jar.read(METADATA['fabric']))
+    require(mod.get('schemaVersion') == 1, 'Wrong fabric.mod.json schema')
+    require(mod.get('id') == MOD_ID, 'Wrong Fabric mod identity')
+    require(mod.get('version') == version, 'Wrong Fabric mod version')
+    depends = mod.get('depends', {})
+    require(depends.get('minecraft') == MINECRAFT_RANGES['fabric'][minecraft], 'Wrong Fabric Minecraft dependency')
+    require('fabricloader' in depends and 'fabric-api' in depends, 'Missing Fabric Loader or Fabric API dependency')
+    entrypoints = mod.get('entrypoints', {})
+    require(entrypoints.get('main') and entrypoints.get('client'), 'Missing Fabric main or client entrypoint')
+    require('fabric-gametest' not in entrypoints, 'GameTest entrypoint packaged')
+    for kind in ('main', 'client'):
+        for entry in entrypoints[kind]:
+            target = entry if isinstance(entry, str) else entry.get('value', '')
+            require(class_file(target) in names, f'Fabric {kind} entrypoint class missing: {target}')
+    icon = mod.get('icon')
+    require(isinstance(icon, str) and icon in names, 'Fabric mod icon missing')
+    mixins = mod.get('mixins', [])
+    require(mixins, 'No Fabric mixin configs')
+    for config_name in mixins:
+        config_name = config_name if isinstance(config_name, str) else config_name.get('config', '')
+        require(config_name in names, f'Missing mixin config {config_name}')
+        config = json.loads(jar.read(config_name))
+        refmap = config.get('refmap')
+        require(isinstance(refmap, str) and refmap in names, f'Mixin config {config_name} has no packaged refmap')
+        package = config.get('package', '').replace('.', '/')
+        for mixin in config.get('mixins', []) + config.get('client', []) + config.get('server', []):
+            require(f'{package}/{mixin}.class' in names, f'Mixin class missing: {mixin}')
+    # The GameTests' stand-ins for NeoForge annotations are test code only.
+    require(not any(name.startswith('net/neoforged/') for name in names), 'NeoForge test stand-ins packaged')
+
+
 def validate_jar(artifact, version):
     minecraft, loader = artifact['minecraft'], artifact['loader']
     path = Path(artifact['path'])
@@ -137,22 +197,15 @@ def validate_jar(artifact, version):
             require(len(names) == len(set(names)), 'Duplicate entries inside jar')
             metadata = [name for name in METADATA.values() if name in names]
             require(metadata == [METADATA[loader]], f'Wrong loader metadata for {loader}')
-            mod = tomllib.loads(jar.read(METADATA[loader]).decode())
-            require(mod.get('modLoader') == 'javafml', 'Wrong FML mod loader')
-            mods = mod.get('mods', [])
-            require(len(mods) == 1 and mods[0].get('modId') == MOD_ID, 'Wrong FML mod identity')
-            require(mods[0].get('version') == version, 'Wrong FML mod version')
-            dependencies = mod.get('dependencies', {}).get(MOD_ID, [])
-            by_id = {dependency.get('modId'): dependency for dependency in dependencies}
-            require(len(by_id) == len(dependencies), 'Duplicate FML dependency')
-            require(loader in by_id and by_id[loader].get('versionRange'), f'Missing {loader} dependency')
-            require(by_id.get('minecraft', {}).get('versionRange') == MINECRAFT_RANGES[minecraft],
-                    'Wrong FML Minecraft version range')
+            if loader == 'neoforge':
+                validate_neoforge_metadata(jar, minecraft, version)
+            else:
+                validate_fabric_metadata(jar, names, minecraft, version)
             manifest = manifest_fields(jar.read('META-INF/MANIFEST.MF').decode())
             require(manifest.get('Implementation-Version') == version, 'Wrong manifest mod version')
             require(manifest.get('Built-On-Minecraft') == minecraft, 'Wrong manifest Minecraft version')
             require(manifest.get('Implementation-Title') == loader, 'Wrong manifest loader')
-            for resource in REQUIRED_CLASSES:
+            for resource in REQUIRED_CLASSES + LOADER_CLASSES[loader]:
                 require(jar.read(resource).startswith(b'\xca\xfe\xba\xbe'), f'Missing compiled mod class: {resource}')
             for resource in REQUIRED_SERVICES:
                 require(jar.read(resource).strip(), f'Empty service file: {resource}')

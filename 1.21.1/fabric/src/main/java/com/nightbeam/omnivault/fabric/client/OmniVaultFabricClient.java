@@ -48,7 +48,10 @@ public class OmniVaultFabricClient implements ClientModInitializer {
         Registrar registrar = new Registrar();
         OmniVaultClient.register(registrar);
         List<ResourceLocation> models = List.copyOf(registrar.models);
-        ModelLoadingPlugin.register(context -> context.addModels(models));
+        ModelLoadingPlugin.register(context -> {
+            context.addModels(models);
+            EmissiveModels.register(context);
+        });
         ClientTickEvents.END_CLIENT_TICK.register(client -> OmniVaultClient.clientTick());
     }
 

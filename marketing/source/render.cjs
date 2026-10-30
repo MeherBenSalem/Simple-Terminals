@@ -8,7 +8,7 @@ const { chromium } = require('playwright');
 
 // The release and the supported versions. Adding a version is one line here (plus a row in curseforge/description.md).
 const RELEASE = { version: '2.0', name: 'OmniVault' };
-const VERSIONS = [{ minecraft: '1.21.1', loaders: ['NeoForge'] }];
+const VERSIONS = [{ minecraft: '1.21.1', loaders: ['NeoForge', 'Fabric'] }];
 
 const root = path.resolve(__dirname, '..', '..');
 const out = path.join(root, 'marketing', 'images');
@@ -189,7 +189,7 @@ const assets = {
       '<b class="hi">Cell Drives</b> hold ten item or fluid cells, each with a status LED',
       '<b class="hi">Storage Monitors</b> show live counts on your walls',
       'Wireless terminals reach 32 blocks from the core, 64+ from a transmitter',
-      'Forge Energy is optional and off by default'],
+      'Power is optional and off by default'],
     art: `<div style="position:relative">${framed(region('base.jpg', 120, 40, 1680, 945, 940))}
       ${plate('Nexus Core', 'left:392px;bottom:120px')}${plate('Cell Drives', 'left:300px;top:250px', '', 'green')}
       ${plate('Storage Monitors', 'right:40px;top:120px', '', 'violet')}</div>` }),
@@ -258,7 +258,7 @@ const assets = {
       'The <b class="hi">Network Port</b>: your whole network as one inventory for pipes',
       'Destructor and Constructor mine and place from the network',
       'Signal Emitters react to stock levels',
-      'Works with any mod that exposes NeoForge item or fluid handlers'],
+      'Works with any mod\'s item and fluid storage, on NeoForge and Fabric'],
     art: `<div class="panel" style="padding:32px 30px 20px">${rivets()}
       <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px 16px">
         ${[['import_bus', 'Import Bus', 'pulls in'], ['export_bus', 'Export Bus', 'pushes out'], ['storage_bus', 'Storage Bus', 'any inventory as storage'],

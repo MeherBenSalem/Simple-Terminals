@@ -27,7 +27,8 @@ jobs:
       - name: Resource and release-guard tests
         run: python3 -m unittest discover -s tests -v
 
-  neoforge-1-21-1:
+  minecraft-1-21-1:
+    # Builds both loaders together: the release guard checks the Fabric and NeoForge jars as one release.
     runs-on: ubuntu-latest
     timeout-minutes: 60
     steps:
@@ -43,19 +44,28 @@ jobs:
       - name: Build
         working-directory: 1.21.1
         run: bash gradlew build --no-daemon --stacktrace
-      - name: Run GameTests on a dedicated server
+      - name: Run GameTests on a NeoForge server
         working-directory: 1.21.1
         run: bash gradlew :neoforge:runGameTestServer --no-daemon --stacktrace
-      - name: Validate the packaged jar
+      - name: Run GameTests on a Fabric server
+        working-directory: 1.21.1
+        run: bash gradlew :fabric:runGametest --no-daemon --stacktrace
+      - name: Validate the packaged jars
         shell: bash
         run: |
           set -euo pipefail
           version="$(sed -n 's/^version=//p' 1.21.1/gradle.properties)"
           python3 scripts/release_guard.py --source build --version "$version" \
             --manifest "$RUNNER_TEMP/manifest.json" --notes "$RUNNER_TEMP/notes.md"
-      - name: Keep the tested jar
+      - name: Keep the tested NeoForge jar
         uses: actions/upload-artifact@v4
         with:
           name: omnivault-1.21.1-neoforge
           path: 1.21.1/neoforge/build/libs/*.jar
+          if-no-files-found: error
+      - name: Keep the tested Fabric jar
+        uses: actions/upload-artifact@v4
+        with:
+          name: omnivault-1.21.1-fabric
+          path: 1.21.1/fabric/build/libs/*.jar
           if-no-files-found: error

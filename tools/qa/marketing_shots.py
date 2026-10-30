@@ -29,10 +29,11 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 from client import Session, PLAYER  # noqa: E402
 
 HELPER = 'Helper'
-WORKSPACE = Path(__file__).resolve().parents[2] / '1.21.1' / 'neoforge'
+# QA_LOADER (neoforge or fabric) picks the dev workspace, as in devrun.sh; QA_SHOTS overrides where captures go.
+WORKSPACE = Path(__file__).resolve().parents[2] / '1.21.1' / os.environ.get('QA_LOADER', 'neoforge')
 
 NS = 'omnivault'
-OUT = Path(__file__).resolve().parents[2] / 'marketing' / 'images' / 'screenshots'
+OUT = Path(os.environ.get('QA_SHOTS') or Path(__file__).resolve().parents[2] / 'marketing' / 'images' / 'screenshots')
 # The pre-filled cells' IDs, which only mean something in the world that holds their contents.
 FILLED = WORKSPACE / 'runs' / 'server' / 'marketing_cells.txt'
 GROUND = -60  # first air block above the superflat grass

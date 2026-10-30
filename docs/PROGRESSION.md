@@ -26,7 +26,7 @@ Ingots, which go into Logic and Advanced Processors.
 
 | Build | What it gives you |
 | --- | --- |
-| **Nexus Core** | The full network: no channel limits, optional Forge Energy. |
+| **Nexus Core** | The full network: no channel limits, optional energy. |
 | **Cell Drive** + **4K–256K cells** | Compact storage that doesn't need chests; fluid cells for fluids. |
 | **Import / Export / Storage Buses**, **Network Port** | Automation with any mod's machines, pipes and inventories. |
 | **Destructor**, **Constructor**, **Signal Emitter**, **Storage Monitor** | Mine, place, react to stock levels and show counts on a wall. |

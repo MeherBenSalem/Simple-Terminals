@@ -12,7 +12,7 @@ The network's options are listed below. Each feature adds its own section to the
 | Key | Default | Meaning |
 | --- | --- | --- |
 | `maxNodes` | 8192 | Most cables and devices one Nexus Core scans. |
-| `requireEnergy` | false | Networks need FE delivered to the Nexus Core to run. |
+| `requireEnergy` | false | Networks need FE delivered to the Nexus Core to run (on Fabric: Team Reborn Energy, 1 E = 1 FE; keep this off without a mod that provides it). |
 | `coreEnergyBuffer` | 1000000 | FE the Nexus Core can buffer. |
 | `coreEnergyUsage` | 8 | FE per tick used by the core itself (devices add their own). |
 

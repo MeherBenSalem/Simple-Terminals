@@ -115,5 +115,6 @@ hold shift for steps of 10). New items prefer storage that already holds them.
 ## Energy
 
 Off by default. Set `requireEnergy = true` under `[network]` in `config/omnivault-common.toml` and the Nexus Core
-accepts Forge Energy (FE) from any mod's cables; each device uses a little per tick and the network goes offline
+accepts energy from any mod's cables: Forge Energy (FE) on NeoForge, Team Reborn Energy (E, 1 E = 1 FE) on Fabric,
+where most tech mods include that API. Each device uses a little per tick and the network goes offline
 when the core runs dry.

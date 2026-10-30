@@ -1,7 +1,7 @@
 # Marketing
 
 Listing copy and artwork for CurseForge and Modrinth (the project formerly listed as Simple Terminals). Nothing here
-ships in the mod jar except the logo, which is copied to `1.21.1/neoforge/src/main/resources/omnivault_logo.png`.
+ships in the mod jars except the logo, which is copied to `1.21.1/common/src/main/resources/omnivault_logo.png`.
 
 | Path | What it is |
 |------|------------|
@@ -43,7 +43,7 @@ Needs Python 3 with Pillow and numpy, Node.js and Playwright with Chromium:
 python3 marketing/source/renders.py                                      # model renders and backdrops
 NODE_PATH="$(npm root -g)" node marketing/source/render.cjs              # everything
 NODE_PATH="$(npm root -g)" node marketing/source/render.cjs card-cells   # one asset
-python3 -c "from PIL import Image; Image.open('marketing/images/icon.png').resize((256, 256), Image.LANCZOS).save('1.21.1/neoforge/src/main/resources/omnivault_logo.png')"
+python3 -c "from PIL import Image; Image.open('marketing/images/icon.png').resize((256, 256), Image.LANCZOS).save('1.21.1/common/src/main/resources/omnivault_logo.png')"
 ```
 
 `renders.py` drives `tools/assets/render_models.py`, the project's offline model renderer, so regenerated models and
@@ -89,6 +89,7 @@ lid is held open by a second, invisible player. Every screenshot is a single une
 ## Wording
 
 - Use the mod's own names. Don't put other mods' names, logos or art in listing images or titles, and don't claim
-  compatibility with a specific mod that hasn't been tested: say "any mod that exposes NeoForge item or fluid handlers".
+  compatibility with a specific mod that hasn't been tested: say "any mod's item and fluid storage" (NeoForge handlers,
+  Fabric's Transfer API).
 - Every number in the copy and on the cards comes from the code defaults and the docs (`docs/PROGRESSION.md`,
   `NETWORK.md`, `AUTOCRAFTING.md`, `STORAGE.md`, `BACKPACKS.md`, `CONFIG.md`). Update the copy when they change.
