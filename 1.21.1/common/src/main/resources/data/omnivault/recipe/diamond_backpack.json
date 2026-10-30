@@ -1,0 +1,21 @@
+{
+  "type": "omnivault:backpack_upgrade",
+  "category": "equipment",
+  "pattern": [
+    "MMM",
+    "MBM",
+    "MMM"
+  ],
+  "key": {
+    "M": {
+      "tag": "c:gems/diamond"
+    },
+    "B": {
+      "item": "omnivault:gold_backpack"
+    }
+  },
+  "result": {
+    "id": "omnivault:diamond_backpack",
+    "count": 1
+  }
+}

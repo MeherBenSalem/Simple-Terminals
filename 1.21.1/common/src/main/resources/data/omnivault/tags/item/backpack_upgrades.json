@@ -1,0 +1,14 @@
+{
+  "replace": false,
+  "values": [
+    "omnivault:pickup_upgrade",
+    "omnivault:magnet_upgrade",
+    "omnivault:void_upgrade",
+    "omnivault:feeding_upgrade",
+    "omnivault:restock_upgrade",
+    "omnivault:compacting_upgrade",
+    "omnivault:crafting_upgrade",
+    "omnivault:everlasting_upgrade",
+    "omnivault:deposit_upgrade"
+  ]
+}

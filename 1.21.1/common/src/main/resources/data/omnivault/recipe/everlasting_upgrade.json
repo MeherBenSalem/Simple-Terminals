@@ -1,0 +1,27 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "GEG",
+    "OUO",
+    "GOG"
+  ],
+  "key": {
+    "G": {
+      "item": "minecraft:ghast_tear"
+    },
+    "E": {
+      "item": "minecraft:end_crystal"
+    },
+    "O": {
+      "item": "omnivault:omnium_ingot"
+    },
+    "U": {
+      "item": "omnivault:upgrade_base"
+    }
+  },
+  "result": {
+    "id": "omnivault:everlasting_upgrade",
+    "count": 1
+  }
+}

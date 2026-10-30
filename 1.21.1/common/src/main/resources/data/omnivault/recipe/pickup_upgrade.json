@@ -1,0 +1,27 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    " H ",
+    "SUS",
+    " R "
+  ],
+  "key": {
+    "H": {
+      "item": "minecraft:hopper"
+    },
+    "S": {
+      "item": "minecraft:string"
+    },
+    "U": {
+      "item": "omnivault:upgrade_base"
+    },
+    "R": {
+      "item": "minecraft:redstone"
+    }
+  },
+  "result": {
+    "id": "omnivault:pickup_upgrade",
+    "count": 1
+  }
+}

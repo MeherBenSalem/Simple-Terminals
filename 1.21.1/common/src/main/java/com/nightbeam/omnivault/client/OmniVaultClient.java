@@ -2,6 +2,7 @@ package com.nightbeam.omnivault.client;
 
 import com.nightbeam.omnivault.network.client.NetworkClient;
 import com.nightbeam.omnivault.physical.client.PhysicalClient;
+import com.nightbeam.omnivault.backpack.client.BackpackClient;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,6 +24,7 @@ public final class OmniVaultClient {
         initialised = true;
         NetworkClient.init();
         PhysicalClient.init();
+        BackpackClient.init();
     }
 
     public static void registration(Consumer<ClientRegistrar> registration) {
