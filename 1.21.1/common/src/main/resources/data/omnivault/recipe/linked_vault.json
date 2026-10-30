@@ -1,0 +1,30 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "BWB",
+    "OEO",
+    "BLB"
+  ],
+  "key": {
+    "B": {
+      "item": "minecraft:blaze_rod"
+    },
+    "W": {
+      "tag": "minecraft:wool"
+    },
+    "O": {
+      "item": "minecraft:obsidian"
+    },
+    "E": {
+      "item": "minecraft:ender_chest"
+    },
+    "L": {
+      "item": "omnivault:logic_processor"
+    }
+  },
+  "result": {
+    "id": "omnivault:linked_vault",
+    "count": 1
+  }
+}

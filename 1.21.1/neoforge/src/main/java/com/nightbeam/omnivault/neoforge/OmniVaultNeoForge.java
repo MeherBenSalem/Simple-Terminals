@@ -37,6 +37,7 @@ public class OmniVaultNeoForge {
         modBus.addListener(this::registerCapabilities);
         modBus.addListener(this::registerAliases);
         NeoForge.EVENT_BUS.addListener((ServerTickEvent.Post event) -> OmniVaultCommon.serverTick(event.getServer()));
+        PhysicalNeoForge.init();
     }
 
     private void registerPayloads(RegisterPayloadHandlersEvent event) {

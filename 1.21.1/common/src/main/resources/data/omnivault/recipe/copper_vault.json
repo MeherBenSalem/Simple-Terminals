@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "CCC",
+    "CXC",
+    "CCC"
+  ],
+  "key": {
+    "C": {
+      "item": "minecraft:copper_ingot"
+    },
+    "X": {
+      "item": "minecraft:chest"
+    }
+  },
+  "result": {
+    "id": "omnivault:copper_vault",
+    "count": 1
+  }
+}

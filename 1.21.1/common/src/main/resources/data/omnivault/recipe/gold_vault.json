@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "GGG",
+    "GVG",
+    "GGG"
+  ],
+  "key": {
+    "G": {
+      "item": "minecraft:gold_ingot"
+    },
+    "V": {
+      "item": "omnivault:iron_vault"
+    }
+  },
+  "result": {
+    "id": "omnivault:gold_vault",
+    "count": 1
+  }
+}

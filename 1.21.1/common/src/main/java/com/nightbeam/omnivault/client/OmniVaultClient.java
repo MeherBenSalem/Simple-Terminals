@@ -18,6 +18,7 @@ public final class OmniVaultClient {
             return;
         }
         initialised = true;
+        com.nightbeam.omnivault.physical.client.PhysicalClient.init();
     }
 
     public static void registration(Consumer<ClientRegistrar> registration) {

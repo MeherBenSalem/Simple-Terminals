@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:item/handheld",
+  "textures": {
+    "layer0": "omnivault:item/netherite_relocator_full"
+  }
+}
