@@ -1,8 +1,10 @@
 package com.nightbeam.omnivault.menu;
 
+import net.minecraft.world.Container;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.inventory.ClickType;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
@@ -63,6 +65,39 @@ public abstract class OVMenu extends AbstractContainerMenu {
         }
         slot.onTake(player, stack);
         return original;
+    }
+
+    @Override
+    public void clicked(int slotId, int button, ClickType clickType, Player player) {
+        if (slotId >= 0 && slotId < slots.size() && slots.get(slotId) instanceof GhostSlot ghost) {
+            if (clickType == ClickType.PICKUP || clickType == ClickType.QUICK_MOVE || clickType == ClickType.CLONE) {
+                ItemStack carried = getCarried();
+                ghost.set(carried.isEmpty() ? ItemStack.EMPTY : carried.copyWithCount(1));
+                ghost.setChanged();
+            }
+            return;
+        }
+        super.clicked(slotId, button, clickType, player);
+    }
+
+    /** Shift-click into a ghost filter: records the item in the first free filter slot if not already listed. */
+    protected static boolean addGhost(Container filter, ItemStack stack) {
+        int free = -1;
+        for (int slot = 0; slot < filter.getContainerSize(); slot++) {
+            ItemStack entry = filter.getItem(slot);
+            if (entry.isEmpty()) {
+                if (free < 0) {
+                    free = slot;
+                }
+            } else if (ItemStack.isSameItemSameComponents(entry, stack)) {
+                return true;
+            }
+        }
+        if (free < 0) {
+            return false;
+        }
+        filter.setItem(free, stack.copyWithCount(1));
+        return true;
     }
 
     /** Moves a stack from the player inventory into this menu's own slots. */
