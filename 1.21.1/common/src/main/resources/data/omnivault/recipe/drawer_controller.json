@@ -1,0 +1,30 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "IOI",
+    "CDC",
+    "ILI"
+  ],
+  "key": {
+    "I": {
+      "item": "minecraft:iron_ingot"
+    },
+    "O": {
+      "item": "omnivault:omnium_ingot"
+    },
+    "C": {
+      "item": "minecraft:comparator"
+    },
+    "D": {
+      "tag": "omnivault:drawers"
+    },
+    "L": {
+      "item": "omnivault:logic_processor"
+    }
+  },
+  "result": {
+    "id": "omnivault:drawer_controller",
+    "count": 1
+  }
+}

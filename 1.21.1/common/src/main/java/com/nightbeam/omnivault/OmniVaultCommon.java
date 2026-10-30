@@ -32,6 +32,7 @@ public final class OmniVaultCommon {
         OmniVault.LOG.info("Initializing {} on {}", OmniVault.MOD_NAME, Services.PLATFORM.getPlatformName());
         // Feature content classes register their entries from static initialisers.
         CoreContent.init();
+        com.nightbeam.omnivault.drawer.DrawerContent.init();
         InventorySorting.init();
         OVConfig.load(Services.PLATFORM.getConfigDir());
     }

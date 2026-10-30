@@ -1,0 +1,27 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "SOS",
+    "OUO",
+    "SES"
+  ],
+  "key": {
+    "S": {
+      "item": "minecraft:stick"
+    },
+    "O": {
+      "item": "minecraft:obsidian"
+    },
+    "E": {
+      "item": "minecraft:ender_pearl"
+    },
+    "U": {
+      "item": "omnivault:upgrade_base"
+    }
+  },
+  "result": {
+    "id": "omnivault:void_drawer_upgrade",
+    "count": 1
+  }
+}

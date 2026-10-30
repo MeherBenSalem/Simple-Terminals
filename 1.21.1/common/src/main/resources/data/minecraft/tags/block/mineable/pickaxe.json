@@ -1,0 +1,7 @@
+{
+  "replace": false,
+  "values": [
+    "omnivault:compacting_drawer",
+    "omnivault:drawer_controller"
+  ]
+}
