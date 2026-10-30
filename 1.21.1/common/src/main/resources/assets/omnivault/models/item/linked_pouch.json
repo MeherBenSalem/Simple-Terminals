@@ -1,0 +1,9 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "omnivault:item/linked_pouch",
+    "layer1": "omnivault:item/linked_pouch_latch_0",
+    "layer2": "omnivault:item/linked_pouch_latch_1",
+    "layer3": "omnivault:item/linked_pouch_latch_2"
+  }
+}

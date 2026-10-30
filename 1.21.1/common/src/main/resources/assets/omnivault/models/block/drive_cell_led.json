@@ -1,0 +1,78 @@
+{
+  "render_type": "minecraft:cutout",
+  "textures": {
+    "particle": "omnivault:block/network/casing",
+    "p0": "omnivault:block/drive/parts"
+  },
+  "elements": [
+    {
+      "from": [
+        4.2,
+        0.6,
+        0.25
+      ],
+      "to": [
+        5.0,
+        1.4,
+        0.45
+      ],
+      "shade": false,
+      "neoforge_data": {
+        "block_light": 15,
+        "sky_light": 15
+      },
+      "faces": {
+        "north": {
+          "uv": [
+            10.25,
+            8.0,
+            10.45,
+            8.2
+          ],
+          "texture": "#p0",
+          "tintindex": 0
+        },
+        "east": {
+          "uv": [
+            10.25,
+            8.0,
+            10.3,
+            8.2
+          ],
+          "texture": "#p0",
+          "tintindex": 0
+        },
+        "west": {
+          "uv": [
+            10.25,
+            8.0,
+            10.3,
+            8.2
+          ],
+          "texture": "#p0",
+          "tintindex": 0
+        },
+        "up": {
+          "uv": [
+            10.25,
+            8.0,
+            10.45,
+            8.05
+          ],
+          "texture": "#p0",
+          "tintindex": 0
+        },
+        "down": {
+          "uv": [
+            10.25,
+            8.0,
+            10.45,
+            8.05
+          ],
+          "texture": "#p0",
+          "tintindex": 0
+        }
+      }
+    }
+  ]
+}

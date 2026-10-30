@@ -3,6 +3,12 @@ plugins {
     id 'net.neoforged.moddev'
 }
 
+sourceSets {
+    // In-world GameTests: run with ./gradlew :neoforge:runGameTestServer. Not part of the shipped jar.
+    gametest {
+    }
+}
+
 neoForge {
     version = neoforge_version
     // Automatically enable neoforge AccessTransformers if the file exists
@@ -14,31 +20,45 @@ neoForge {
         minecraftVersion = parchment_minecraft
         mappingsVersion = parchment_version
     }
+    addModdingDependenciesTo(sourceSets.gametest)
     runs {
         configureEach {
             systemProperty('neoforge.enabledGameTestNamespaces', mod_id)
-            ideName = "NeoForge ${it.name.capitalize()} (${project.path})" // Unify the run config names with fabric
+            ideName = "NeoForge ${it.name.capitalize()} (${project.path})"
         }
         client {
             client()
-        }
-        data {
-            data()
-
-            // DataGen can be run by - "./gradlew :neoforge:runData" in Terminal.
-            // Specify the modid for data generation, where to output the resulting resource, and where to look for existing resources.
-            programArguments.addAll '--mod', project.mod_id, '--all', '--output', file('src/generated/resources/').getAbsolutePath(), '--existing', file('src/main/resources/').getAbsolutePath()
-
+            gameDirectory = project.file('runs/client')
         }
         server {
             server()
+            gameDirectory = project.file('runs/server')
+        }
+        // QA client: joins a dev server on localhost:25565 straight away (see tools/qa/).
+        qaClient {
+            client()
+            gameDirectory = project.file('runs/client')
+            programArguments.addAll '--quickPlayMultiplayer', 'localhost:25565', '--username', 'Builder', '--width', '1920', '--height', '1080'
+        }
+        gameTestServer {
+            type = 'gameTestServer'
+            sourceSet = sourceSets.gametest
+            gameDirectory = project.file('runs/gametest')
         }
     }
     mods {
         "${mod_id}" {
             sourceSet sourceSets.main
+            sourceSet sourceSets.gametest
         }
     }
 }
 
-sourceSets.main.resources { srcDir 'src/generated/resources' }
+dependencies {
+    compileOnly "mezz.jei:jei-${minecraft_version}-neoforge-api:${jei_version}"
+    gametestImplementation sourceSets.main.output
+}
+
+tasks.named('compileGametestJava', JavaCompile) {
+    dependsOn(configurations.commonJava)
+}

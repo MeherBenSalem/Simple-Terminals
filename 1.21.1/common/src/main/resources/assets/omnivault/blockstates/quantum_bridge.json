@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "active=false": {
+      "model": "omnivault:block/quantum_bridge"
+    },
+    "active=true": {
+      "model": "omnivault:block/quantum_bridge_active"
+    }
+  }
+}

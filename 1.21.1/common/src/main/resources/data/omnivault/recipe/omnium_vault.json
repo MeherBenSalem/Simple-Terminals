@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "OAO",
+    "OVO",
+    "OOO"
+  ],
+  "key": {
+    "O": {
+      "item": "omnivault:omnium_ingot"
+    },
+    "A": {
+      "item": "omnivault:advanced_processor"
+    },
+    "V": {
+      "item": "omnivault:netherite_vault"
+    }
+  },
+  "result": {
+    "id": "omnivault:omnium_vault",
+    "count": 1
+  }
+}

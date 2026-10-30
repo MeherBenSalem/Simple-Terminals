@@ -1,4 +1,4 @@
-# Dual-publish NightBeam mods/plugins to Modrinth + CurseForge on version tags.
+# Dual-publish OmniVault (formerly Simple Terminals) to Modrinth + CurseForge on version tags.
 #
 # Rule: EACH jar becomes its OWN Modrinth version and OWN CurseForge file
 # with the correct Minecraft version + loader tags. Never attach multiple
@@ -72,7 +72,7 @@ jobs:
             echo "Prebuilt release directory found; the complete set must pass the release guard"
           else
             echo "found=false" >> "$GITHUB_OUTPUT"
-            echo "No prebuilt jars; build all six loader artifacts"
+            echo "No prebuilt jars; build the release artifacts"
           fi
 
       - uses: actions/setup-python@v5
@@ -82,41 +82,22 @@ jobs:
       - uses: actions/setup-java@v4
         with:
           distribution: temurin
-          java-version: |
-            17
-            21
-            25
+          java-version: '21'
 
       - name: Verify source resources and release guard tests
-        run: python3 -m unittest discover -s tests -v
-
-      - name: Test native Minecraft recipe and loot implementations
-        run: python3 tests/native_recipe/run.py --java "$JAVA_HOME_25_X64/bin/java"
-
-      - name: Test native 26.2 registry-property construction
-        run: python3 tests/native_registry_ids/run.py --java "$JAVA_HOME_25_X64/bin/java"
+        run: |
+          python3 tools/assets/build_lang.py --check
+          python3 -m unittest discover -s tests -v
 
       - uses: gradle/actions/setup-gradle@v4
         if: steps.prebuilt.outputs.found != 'true'
 
-      - name: Build MultiLoader workspaces
+      - name: Build and run GameTests
         if: steps.prebuilt.outputs.found != 'true'
-        shell: bash
+        working-directory: 1.21.1
         run: |
-          set -euo pipefail
-          for ws in 1.20.1 1.21.1 26.2; do
-            case "$ws" in
-              26.2) build_java="$JAVA_HOME_25_X64" ;;
-              *) build_java="$JAVA_HOME_21_X64" ;;
-            esac
-            echo "Building workspace $ws with $build_java"
-            (
-              cd "$ws"
-              export JAVA_HOME="$build_java"
-              export PATH="$JAVA_HOME/bin:$PATH"
-              bash gradlew clean build --no-daemon --stacktrace
-            )
-          done
+          bash gradlew clean build --no-daemon --stacktrace
+          bash gradlew :neoforge:runGameTestServer --no-daemon --stacktrace
 
       - name: Validate complete packaged release and version-specific notes
         env:
@@ -149,9 +130,9 @@ jobs:
           const fs = require('fs');
           const path = require('path');
           const crypto = require('crypto');
-          // Verified public Simple Terminals project IDs. Never publish to a different configured project.
+          // Verified public project IDs (the former Simple Terminals project, now OmniVault). Never publish elsewhere.
           if (process.env.MODRINTH_ID !== 'Ss3e4qjk' || process.env.CURSEFORGE_ID !== '1528758') {
-            throw new Error('Configured publish destination is not the verified Simple Terminals project');
+            throw new Error('Configured publish destination is not the verified OmniVault project');
           }
           const version = process.env.VERSION;
           const platforms = (process.env.PLATFORMS || 'both').toLowerCase();
@@ -161,10 +142,10 @@ jobs:
           const doModrinth = platforms === 'both' || platforms === 'modrinth';
           const doCurse = platforms === 'both' || platforms === 'curseforge';
           const manifest = JSON.parse(fs.readFileSync(process.env.RELEASE_MANIFEST, 'utf8'));
-          if (manifest.version !== version || manifest.artifacts.length !== 6) {
+          if (manifest.version !== version || manifest.artifacts.length !== 1) {
             throw new Error('Missing or mismatched validated release manifest');
           }
-          // Check all six artifacts before the first API request and reuse exactly these bytes.
+          // Check every artifact before the first API request and reuse exactly these bytes.
           const jars = manifest.artifacts.map((artifact) => {
             const bytes = fs.readFileSync(artifact.path);
             for (const algorithm of ['sha256', 'sha1', 'sha512']) {

@@ -1,0 +1,22 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "minecraft:ender_pearl"
+    },
+    {
+      "item": "omnivault:quantum_processor"
+    },
+    {
+      "item": "minecraft:paper"
+    },
+    {
+      "item": "omnivault:omnium_ingot"
+    }
+  ],
+  "result": {
+    "id": "omnivault:quantum_link_card",
+    "count": 2
+  }
+}

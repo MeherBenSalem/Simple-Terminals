@@ -34,3 +34,6 @@ graphify-out/
 # Python regression-test caches
 __pycache__/
 *.pyc
+
+# Local agent worktrees
+.claude/

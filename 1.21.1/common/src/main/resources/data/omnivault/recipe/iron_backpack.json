@@ -1,0 +1,21 @@
+{
+  "type": "omnivault:backpack_upgrade",
+  "category": "equipment",
+  "pattern": [
+    "MMM",
+    "MBM",
+    "MMM"
+  ],
+  "key": {
+    "M": {
+      "tag": "c:ingots/iron"
+    },
+    "B": {
+      "item": "omnivault:copper_backpack"
+    }
+  },
+  "result": {
+    "id": "omnivault:iron_backpack",
+    "count": 1
+  }
+}

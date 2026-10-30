@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "O",
+    "I",
+    "N"
+  ],
+  "key": {
+    "O": {
+      "item": "omnivault:omnium_ingot"
+    },
+    "I": {
+      "item": "minecraft:iron_ingot"
+    },
+    "N": {
+      "item": "minecraft:gold_nugget"
+    }
+  },
+  "result": {
+    "id": "omnivault:drawer_key",
+    "count": 1
+  }
+}

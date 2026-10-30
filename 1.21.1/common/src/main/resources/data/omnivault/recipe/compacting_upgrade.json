@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    " P ",
+    "PUP",
+    " T "
+  ],
+  "key": {
+    "P": {
+      "item": "minecraft:piston"
+    },
+    "U": {
+      "item": "omnivault:upgrade_base"
+    },
+    "T": {
+      "item": "minecraft:crafting_table"
+    }
+  },
+  "result": {
+    "id": "omnivault:compacting_upgrade",
+    "count": 1
+  }
+}

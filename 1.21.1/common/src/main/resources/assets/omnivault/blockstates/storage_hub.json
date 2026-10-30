@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "active=false": {
+      "model": "omnivault:block/storage_hub"
+    },
+    "active=true": {
+      "model": "omnivault:block/storage_hub_active"
+    }
+  }
+}

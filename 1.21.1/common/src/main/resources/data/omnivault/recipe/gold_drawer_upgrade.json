@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "SGS",
+    "GUG",
+    "SGS"
+  ],
+  "key": {
+    "S": {
+      "item": "minecraft:stick"
+    },
+    "G": {
+      "item": "minecraft:gold_ingot"
+    },
+    "U": {
+      "item": "omnivault:iron_drawer_upgrade"
+    }
+  },
+  "result": {
+    "id": "omnivault:gold_drawer_upgrade",
+    "count": 1
+  }
+}
