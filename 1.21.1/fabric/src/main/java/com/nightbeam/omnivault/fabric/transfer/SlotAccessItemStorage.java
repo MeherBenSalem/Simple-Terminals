@@ -1,6 +1,7 @@
 package com.nightbeam.omnivault.fabric.transfer;
 
 import com.nightbeam.omnivault.storage.ItemKey;
+import com.nightbeam.omnivault.storage.ItemStorage;
 import com.nightbeam.omnivault.storage.SlotAccess;
 import com.nightbeam.omnivault.storage.SlotAccessStorage;
 import net.fabricmc.fabric.api.transfer.v1.item.ItemVariant;
@@ -25,7 +26,7 @@ import java.util.function.Consumer;
  */
 public final class SlotAccessItemStorage extends SnapshotParticipant<Integer> implements SlottedStorage<ItemVariant> {
     private final SlotAccess access;
-    private final SlotAccessStorage counted;
+    private final ItemStorage counted;
     private final Consumer<ItemStack> overflow;
     private final List<Runnable> undo = new ArrayList<>();
 
@@ -35,7 +36,8 @@ public final class SlotAccessItemStorage extends SnapshotParticipant<Integer> im
      */
     public SlotAccessItemStorage(SlotAccess access, Consumer<ItemStack> overflow) {
         this.access = access;
-        this.counted = new SlotAccessStorage(access);
+        // Drawers count their own contents in longs; anything else is counted slot by slot.
+        this.counted = access instanceof ItemStorage storage ? storage : new SlotAccessStorage(access);
         this.overflow = overflow;
     }
 
