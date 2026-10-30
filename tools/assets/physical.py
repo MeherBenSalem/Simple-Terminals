@@ -851,16 +851,7 @@ def relocator_items():
 
 def merge_tag(registry: str, name: str, values: list, namespace: str):
     """Writes a tag, keeping entries other features already put in the same file."""
-    path = kit.RESOURCES / 'data' / namespace / 'tags' / registry / (name + '.json')
-    existing = []
-    if path.exists():
-        existing = json.loads(path.read_text(encoding='utf-8')).get('values', [])
-    merged = list(existing)
-    for value in values:
-        if value not in merged:
-            merged.append(value)
-    merged.sort(key=lambda v: json.dumps(v, sort_keys=True))
-    kit.write_json(path, {'replace': False, 'values': merged})
+    kit.merge_tag(registry, name, values, namespace)
 
 
 def tags():

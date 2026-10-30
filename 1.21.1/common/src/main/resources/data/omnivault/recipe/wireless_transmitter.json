@@ -1,0 +1,27 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    " E ",
+    " R ",
+    "OAO"
+  ],
+  "key": {
+    "E": {
+      "item": "minecraft:ender_pearl"
+    },
+    "R": {
+      "item": "minecraft:lightning_rod"
+    },
+    "O": {
+      "item": "omnivault:omnium_ingot"
+    },
+    "A": {
+      "item": "omnivault:advanced_processor"
+    }
+  },
+  "result": {
+    "id": "omnivault:wireless_transmitter",
+    "count": 1
+  }
+}

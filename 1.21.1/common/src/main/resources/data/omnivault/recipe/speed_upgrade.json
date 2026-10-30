@@ -1,0 +1,22 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "omnivault:upgrade_base"
+    },
+    {
+      "item": "minecraft:sugar"
+    },
+    {
+      "item": "minecraft:redstone"
+    },
+    {
+      "item": "omnivault:omnium_dust"
+    }
+  ],
+  "result": {
+    "id": "omnivault:speed_upgrade",
+    "count": 1
+  }
+}

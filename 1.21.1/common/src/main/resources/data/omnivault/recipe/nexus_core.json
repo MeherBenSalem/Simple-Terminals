@@ -1,0 +1,27 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "OAO",
+    "BEB",
+    "OAO"
+  ],
+  "key": {
+    "O": {
+      "item": "omnivault:omnium_ingot"
+    },
+    "A": {
+      "item": "omnivault:advanced_processor"
+    },
+    "B": {
+      "item": "omnivault:omnium_block"
+    },
+    "E": {
+      "item": "minecraft:ender_eye"
+    }
+  },
+  "result": {
+    "id": "omnivault:nexus_core",
+    "count": 1
+  }
+}

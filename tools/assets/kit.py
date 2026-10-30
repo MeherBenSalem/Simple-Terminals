@@ -482,3 +482,19 @@ def tag(registry: str, name: str, values: list[str], namespace: str = MOD):
     """registry: 'block', 'item'... written under data/<namespace>/tags/<registry>/<name>.json"""
     base = RESOURCES / 'data' / namespace / 'tags' / registry
     return write_json(base / (name + '.json'), {'replace': False, 'values': values})
+
+
+def merge_tag(registry: str, name: str, values: list, namespace: str = 'minecraft'):
+    """Adds entries to a tag file several features write (e.g. minecraft:mineable/pickaxe).
+
+    Keeps every existing entry, drops duplicates (a required entry wins over an optional one for the same id) and
+    sorts by id, so the result is the same whichever generator runs first.
+    """
+    path = RESOURCES / 'data' / namespace / 'tags' / registry / (name + '.json')
+    existing = json.loads(path.read_text(encoding='utf-8')).get('values', []) if path.exists() else []
+    by_id = {}
+    for value in existing + list(values):
+        key = value['id'] if isinstance(value, dict) else value
+        if key not in by_id or isinstance(by_id[key], dict) and not isinstance(value, dict):
+            by_id[key] = value
+    return write_json(path, {'replace': False, 'values': [by_id[k] for k in sorted(by_id)]})

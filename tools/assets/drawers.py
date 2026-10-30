@@ -25,6 +25,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
+import kit  # noqa: E402
 from kit import (AMBER, BLACK, CLEAR, CYAN, DATA, DIAMOND, GOLD, GREEN, GUNMETAL, IRON, MOD, NETHERITE,  # noqa: E402
                  RESOURCES, STEEL, VIOLET, Model, Tex, blockstate_horizontal, blockstate_single, item_model,
                  loot_self, mix, rgb, shade, shaped, shapeless, write_json)
@@ -821,13 +822,7 @@ def loot_drawer(name):
 
 def merge_tag(namespace, registry, name, values):
     """Adds values to a tag file, keeping whatever other features already put there."""
-    path = RESOURCES / 'data' / namespace / 'tags' / registry / (name + '.json')
-    current = json.loads(path.read_text(encoding='utf-8')) if path.exists() else {'replace': False, 'values': []}
-    merged = list(current.get('values', []))
-    for value in values:
-        if value not in merged:
-            merged.append(value)
-    return write_json(path, {'replace': current.get('replace', False), 'values': merged})
+    return kit.merge_tag(registry, name, values, namespace)
 
 
 WOOD_DRAWERS = ['drawer_1x1', 'drawer_1x2', 'drawer_2x2']

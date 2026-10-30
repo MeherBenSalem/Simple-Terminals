@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:smithing_transform",
+  "template": {
+    "item": "omnivault:quantum_upgrade_template"
+  },
+  "base": {
+    "item": "omnivault:wireless_terminal"
+  },
+  "addition": {
+    "item": "minecraft:nether_star"
+  },
+  "result": {
+    "id": "omnivault:quantum_wireless_terminal",
+    "count": 1
+  }
+}

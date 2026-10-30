@@ -17,6 +17,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
+import kit  # noqa: E402
 from kit import (  # noqa: E402
     AMBER, BLACK, CLEAR, CYAN, DATA, GUNMETAL, RESOURCES, STEEL, VIOLET, Model, Tex, blockstate_facing,
     blockstate_horizontal, item_model, loot_self, mix, save_animation, shade, shaped, shapeless, write_json, ASSETS, MOD,
@@ -628,12 +629,7 @@ def blockstate_variants(name: str, variants: dict[str, str]):
 
 def merge_tag(registry: str, name: str, values: list[str], namespace: str = 'minecraft'):
     """Adds values to a tag file other features may also write, keeping theirs."""
-    path = RESOURCES / 'data' / namespace / 'tags' / registry / (name + '.json')
-    existing = []
-    if path.exists():
-        existing = json.loads(path.read_text(encoding='utf-8')).get('values', [])
-    merged = sorted(set(existing) | set(values))
-    write_json(path, {'replace': False, 'values': merged})
+    kit.merge_tag(registry, name, values, namespace)
 
 
 def data():
