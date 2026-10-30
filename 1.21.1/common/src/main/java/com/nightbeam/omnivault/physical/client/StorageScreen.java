@@ -153,12 +153,7 @@ public class StorageScreen extends AbstractContainerScreen<StorageMenu> {
         int countLeft = counterRight() - font.width(count);
         g.drawString(font, count, countLeft, titleLabelY, used >= layout.size() ? GuiStyle.WARN : GuiStyle.TEXT_DIM, false);
 
-        int maxWidth = countLeft - 6 - titleLabelX;
-        Component shown = title;
-        if (font.width(title) > maxWidth) {
-            shown = Component.literal(font.plainSubstrByWidth(title.getString(), Math.max(0, maxWidth - font.width("…"))) + "…");
-        }
-        GuiStyle.title(g, font, shown, titleLabelX, titleLabelY);
+        GuiStyle.title(g, font, GuiStyle.fit(font, title, countLeft - 6 - titleLabelX), titleLabelX, titleLabelY);
         if (!layout.compact()) {
             GuiStyle.labelDim(g, font, playerInventoryTitle, inventoryLabelX, inventoryLabelY);
         }

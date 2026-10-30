@@ -12,6 +12,7 @@ import com.nightbeam.omnivault.util.InventorySorting;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.EditBox;
+import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -22,6 +23,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import org.lwjgl.glfw.GLFW;
 
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -35,6 +37,9 @@ import java.util.Optional;
  */
 public class TerminalScreen<T extends TerminalMenu> extends AbstractContainerScreen<T> {
     private static final int SCROLL_X = 174;
+    /** The search well, right-aligned with the scrollbar; the title gets the space to its left. */
+    private static final int SEARCH_X = 104;
+    private static final int SEARCH_WIDTH = SCROLL_X + 8 - SEARCH_X;
 
     // Remembered for the session across every terminal.
     private static SortMode sortMode = SortMode.COUNT;
@@ -61,8 +66,10 @@ public class TerminalScreen<T extends TerminalMenu> extends AbstractContainerScr
     @Override
     protected void init() {
         super.init();
-        search = new EditBox(font, leftPos + 92, topPos + 6, 78, 10, Component.translatable("gui.omnivault.terminal.search"));
+        search = new EditBox(font, leftPos + SEARCH_X + 3, topPos + 6, SEARCH_WIDTH - 6, 10, Component.translatable("gui.omnivault.terminal.search"));
         search.setBordered(false);
+        search.setTooltip(Tooltip.create(Component.translatable("gui.omnivault.terminal.search_help")));
+        search.setTooltipDelay(Duration.ofMillis(600));
         search.setMaxLength(80);
         search.setTextColor(GuiStyle.TEXT);
         search.setValue(lastSearch);
@@ -231,7 +238,7 @@ public class TerminalScreen<T extends TerminalMenu> extends AbstractContainerScr
         super.render(graphics, mouseX, mouseY, partialTick);
         renderGrid(graphics, mouseX, mouseY);
         if (search.getValue().isEmpty() && !search.isFocused()) {
-            graphics.drawString(font, Component.translatable("gui.omnivault.terminal.search_hint"), leftPos + 92, topPos + 6, GuiStyle.TEXT_DIM, false);
+            graphics.drawString(font, Component.translatable("gui.omnivault.terminal.search_hint"), leftPos + SEARCH_X + 3, topPos + 6, GuiStyle.TEXT_DIM, false);
         }
         TerminalMenu.ClientEntry hovered = entryAt(mouseX, mouseY);
         Map.Entry<FluidKey, Long> hoveredFluid = fluidAt(mouseX, mouseY);
@@ -254,7 +261,7 @@ public class TerminalScreen<T extends TerminalMenu> extends AbstractContainerScr
     @Override
     protected void renderBg(GuiGraphics graphics, float partialTick, int mouseX, int mouseY) {
         GuiStyle.window(graphics, leftPos, topPos, imageWidth, imageHeight);
-        GuiStyle.well(graphics, leftPos + 89, topPos + 4, 84, 13);
+        GuiStyle.well(graphics, leftPos + SEARCH_X, topPos + 4, SEARCH_WIDTH, 13);
         GuiStyle.well(graphics, leftPos + TerminalMenu.GRID_X - 1, topPos + TerminalMenu.GRID_Y - 1, TerminalMenu.COLUMNS * 18 + 2, menu.rows() * 18 + 2);
         GuiStyle.slots(graphics, leftPos + TerminalMenu.GRID_X - 1 + 1, topPos + TerminalMenu.GRID_Y, TerminalMenu.COLUMNS, menu.rows());
         GuiStyle.scrollbar(graphics, leftPos + SCROLL_X, topPos + TerminalMenu.GRID_Y - 1, menu.rows() * 18 + 2,
@@ -317,7 +324,7 @@ public class TerminalScreen<T extends TerminalMenu> extends AbstractContainerScr
 
     @Override
     protected void renderLabels(GuiGraphics graphics, int mouseX, int mouseY) {
-        GuiStyle.title(graphics, font, title, 8, 6);
+        GuiStyle.title(graphics, font, GuiStyle.fit(font, title, SEARCH_X - 4 - 8), 8, 6);
         GuiStyle.labelDim(graphics, font, playerInventoryTitle, 8, inventoryLabelY);
         Component summary = Component.translatable(fluidMode ? "gui.omnivault.terminal.fluid_summary" : "gui.omnivault.terminal.summary",
                 Formatting.compact(viewSize()));

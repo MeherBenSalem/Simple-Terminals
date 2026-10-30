@@ -140,6 +140,15 @@ public final class GuiStyle {
         g.drawString(font, text, x, y, TEXT, true);
     }
 
+    /** The text as is if it fits in {@code maxWidth} pixels, otherwise cut short with an ellipsis. */
+    public static Component fit(Font font, Component text, int maxWidth) {
+        if (font.width(text) <= maxWidth) {
+            return text;
+        }
+        return Component.literal(font.plainSubstrByWidth(text.getString(), Math.max(0, maxWidth - font.width("…"))) + "…")
+                .withStyle(text.getStyle());
+    }
+
     public static void centered(GuiGraphics g, Font font, Component text, int cx, int y, int color) {
         FormattedCharSequence seq = text.getVisualOrderText();
         g.drawString(font, seq, cx - font.width(seq) / 2, y, color, false);
