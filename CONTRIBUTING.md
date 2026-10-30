@@ -1,6 +1,6 @@
 # Contributing
 
-Thanks for contributing to Simple Terminals.
+Thanks for contributing to OmniVault (formerly Simple Terminals).
 
 ## Before you start
 
@@ -12,13 +12,16 @@ Thanks for contributing to Simple Terminals.
 
 1. Fork the repository and create a branch from `main`.
 2. Make the smallest coherent change that solves the problem.
-3. Build the version root you changed from inside that folder (`1.20.1/`, `1.21.1/`, or `26.2/`).
+3. Build and test from `1.21.1/`: `./gradlew build` and `./gradlew :neoforge:runGameTestServer`, plus
+   `python3 -m unittest discover -s tests` from the repository root.
 4. Update documentation when behavior or release steps change.
 5. Open a pull request with a clear summary and verification notes.
 
 ## Coding expectations
 
-- Follow the existing patterns in the targeted version root. Version folders are intentionally isolated.
+- Follow `docs/ARCHITECTURE.md`: gameplay goes in `common` (vanilla APIs only), loader glue in `neoforge`.
+- Change art and data through the generators in `tools/assets/` and lang through `tools/lang/`, never the generated files.
+- Add a GameTest for gameplay changes.
 - Do not invent Minecraft, Fabric, Forge, or NeoForge APIs — verify against the exact version you target.
 - Avoid committing generated jars, logs, run directories, secrets, or local IDE files.
 

@@ -1,74 +1,70 @@
-# Simple Terminals
+# OmniVault
 
-Wall-mounted crafting terminals that open nearby inventories with a scrollable storage view, search, and a 3×3 crafting grid.
+**One mod for every storage need.** A channel-free digital storage network with drives, cells, terminals,
+buses and autocrafting; tiered vaults, drawers, linked (ender) vaults and backpacks with upgrades; and a
+progression that starts with a Tom's-Simple-Storage-style chest network on day one and ends with
+quantum bridges between dimensions. Every block is a hand-built 3D model.
+
+OmniVault is the successor of **Simple Terminals**: worlds that used its Crafting Terminal keep it.
+
+![OmniVault](marketing/images/banner.png)
 
 ## Features
 
-- Place a thin **Crafting Terminal** on a wall facing a chest or other inventory
-- Opens the target menu when it provides a `MenuProvider`
-- Otherwise opens a terminal UI with search, scrolling slots, and crafting
-- MultiLoader builds for Fabric, Forge (1.20.1), and NeoForge (1.21.1 / 26.2)
+| Area | Highlights |
+| --- | --- |
+| [Early game](docs/PROGRESSION.md) | Storage Hub + Inventory Cable: every chest the cable touches in one terminal. Vanilla materials, no power. |
+| [Storage network](docs/NETWORK.md) | Nexus Core, dyeable cables, Cell Drives with item and fluid cells from 4K to Singularity (2.1 billion items), storage and crafting terminals with search, sorting, fluids and JEI transfer, import/export/storage buses, Network Port, Destructor, Constructor, Signal Emitter, Storage Monitor, wireless and quantum wireless terminals, Quantum Bridges between dimensions, optional Forge Energy. No channels. |
+| [Autocrafting](docs/AUTOCRAFTING.md) | Crafting and processing patterns, Pattern Providers for any mod's machines, Assemblers and Quantum Assemblers, Crafting Processors, a planner with sub-crafts, reservations and a live status screen. |
+| [Physical storage](docs/STORAGE.md) | Six tiers of vaults (45–162 slots) with in-place upgrade kits, 1×1/1×2/2×2 drawers, compacting drawers and drawer controllers, Linked Vaults and Pouches, Trash Can, Relocators. |
+| [Backpacks](docs/BACKPACKS.md) | Six tiers (27–120 slots), wearable and placeable, nine upgrades: pickup, magnet, void, feeding, restock, compacting, crafting, everlasting and deposit. |
+| [Configuration](docs/CONFIG.md) | One commented `omnivault-common.toml`. |
 
 ## Supported versions
 
-| Minecraft | Fabric | Forge | NeoForge |
-|-----------|--------|-------|----------|
-| 1.20.1    | Yes    | Yes   | —        |
-| 1.21.1    | Yes    | —     | Yes      |
-| 26.2      | Yes    | —     | Yes      |
+| Minecraft | Loader | Java | Also install |
+| --- | --- | --- | --- |
+| 1.21.1 | NeoForge 21.1.80+ | 21 | Nothing (JEI optional) |
 
-**Limitation:** Capability-based item handlers and Sophisticated Storage controller integration work on **Forge/NeoForge** only. Fabric opens adjacent vanilla containers / menu providers.
-
-## Requirements
-
-- **JDK 21** (or 17) to run Gradle for `1.20.1/` and `1.21.1/`
-- **JDK 25** for `26.2/`
-
-## Installation
-
-1. Install the matching loader for your Minecraft version.
-2. Drop `simple-terminals-<minecraft>-<loader>-<version>.jar` into `mods/`.
-3. Restart the game.
+The project uses the MultiLoader layout (`common` + loader modules) so Fabric and other Minecraft versions can follow.
+Install on both the server and every client.
 
 ## Building
 
-```powershell
-$env:JAVA_HOME = "C:\path\to\jdk-21"
-cd 1.20.1
-.\gradlew.bat build
-cd ..\1.21.1
-.\gradlew.bat build
-
-$env:JAVA_HOME = "C:\path\to\jdk-25"
-cd ..\26.2
-.\gradlew.bat build
+```bash
+cd 1.21.1
+./gradlew build
 ```
+
+The jar is written to `1.21.1/neoforge/build/libs/omnivault-1.21.1-neoforge-<version>.jar`.
 
 ## Testing
 
-Run source-resource regressions with `python3 -m unittest discover -s tests -v`.
-Run the native Minecraft recipe suite with a JDK 25+:
-`python3 tests/native_recipe/run.py --java "$JAVA_HOME/bin/java"`.
-Also run `python3 tests/native_registry_ids/run.py --java "$JAVA_HOME/bin/java"`
-for the 26.2 registry-property regression.
-See [the native test instructions](tests/native_recipe/README.md) for coverage,
-verified download caching, and loader/UI integration limits.
+```bash
+cd 1.21.1 && ./gradlew :neoforge:runGameTestServer   # boots a dedicated server and runs every GameTest
+python3 -m unittest discover -s tests                 # resource and release-guard checks (repository root)
+python3 tools/assets/build_lang.py --check            # en_us.json matches the lang fragments
+```
 
-After building, validate each distributable loader jar with
-`python3 tests/test_terminal_recipe_resources.py --jar 1.21.1:path/to/loader.jar -v`
-(substitute its Minecraft version; repeat `--jar` for multiple artifacts).
-The non-publishing **Verify recipes and builds** workflow runs native tests,
-builds all six supported loader targets, and validates their packaged survival resources.
-The separate publish workflow remains tag/manual-triggered.
+The GameTests build real networks, vaults, drawers, backpacks and autocrafting setups in a world and check the
+results, from cell capacities to a furnace smelting through a Pattern Provider and a drive in the Nether joined
+through a Quantum Bridge. `tools/qa/` drives a dev server and a headless client for in-game checks and screenshots.
 
 ## Project layout
 
 ```
-Simple-Terminals/
-├── 1.20.1/   # Fabric + Forge
-├── 1.21.1/   # Fabric + NeoForge
-└── 26.2/     # Fabric + NeoForge
+1.21.1/
+├── common/     # gameplay, menus, screens, renderers (vanilla APIs only)
+└── neoforge/   # NeoForge glue, plus src/gametest (not shipped)
+tools/
+├── assets/     # generators for every texture, model, blockstate, recipe and loot table; offline model renderer
+├── lang/       # lang fragments merged into en_us.json
+└── qa/         # dev server / Xvfb client automation
+marketing/      # CurseForge/Modrinth listing copy and artwork
+docs/           # player guides and architecture notes
 ```
+
+See [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) for how the code is organised.
 
 ## Contributing
 

@@ -1,4 +1,45 @@
-# Simple Terminals — Changelog
+# OmniVault (formerly Simple Terminals) — Changelog
+
+## 2.0.0
+
+Simple Terminals is now **OmniVault**, an all-in-one storage mod for **Minecraft 1.21.1 on NeoForge**. Existing
+Crafting Terminals carry over: the old `simple_terminals:crafting_terminal` ID now loads as OmniVault's Crafting
+Terminal.
+
+### Early game
+* **Storage Hub** and **Inventory Cable**: every chest, barrel or other inventory they touch joins one network,
+  from vanilla materials. Storage and Crafting Terminals now need only vanilla materials too.
+
+### Storage network
+* **Nexus Core**, dyeable **Nexus Cable** and no channel limits; optional Forge Energy.
+* **Cell Drives** with item and fluid cells in 4K, 16K, 64K, 256K, 1M, 16M and **Singularity** (2,147,483,648
+  items) tiers, plus creative cells.
+* **Storage** and **Crafting Terminals**: search by name, `@mod` and `#tag`, four sort orders, a fluid view with
+  bucket fill/empty, and JEI recipe transfer.
+* **Import**, **Export** and **Storage Buses** for items and fluids, **Network Port**, **Destructor**,
+  **Constructor**, **Signal Emitter** and **Storage Monitor**; Speed, Stack, Fuzzy, Redstone and Range Upgrades.
+* **Wireless Terminal** with **Wireless Transmitters**, the **Quantum Wireless Terminal**, and **Quantum Bridges**
+  that join network segments across any distance and between dimensions.
+
+### Autocrafting
+* Crafting and processing patterns, the **Pattern Encoding Terminal**, **Pattern Providers**, **Assemblers**,
+  **Quantum Assemblers** and **Crafting Processors**, with a planner, reservations and a crafting status screen.
+
+### Physical storage
+* **Vaults** in six tiers (45–162 slots) with animated lids, sorting and in-place **upgrade kits** (also for vanilla
+  chests and barrels).
+* **Drawers** (1×1, 1×2, 2×2), **Compacting Drawer**, **Drawer Controller**, **Drawer Trim**, capacity and void
+  upgrades and the **Drawer Key**.
+* **Linked Vault** and **Linked Pouch** (colour frequencies, optional private mode), **Trash Can**, **Relocator** and
+  **Netherite Relocator**.
+
+### Backpacks
+* Six tiers (27–120 slots), wearable and placeable, dyeable leather, key binding **B**.
+* Pickup, Magnet, Void, Feeding, Restock, Compacting, Crafting, Everlasting and Deposit upgrades with filters.
+
+### Removed for now
+* The 1.20.1 (Fabric, Forge) and 26.2 (Fabric, NeoForge) builds and the 1.21.1 Fabric build of Simple Terminals.
+  The code layout is ready for those ports to return.
 
 ## 1.1.1
 

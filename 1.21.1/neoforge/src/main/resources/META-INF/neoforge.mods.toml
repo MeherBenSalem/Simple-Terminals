@@ -1,4 +1,5 @@
 modLoader = "javafml"
+issueTrackerURL = "https://github.com/MeherBenSalem/Simple-Terminals/issues"
 loaderVersion = "${neoforge_loader_version_range}"
 license = "${license}"
 [[mods]]
@@ -6,6 +7,7 @@ modId = "${mod_id}"
 version = "${version}"
 displayName = "${mod_name}"
 displayURL = "https://nightbeam.cloud"
+logoFile = "omnivault_logo.png"
 credits = "${credits}"
 authors = "${mod_author}"
 description = '''${description}'''
@@ -21,3 +23,9 @@ type = "required"
 versionRange = "${minecraft_version_range}"
 ordering = "NONE"
 side = "BOTH"
+[[dependencies.${mod_id}]]
+modId = "jei"
+type = "optional"
+versionRange = "[19.21,)"
+ordering = "NONE"
+side = "CLIENT"
