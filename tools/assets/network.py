@@ -848,54 +848,111 @@ def p_flange(t):
         t.set(1, 1, STEEL[3])
 
 
-def cable_core(s: Shape):
-    s.box([5.5, 5.5, 5.5], [10.5, 10.5, 10.5], 'casing_dark')
+# Material sets for the two cable families (same geometry, same tinted emissive light strips).
+CABLE_STYLES = {
+    'nexus': {'body': 'casing_dark', 'bracket': 'bracket', 'rail': 'steel', 'flange': 'flange'},
+    'inventory': {'body': 'oakwood', 'bracket': 'copper_bracket', 'rail': 'copper', 'flange': 'flange_copper'},
+}
+
+
+@painter('oakwood')
+def p_oakwood(t):
+    """Oak with grain running along the long axis and darkened edges (inventory cable body)."""
+    vertical = t.h > t.w
+    t.noise(OAK, base=2, chance=0.3)
+    n = t.w if vertical else t.h
+    for i in range(n):
+        if i % 3 == 1:
+            for j in range(t.h if vertical else t.w):
+                x, y = (i, j) if vertical else (j, i)
+                if t.rng.random() < 0.7:
+                    t.set(x, y, OAK[1])
+    if t.w >= 2 and t.h >= 2:
+        t.hline(0, t.w - 1, 0, OAK[3])
+        t.vline(0, 0, t.h - 1, OAK[3])
+        t.hline(0, t.w - 1, t.h - 1, OAK[0])
+        t.vline(t.w - 1, 0, t.h - 1, OAK[0])
+
+
+@painter('copper_bracket')
+def p_copper_bracket(t):
+    plate(t, COPPER, base=2, hi=COPPER[5], lo=COPPER[0])
+    if t.w >= 3 and t.h >= 3:
+        t.set(t.w // 2, t.h // 2, COPPER[4])
+
+
+@painter('flange_copper')
+def p_flange_copper(t):
+    plate(t, COPPER, base=2, hi=COPPER[5], lo=COPPER[0])
+    if t.w >= 5 and t.h >= 5:
+        t.rect(1, 1, t.w - 2, t.h - 2, OAK[0])
+        t.rect(2, 2, t.w - 3, t.h - 3, BLACK)
+        t.set(1, 1, COPPER[3])
+
+
+def cable_core(s: Shape, style='nexus'):
+    m = CABLE_STYLES[style]
+    s.box([5.5, 5.5, 5.5], [10.5, 10.5, 10.5], m['body'])
     for x in (5, 9.5):
         for y in (5, 9.5):
             for z in (5, 9.5):
-                s.box([x, y, z], [x + 1.5, y + 1.5, z + 1.5], 'bracket')
+                s.box([x, y, z], [x + 1.5, y + 1.5, z + 1.5], m['bracket'])
     lamp = dict(emissive=True, tint=0)
     s.box([5.25, 7, 7], [10.75, 9, 9], 'white', faces={'north': None, 'south': None, 'up': None, 'down': None}, **lamp)
     s.box([7, 5.25, 7], [9, 10.75, 9], 'white', faces={'north': None, 'south': None, 'east': None, 'west': None}, **lamp)
     s.box([7, 7, 5.25], [9, 9, 10.75], 'white', faces={'east': None, 'west': None, 'up': None, 'down': None}, **lamp)
 
 
-def cable_arm(s: Shape, turns=0):
+def cable_arm(s: Shape, turns=0, style='nexus'):
+    m = CABLE_STYLES[style]
     put = putter(s, turns)
-    put([6, 6, 0], [10, 10, 5.5], 'casing_dark', skip=('north', 'south'))
+    put([6, 6, 0], [10, 10, 5.5], m['body'], skip=('north', 'south'))
     for x in (5.5, 9.5):
         for y in (5.5, 9.5):
-            put([x, y, 1], [x + 1, y + 1, 5.5], 'steel', skip=('south',))
+            put([x, y, 1], [x + 1, y + 1, 5.5], m['rail'], skip=('south',))
     lamp = dict(emissive=True, tint=0, skip=('north', 'south'))
     put([7.25, 9.75, 1], [8.75, 10.25, 5.5], 'white', **lamp)
     put([7.25, 5.75, 1], [8.75, 6.25, 5.5], 'white', **lamp)
     put([5.75, 7.25, 1], [6.25, 8.75, 5.5], 'white', **lamp)
     put([9.75, 7.25, 1], [10.25, 8.75, 5.5], 'white', **lamp)
-    put([5.5, 5.5, 0], [10.5, 10.5, 1], 'bracket', faces={'north': 'flange'})
+    put([5.5, 5.5, 0], [10.5, 10.5, 1], m['bracket'], faces={'north': m['flange']})
+
+
+def cable_block(name: str, style: str):
+    """Core + arm models, the item (core with east/west arms) and the multipart blockstate."""
+    atlas = Atlas(f'block/{name}')
+    particle = 'block/network/casing' if style == 'nexus' else 'block/inventory_cable/particle'
+    core = Shape(atlas, particle=particle)
+    cable_core(core, style)
+    arm = Shape(atlas, particle=particle)
+    cable_arm(arm, style=style)
+    item = Shape(atlas, particle=particle)
+    cable_core(item, style)
+    cable_arm(item, 1, style)
+    cable_arm(item, 3, style)
+    atlas.pack()
+    atlas.save()
+    core.save(f'block/{name}_core')
+    arm.save(f'block/{name}_arm')
+    item.display = kit.Model().block_display().display
+    item.display['gui'] = {'rotation': [30, 225, 0], 'translation': [0, 0, 0], 'scale': [0.85, 0.85, 0.85]}
+    item.save(f'item/{name}')
+    rot = {'north': {}, 'east': {'y': 90}, 'south': {'y': 180}, 'west': {'y': 270}, 'up': {'x': 270}, 'down': {'x': 90}}
+    parts = [{'apply': {'model': f'{M}:block/{name}_core'}}]
+    for direction, r in rot.items():
+        parts.append({'when': {direction: 'true'}, 'apply': {'model': f'{M}:block/{name}_arm', **r}})
+    kit.blockstate_multipart(name, parts)
 
 
 def nexus_cable():
-    atlas = Atlas('block/nexus_cable')
-    core = Shape(atlas)
-    cable_core(core)
-    arm = Shape(atlas)
-    cable_arm(arm)
-    item = Shape(atlas)
-    cable_core(item)
-    cable_arm(item, 1)
-    cable_arm(item, 3)
-    atlas.pack()
-    atlas.save()
-    core.save('block/nexus_cable_core')
-    arm.save('block/nexus_cable_arm')
-    item.display = kit.Model().block_display().display
-    item.display['gui'] = {'rotation': [30, 225, 0], 'translation': [0, 0, 0], 'scale': [0.85, 0.85, 0.85]}
-    item.save('item/nexus_cable')
-    rot = {'north': {}, 'east': {'y': 90}, 'south': {'y': 180}, 'west': {'y': 270}, 'up': {'x': 270}, 'down': {'x': 90}}
-    parts = [{'apply': {'model': f'{M}:block/nexus_cable_core'}}]
-    for direction, r in rot.items():
-        parts.append({'when': {direction: 'true'}, 'apply': {'model': f'{M}:block/nexus_cable_arm', **r}})
-    kit.blockstate_multipart('nexus_cable', parts)
+    cable_block('nexus_cable', 'nexus')
+
+
+def inventory_cable():
+    t = Tex(16, seed=61)
+    p_oakwood(t)
+    t.save('block/inventory_cable/particle')
+    cable_block('inventory_cable', 'inventory')
 
 
 # =================================================================================================
@@ -1697,6 +1754,266 @@ def wireless_transmitter():
 
 
 # =================================================================================================
+# Storage Hub (early game: oak and iron, copper ports, an amber status lamp)
+# =================================================================================================
+
+@painter('hub_planks')
+def p_hub_planks(t):
+    """Oak boards behind the iron bands, with a darker gap between boards and nail heads."""
+    w, h = t.w, t.h
+    t.noise(OAK, base=3, chance=0.3)
+    for x in range(w):
+        for y in range(h):
+            if x % 4 == 3:
+                t.set(x, y, OAK[1])
+            elif t.rng.random() < 0.08:
+                t.set(x, y, OAK[4])
+    for x in range(1, w, 4):
+        for y in (1, h - 2):
+            t.set(x, y, IRON_RAMP[3])
+    t.hline(0, w - 1, 0, OAK[1])
+    t.vline(0, 0, h - 1, OAK[1])
+
+
+@painter('iron_band')
+def p_iron_band(t):
+    """Forged (wrought) iron strap with rivets along its length."""
+    wrought = [rgb('1f2226'), rgb('3a3f45'), rgb('555b63'), rgb('737a83'), rgb('959ca5'), rgb('b9c0c8')]
+    plate(t, wrought, base=2, hi=wrought[4], lo=wrought[0])
+    along_x = t.w >= t.h
+    n = t.w if along_x else t.h
+    for i in range(2, n - 1, 4):
+        x, y = (i, 0) if along_x else (0, i)
+        t.set(x, y, wrought[5])
+
+
+@painter('lens')
+def p_lens(t, ramp='amber', lit='1'):
+    """A domed lamp lens: bright core, rim and a specular glint."""
+    r = RAMPS[ramp]
+    on = lit == '1'
+    t.fill(r[3] if on else r[1])
+    if t.w >= 3 and t.h >= 3:
+        t.rect(1, 1, t.w - 2, t.h - 2, r[4] if on else r[2])
+        t.set(1, 1, r[5] if on else r[3])
+    t.set(0, 0, r[5] if on else r[2])
+
+
+def hub_model(s: Shape, active: bool):
+    glow = 'glow:amber' if active else 'dim:amber'
+    s.box([1, 1, 1], [15, 15, 15], 'hub_planks')
+    for a in (0, 14):
+        for b in (0, 14):
+            s.box([0, a, b], [16, a + 2, b + 2], 'iron_band')
+            s.box([a, 0, b], [a + 2, 16, b + 2], 'iron_band')
+            s.box([a, b, 0], [a + 2, b + 2, 16], 'iron_band')
+    # a copper port on every side face and underneath, glowing amber while the network runs
+    ports = {
+        'north': ([5, 5, 0.5], [11, 11, 1], [6.5, 6.5, 0.75], [9.5, 9.5, 1]),
+        'south': ([5, 5, 15], [11, 11, 15.5], [6.5, 6.5, 15], [9.5, 9.5, 15.25]),
+        'west': ([0.5, 5, 5], [1, 11, 11], [0.75, 6.5, 6.5], [1, 9.5, 9.5]),
+        'east': ([15, 5, 5], [15.5, 11, 11], [15, 6.5, 6.5], [15.25, 9.5, 9.5]),
+        'down': ([5, 0.5, 5], [11, 1, 11], [6.5, 0.75, 6.5], [9.5, 1, 9.5]),
+    }
+    for face, (f, t, gf, gt) in ports.items():
+        s.box(f, t, 'copper', faces={face: 'ring:copper'})
+        s.box(gf, gt, glow, emissive=active)
+    # the status lamp: a copper bezel and a domed amber lens on top
+    s.box([5, 15, 5], [11, 15.5, 11], 'copper', faces={'up': 'ring:copper'}, skip=('down',))
+    s.box([6, 15, 6], [10, 15.75, 10], 'copper_bracket', skip=('down',))
+    s.box([6.75, 15.75, 6.75], [9.25, 16, 9.25], f'lens:amber:{1 if active else 0}', emissive=active,
+          skip=('down',))
+
+
+def storage_hub():
+    atlas = Atlas('block/storage_hub')
+    textures = {}
+    idle = Shape(atlas, render_type='minecraft:cutout', textures=textures, particle='block/storage_hub/particle')
+    hub_model(idle, False)
+    on = Shape(atlas, render_type='minecraft:cutout', textures=textures, particle='block/storage_hub/particle')
+    hub_model(on, True)
+    atlas.pack()
+    atlas.save()
+    t = Tex(16, seed=62)
+    p_hub_planks(t)
+    t.save('block/storage_hub/particle')
+    idle.save('block/storage_hub')
+    on.save('block/storage_hub_active')
+    kit.item_model('storage_hub', parent='block/storage_hub_active')
+    blockstate_variants('storage_hub', 'active', {'false': 'block/storage_hub', 'true': 'block/storage_hub_active'})
+
+
+# =================================================================================================
+# Quantum Bridge (late game: a dimensional gateway in void steel, violet and singularity white)
+# =================================================================================================
+
+VOID = [rgb('08060c'), rgb('120d1a'), rgb('1c1428'), rgb('2a1f3b'), rgb('3d2e56'), rgb('5a4580')]
+SINGULARITY = [rgb('4a3a66'), rgb('8a74b8'), rgb('c8b8f0'), rgb('e9d7ff'), rgb('f6efff'), rgb('ffffff')]
+RAMPS['void'] = VOID
+RAMPS['singularity'] = SINGULARITY
+
+
+@painter('void')
+def p_void(t):
+    plate(t, VOID, base=2, hi=VOID[4], lo=VOID[0])
+
+
+@painter('void_band')
+def p_void_band(t):
+    """Void-steel slab side with an engraved violet circuit line."""
+    plate(t, VOID, base=2, hi=VOID[5], lo=VOID[0])
+    if t.h >= 3:
+        y = t.h // 2
+        for x in range(1, t.w - 1):
+            t.set(x, y, VIOLET[1] if x % 5 else VIOLET[3])
+
+
+@painter('void_top')
+def p_void_top(t):
+    """Top of the bridge: an engraved octagon around the singularity crown, rivets in the corners."""
+    plate(t, VOID, base=2, hi=VOID[4], lo=VOID[0])
+    w, h = t.w, t.h
+    cx, cy = (w - 1) / 2, (h - 1) / 2
+    for y in range(h):
+        for x in range(w):
+            d = max(abs(x - cx), abs(y - cy), (abs(x - cx) + abs(y - cy)) / 1.4)
+            if 5.6 <= d < 6.4:
+                t.set(x, y, VIOLET[1])
+    for x, y in ((1, 1), (w - 3, 1), (1, h - 3), (w - 3, h - 3)):
+        rivet(t, x, y)
+
+
+@painter('void_pillar')
+def p_void_pillar(t):
+    plate(t, VOID, base=3, hi=VIOLET[2], lo=VOID[0])
+    for i in range(2, t.h - 1, 3):
+        t.hline(1, t.w - 2, i, VOID[1])
+
+
+@painter('portal_off')
+def p_portal_off(t):
+    """The gateway at rest: a dark, faintly coiled field."""
+    w, h = t.w, t.h
+    cx, cy = w / 2, h / 2
+    for y in range(h):
+        for x in range(w):
+            dx, dy = x + 0.5 - cx, y + 0.5 - cy
+            r, a = math.hypot(dx, dy), math.atan2(dy, dx)
+            v = math.sin(2 * a + r * 1.3)
+            t.set(x, y, VOID[2] if v > 0.6 else VOID[1] if v > -0.2 else VOID[0])
+
+
+def portal_texture():
+    """Animated vortex: violet spiral arms around a white-hot singularity, with drifting sparks."""
+    frames = []
+    n = 16
+    for f in range(n):
+        t = Tex(16, seed=300 + f)
+        phase = f / n * math.tau
+        for y in range(16):
+            for x in range(16):
+                dx, dy = x + 0.5 - 8, y + 0.5 - 8
+                r, a = math.hypot(dx, dy), math.atan2(dy, dx)
+                v = math.sin(2 * a - r * 1.15 + phase)
+                fall = max(0.0, 1 - r / 5.5)
+                if r < 1.1:
+                    c = SINGULARITY[5]
+                elif r < 1.9:
+                    c = SINGULARITY[3]
+                elif v > 0.6:
+                    c = mix(VIOLET[3], SINGULARITY[3], fall * fall)
+                elif v > 0.0:
+                    c = mix(VIOLET[1], VIOLET[3], fall)
+                else:
+                    c = mix(VOID[1], VIOLET[1], fall)
+                t.set(x, y, c)
+        for k in range(5):
+            ang = phase * 0.5 + k * math.tau / 5
+            rad = 2.5 + ((f + k * 3) % n) / n * 4.5
+            sx, sy = int(8 + rad * math.cos(ang)), int(8 + rad * math.sin(ang))
+            t.set(sx, sy, SINGULARITY[5])
+        frames.append(t)
+    kit.save_animation('block/quantum_bridge/portal', frames, frametime=2, interpolate=True)
+
+
+def octagon_ring(s: Shape, plane: str, centre, depth, apothem, thickness, mat, **kw):
+    """Eight bars forming an octagonal ring. plane 'xy' (faces north/south) or 'zy' (faces east/west);
+    depth = (near, far) along the third axis; centre = (horizontal, vertical) of the ring."""
+    side = 2 * apothem * math.tan(math.radians(22.5)) + thickness * 0.8
+    h, v = centre
+    d0, d1 = depth
+    th = thickness / 2
+    if plane == 'xy':
+        def box(x0, y0, x1, y1, angle=0):
+            s.box([x0, y0, d0], [x1, y1, d1], mat, rot=(angle, 'z', [h, v, (d0 + d1) / 2]) if angle else None, **kw)
+    else:
+        def box(x0, y0, x1, y1, angle=0):
+            s.box([d0, y0, x0], [d1, y1, x1], mat, rot=(angle, 'x', [(d0 + d1) / 2, v, h]) if angle else None, **kw)
+    for sign in (1, -1):
+        yc = v + sign * apothem
+        for angle in (0, 45, -45):
+            box(h - side / 2, yc - th, h + side / 2, yc + th, angle)
+        xc = h + sign * apothem
+        box(xc - th, v - side / 2, xc + th, v + side / 2)
+
+
+def bridge_model(s: Shape, active: bool):
+    ring = 'glow:violet' if active else 'dim:violet'
+    edge = 'glow:singularity' if active else 'dim:violet'
+    s.box([0, 0, 0], [16, 3, 16], 'void_band', faces={'up': 'void', 'down': 'panel'})
+    s.box([0, 13, 0], [16, 15.25, 16], 'void_band', faces={'up': 'void_top', 'down': 'void'})
+    # a rim closes the crown recess at the sides (no see-through slit under a block placed on top)
+    for f, t in (([0, 15.25, 0], [16, 16, 1.5]), ([0, 15.25, 14.5], [16, 16, 16]),
+                 ([0, 15.25, 1.5], [1.5, 16, 14.5]), ([14.5, 15.25, 1.5], [16, 16, 14.5])):
+        s.box(f, t, 'void_band', faces={'up': 'void'}, skip=('down',))
+    s.box([2, 3, 2], [14, 13, 14], 'void', skip=('up', 'down'))
+    for x, z in ((0, 0), (13, 0), (0, 13), (13, 13)):
+        s.box([x, 3, z], [x + 3, 13, z + 3], 'void_pillar', skip=('up', 'down'))
+    portal = ('#portal', [3, 3, 13, 13]) if active else 'portal_off'
+    for turns in range(4):
+        put = putter(s, turns)
+        # the vortex pane, set back between the pillars, with white light along both edges
+        put([3, 3, 1.5], [13, 13, 2], 'void', faces={'north': portal}, emissive=active,
+            skip=('south', 'east', 'west', 'up', 'down'))
+        put([3, 3.5, 0.75], [3.5, 12.5, 1.5], edge, emissive=active, skip=('up', 'down', 'south'))
+        put([12.5, 3.5, 0.75], [13, 12.5, 1.5], edge, emissive=active, skip=('up', 'down', 'south'))
+    # octagonal gateway rings standing in front of each pane
+    for plane, depth in (('xy', (0.5, 1.5)), ('xy', (14.5, 15.5)), ('zy', (0.5, 1.5)), ('zy', (14.5, 15.5))):
+        octagon_ring(s, plane, (8, 8), depth, 4.2, 0.8, ring, emissive=active)
+    # the crown: a singularity held over the top in a violet ring
+    for y, r in ((15.25, 2.6),):
+        side = 2 * r * math.tan(math.radians(22.5)) + 0.3
+        for zc in (8 + r, 8 - r):
+            for a in (0, 45, -45):
+                s.box([8 - side / 2, y, zc - 0.3], [8 + side / 2, y + 0.6, zc + 0.3], ring, emissive=active,
+                      rot=(a, 'y', [8, 8, 8]) if a else None, skip=('down',))
+        for xc in (8 + r, 8 - r):
+            s.box([xc - 0.3, y, 8 - side / 2], [xc + 0.3, y + 0.6, 8 + side / 2], ring, emissive=active,
+                  skip=('down',))
+    s.box([7, 15.25, 7], [9, 16, 9], 'glow:singularity' if active else 'void', emissive=active,
+          rot=(45, 'y', [8, 8, 8]), skip=('down',))
+
+
+def quantum_bridge():
+    portal_texture()
+    atlas = Atlas('block/quantum_bridge')
+    textures = {'portal': 'block/quantum_bridge/portal'}
+    idle = Shape(atlas, textures=textures, particle='block/quantum_bridge/particle')
+    bridge_model(idle, False)
+    on = Shape(atlas, textures=textures, particle='block/quantum_bridge/particle')
+    bridge_model(on, True)
+    atlas.pack()
+    atlas.save()
+    t = Tex(16, seed=63)
+    p_void(t)
+    t.save('block/quantum_bridge/particle')
+    idle.save('block/quantum_bridge')
+    on.save('block/quantum_bridge_active')
+    kit.item_model('quantum_bridge', parent='block/quantum_bridge_active')
+    blockstate_variants('quantum_bridge', 'active', {'false': 'block/quantum_bridge', 'true': 'block/quantum_bridge_active'})
+
+
+# =================================================================================================
 # Block of Omnium
 # =================================================================================================
 
@@ -1831,7 +2148,14 @@ def storage_cell_sprites():
     for i, c in enumerate((RED[3], AMBER[3], GOLD[3], GREEN[3], CYAN[3], VIOLET[3])):
         g.set(4 + i, 11, c)
     g.save('item/storage_cell/glyph_creative')
-    for tier in TIER_IDS:
+    # singularity: the gauge overflows in white light and a star sits on the label
+    g = Tex(16)
+    for i in range(6):
+        g.set(4 + i, 11, SINGULARITY[5] if i % 2 else SINGULARITY[3])
+    for x, y, c in ((8, 6, 5), (7, 7, 4), (8, 7, 5), (9, 7, 4), (8, 8, 4)):
+        g.set(x, y, SINGULARITY[c])
+    g.save('item/storage_cell/glyph_singularity')
+    for tier in TIER_IDS + ['singularity']:
         kit.item_model(f'storage_cell_{tier}', layers=['item/storage_cell/tint', 'item/storage_cell/body',
                                                         f'item/storage_cell/glyph_{tier}'])
     kit.item_model('creative_storage_cell', layers=['item/storage_cell/tint', 'item/storage_cell/body',
@@ -1892,7 +2216,14 @@ def fluid_cell_sprites():
             for i in range(n):
                 g.set(11, 10 - i, BLUE[4] if i % 2 == 0 else BLUE[3])
         g.save(f'item/fluid_cell/glyph_{tier}')
-    for tier in TIER_IDS:
+    g = Tex(16)
+    g.set(7, 7, SINGULARITY[5])
+    g.set(7, 8, (255, 255, 255, 255))
+    g.set(8, 9, SINGULARITY[3])
+    for i in range(6):
+        g.set(11, 10 - i, SINGULARITY[5] if i % 2 else SINGULARITY[2])
+    g.save('item/fluid_cell/glyph_singularity')
+    for tier in TIER_IDS + ['singularity']:
         kit.item_model(f'fluid_cell_{tier}', layers=['item/fluid_cell/tint', 'item/fluid_cell/body',
                                                       f'item/fluid_cell/glyph_{tier}'])
     kit.item_model('creative_fluid_cell', layers=['item/fluid_cell/tint', 'item/fluid_cell/body',
@@ -1941,6 +2272,56 @@ def matrix_sprites():
             t.set(3 + i * 2 if n < 6 else 3 + i * 2, 13, r[4])
         t.save(f'item/storage_matrix_{tier}')
         kit.item_model(f'storage_matrix_{tier}')
+    singularity_matrix_sprite()
+
+
+def singularity_matrix_sprite():
+    """A white-hot singularity: a black core inside a blazing accretion ring, on a void-steel chip."""
+    t = Tex(16, seed=77)
+    for y in range(4, 13, 2):
+        t.set(1, y, SINGULARITY[4])
+        t.set(14, y, SINGULARITY[2])
+    bevel_rect(t, 2, 2, 13, 13, VOID, base=2, hi=VIOLET[2], lo=BLACK)
+    t.rect(3, 3, 12, 12, VOID[0])
+    for y in range(3, 13):
+        for x in range(3, 13):
+            dx, dy = x - 7.5, y - 7.5
+            r = math.hypot(dx * 0.8, dy * 1.25)   # a tilted disk
+            if 2.3 <= r < 4.6:
+                k = (r - 2.3) / 2.3
+                c = mix(SINGULARITY[5], VIOLET[3], k) if dx + dy < 1 else mix(SINGULARITY[3], VIOLET[2], k)
+                t.set(x, y, c)
+            elif r < 2.3:
+                t.set(x, y, BLACK if r < 1.6 else VIOLET[1])
+    t.set(5, 5, SINGULARITY[5])
+    t.set(11, 4, VIOLET[4])
+    t.set(4, 11, VIOLET[4])
+    for x in range(3, 13, 2):
+        t.set(x, 13, SINGULARITY[4])
+    t.save('item/storage_matrix_singularity')
+    kit.item_model('storage_matrix_singularity')
+
+
+def link_card_sprite():
+    """Quantum Link Card: a void keycard with a holographic stripe and two entangled rings."""
+    t = Tex(16, seed=78)
+    bevel_rect(t, 1, 3, 14, 12, VOID, base=2, hi=VIOLET[3], lo=BLACK)
+    t.set(1, 3, CLEAR)
+    t.set(14, 3, CLEAR)
+    t.set(1, 12, CLEAR)
+    t.set(14, 12, CLEAR)
+    for x in range(2, 14):                       # holographic stripe
+        t.set(x, 4, mix(VIOLET[4], CYAN[4], (x - 2) / 11))
+        t.set(x, 5, mix(VIOLET[2], CYAN[2], (x - 2) / 11))
+    for cx, colour in ((6, VIOLET[4]), (9, SINGULARITY[4])):   # two interlocked rings
+        for x, y in ((cx - 1, 7), (cx, 7), (cx - 2, 8), (cx + 1, 8), (cx - 2, 9), (cx + 1, 9), (cx - 1, 10), (cx, 10)):
+            t.set(x, y, colour)
+    t.set(7, 8, SINGULARITY[5])
+    t.set(8, 9, VIOLET[5])
+    t.rect(11, 9, 12, 10, GOLD[3])               # contact chip
+    t.set(11, 9, GOLD[4])
+    t.save('item/quantum_link_card')
+    kit.item_model('quantum_link_card')
 
 
 def chip(t: Tex, x0, y0, x1, y1, pin_ramp, body=GUNMETAL):
@@ -2253,10 +2634,8 @@ def handheld_items():
 
 NETWORK_BLOCKS = ['nexus_core', 'nexus_cable', 'drive', 'terminal', 'crafting_terminal', 'import_bus', 'export_bus',
                   'storage_bus', 'network_port', 'signal_emitter', 'wireless_transmitter', 'omnium_block',
-                  'destructor', 'constructor', 'storage_monitor']
-# Content that may be missing from a checkout gets load conditions; everything is merged now, so nothing is pending.
-PENDING_BLOCKS = []
-PENDING_ITEMS = set()
+                  'destructor', 'constructor', 'storage_monitor', 'quantum_bridge']
+EARLY_BLOCKS = ['storage_hub', 'inventory_cable']   # oak and iron: mined with an axe
 
 
 def ov(name):
@@ -2267,31 +2646,12 @@ def mc(name):
     return f'minecraft:{name}'
 
 
-def require_items(path, names):
-    """Adds NeoForge load conditions so the file is skipped while any of these items is unregistered."""
-    data = json.loads(path.read_text(encoding='utf-8'))
-    conditions = [{'type': 'neoforge:item_exists', 'item': ov(n)} for n in sorted(names)]
-    kit.write_json(path, {'neoforge:conditions': conditions, **data})
-
-
-def pending_in(*ids):
-    return {i.split(':', 1)[1] for i in ids if i.startswith(M + ':') and i.split(':', 1)[1] in PENDING_ITEMS}
-
-
 def shaped(name, pattern, key, count=1, result=None):
-    path = kit.shaped(name, pattern, key, result=result, count=count)
-    needed = pending_in(*(key.values()), result or ov(name))
-    if needed:
-        require_items(path, needed)
-    return path
+    return kit.shaped(name, pattern, key, result=result, count=count)
 
 
 def shapeless(name, ingredients, count=1, result=None):
-    path = kit.shapeless(name, ingredients, result=result, count=count)
-    needed = pending_in(*ingredients, result or ov(name))
-    if needed:
-        require_items(path, needed)
-    return path
+    return kit.shapeless(name, ingredients, result=result, count=count)
 
 
 def recipes():
@@ -2331,10 +2691,20 @@ def recipes():
         '16m': (['MNM', 'QSQ', 'MNM'], {'M': ov('storage_matrix_1m'), 'N': mc('netherite_ingot'), 'Q': ov('quantum_processor'),
                                         'S': mc('nether_star')}),
     }
+    matrix_keys['singularity'] = (['MQM', 'QNQ', 'MQM'], {'M': ov('storage_matrix_16m'), 'Q': ov('quantum_processor'),
+                                                         'N': mc('nether_star')})
     for tier, (pattern, key) in matrix_keys.items():
         shaped(f'storage_matrix_{tier}', pattern, key)
         shapeless(f'storage_cell_{tier}', [ov('cell_housing'), ov(f'storage_matrix_{tier}')])
         shapeless(f'fluid_cell_{tier}', [ov('fluid_cell_housing'), ov(f'storage_matrix_{tier}')])
+    # -- early game: vanilla materials only, so a Storage Hub network works before any omnium -------------
+    shaped('storage_hub', ['PRP', 'CIC', 'PRP'], {'P': '#minecraft:planks', 'R': mc('redstone'), 'C': mc('chest'),
+                                                  'I': mc('iron_ingot')})
+    shaped('inventory_cable', ['SSS', 'NRN', 'SSS'], {'S': '#minecraft:wooden_slabs', 'N': mc('iron_nugget'),
+                                                      'R': mc('redstone')}, count=8)
+    shaped('terminal', ['IGI', 'RCR', 'IRI'], {'I': mc('iron_ingot'), 'G': mc('glass'), 'R': mc('redstone'),
+                                               'C': mc('chest')})
+    shapeless('crafting_terminal', [ov('terminal'), mc('crafting_table'), mc('redstone')])
     # -- network blocks -------------------------------------------------------------------------------
     shaped('nexus_core', ['OAO', 'BEB', 'OAO'], {'O': ov('omnium_ingot'), 'A': ov('advanced_processor'),
                                                  'B': ov('omnium_block'), 'E': mc('ender_eye')})
@@ -2342,9 +2712,12 @@ def recipes():
            count=8)
     shaped('drive', ['IOI', 'CLC', 'IOI'], {'I': mc('iron_ingot'), 'O': ov('omnium_ingot'), 'C': mc('chest'),
                                             'L': ov('logic_processor')})
-    shaped('terminal', ['IGI', 'LOL', 'IRI'], {'I': mc('iron_ingot'), 'G': mc('glass'), 'L': ov('logic_processor'),
-                                               'O': ov('omnium_ingot'), 'R': mc('redstone')})
-    shapeless('crafting_terminal', [ov('terminal'), mc('crafting_table'), ov('logic_processor')])
+    # -- late game: quantum links ---------------------------------------------------------------------
+    shaped('quantum_bridge', ['EQE', 'CBC', 'ESE'], {'E': mc('echo_shard'), 'Q': ov('quantum_processor'),
+                                                     'C': mc('ender_chest'), 'B': ov('omnium_block'),
+                                                     'S': mc('nether_star')})
+    shapeless('quantum_link_card', [mc('ender_pearl'), ov('quantum_processor'), mc('paper'), ov('omnium_ingot')],
+              count=2)
     shaped('storage_monitor', ['GGG', 'ILI', 'III'], {'G': mc('glass_pane'), 'I': mc('iron_ingot'),
                                                       'L': ov('logic_processor')})
     for name, part in (('import_bus', 'hopper'), ('export_bus', 'piston'), ('storage_bus', 'chest'),
@@ -2362,13 +2735,11 @@ def recipes():
 
 
 def loot_and_tags():
-    for name in NETWORK_BLOCKS + PENDING_BLOCKS:
-        path = kit.loot_self(name)
-        if name in PENDING_ITEMS:
-            require_items(path, [name])
-    # The pickaxe tag is shared by every feature: merge into it instead of overwriting other entries.
-    kit.merge_tag('block', 'mineable/pickaxe', [ov(n) for n in NETWORK_BLOCKS]
-                  + [{'id': ov(n), 'required': False} for n in PENDING_BLOCKS])
+    for name in NETWORK_BLOCKS + EARLY_BLOCKS:
+        kit.loot_self(name)
+    # Tool tags are shared by every feature: merge into them instead of overwriting other entries.
+    kit.merge_tag('block', 'mineable/pickaxe', [ov(n) for n in NETWORK_BLOCKS])
+    kit.merge_tag('block', 'mineable/axe', [ov(n) for n in EARLY_BLOCKS])
 
 
 def lang():
@@ -2413,6 +2784,8 @@ def main():
     shared_textures()
     nexus_core()
     nexus_cable()
+    storage_hub()
+    inventory_cable()
     drive()
     terminals()
     storage_monitor()
@@ -2420,10 +2793,12 @@ def main():
     network_port()
     signal_emitter()
     wireless_transmitter()
+    quantum_bridge()
     omnium_block()
     storage_cell_sprites()
     fluid_cell_sprites()
     matrix_sprites()
+    link_card_sprite()
     processor_sprites()
     upgrade_sprites()
     template_sprite()

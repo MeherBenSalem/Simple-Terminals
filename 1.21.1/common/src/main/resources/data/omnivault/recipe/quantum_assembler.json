@@ -1,0 +1,27 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "QOQ",
+    "OAO",
+    "QNQ"
+  ],
+  "key": {
+    "Q": {
+      "item": "omnivault:quantum_processor"
+    },
+    "O": {
+      "item": "omnivault:omnium_ingot"
+    },
+    "A": {
+      "item": "omnivault:assembler"
+    },
+    "N": {
+      "item": "minecraft:nether_star"
+    }
+  },
+  "result": {
+    "id": "omnivault:quantum_assembler",
+    "count": 1
+  }
+}

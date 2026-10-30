@@ -23,7 +23,7 @@ from kit import (  # noqa: E402
     blockstate_horizontal, item_model, loot_self, mix, save_animation, shade, shaped, shapeless, write_json, ASSETS, MOD,
 )
 
-BLOCKS = ['pattern_terminal', 'pattern_provider', 'assembler', 'crafting_processor']
+BLOCKS = ['pattern_terminal', 'pattern_provider', 'assembler', 'quantum_assembler', 'crafting_processor']
 
 
 # ---------------------------------------------------------------------------------------------
@@ -396,18 +396,107 @@ def assembler_textures():
     save_animation('block/assembler_ring', frames, frametime=2)
 
 
-def assembler_model(state: str) -> Model:
-    """state: 'off' (no network), 'on' (online, idle) or 'working'."""
+def quantum_assembler_textures():
+    """The Quantum Assembler's palette: void steel, violet omnium energy and white singularity light."""
+    void = [kit.rgb('08060c'), kit.rgb('120d1a'), kit.rgb('1c1428'), kit.rgb('2a1f3b'), kit.rgb('3d2e56'), kit.rgb('5a4580')]
+    white = [kit.rgb('4a3a66'), kit.rgb('8a74b8'), kit.rgb('c8b8f0'), kit.rgb('e9d7ff'), kit.rgb('f6efff'), kit.rgb('ffffff')]
+
+    base = Tex(seed=141).brushed(void, base=2)
+    base.frame(void, width=1, base=3)
+    for x, y in ((1, 1), (13, 1), (1, 13), (13, 13)):
+        base.screw(x, y)
+    base.vents(3, 5, 12, 10, ramp=void, spacing=2)
+    for x in range(3, 13, 3):
+        base.set(x, 4, VIOLET[3])
+    base.save('block/quantum_assembler_base')
+
+    top = Tex(seed=142).brushed(void, base=2)
+    top.frame(void, width=1, base=3)
+    top.radial(8, 8, 6, VIOLET[1], void[2])
+    top.outline(3, 3, 12, 12, white[1])
+    top.rect(6, 6, 9, 9, BLACK)
+    top.set(7, 7, white[3])
+    top.save('block/quantum_assembler_top')
+
+    pillar = Tex(seed=143).brushed(void, base=3, vertical=True)
+    pillar.vline(0, 0, 15, VIOLET[2])
+    pillar.vline(15, 0, 15, void[0])
+    pillar.vline(7, 0, 15, void[1])
+    pillar.vline(8, 0, 15, VIOLET[1])
+    pillar.save('block/quantum_assembler_pillar')
+
+    dead = Tex(seed=144)
+    dead.vline(7, 1, 14, VIOLET[0])
+    dead.vline(8, 1, 14, VIOLET[0])
+    dead.save('block/quantum_assembler_strip')
+    steady = Tex(seed=144)
+    steady.vline(7, 1, 14, VIOLET[3])
+    steady.vline(8, 1, 14, white[3])
+    steady.save('block/quantum_assembler_strip_on')
+    frames = []
+    for f in range(8):
+        t = Tex(seed=144)
+        for y in range(1, 15):
+            d = (y - (14 - f * 2)) % 16
+            color = white[5] if d < 2 else white[3] if d < 4 else VIOLET[3]
+            t.set(7, y, color)
+            t.set(8, y, shade(color, 0.85))
+        frames.append(t)
+    save_animation('block/quantum_assembler_strip_working', frames, frametime=2)
+
+    glass = Tex(seed=145, fill=(190, 150, 255, 44))
+    glass.outline(0, 0, 15, 15, (220, 200, 255, 120))
+    glass.line(2, 13, 7, 8, (245, 235, 255, 110))
+    glass.line(4, 13, 9, 8, (245, 235, 255, 70))
+    glass.line(11, 4, 13, 2, (245, 235, 255, 90))
+    glass.save('block/quantum_assembler_glass')
+
+    for name, lit in (('quantum_assembler_emitter', False), ('quantum_assembler_emitter_on', True)):
+        t = Tex(seed=146).fill(void[1])
+        t.outline(0, 0, 15, 15, VIOLET[2])
+        t.radial(8, 8, 6.5, VIOLET[3] if lit else VIOLET[0], VIOLET[1] if lit else void[1])
+        pattern_grid(t, 4, 4, 2, 1, lit, accent=white, frame=VIOLET)
+        t.save('block/' + name)
+    frames = []
+    for f in range(8):
+        t = Tex(seed=146).fill(void[1])
+        t.outline(0, 0, 15, 15, white[3])
+        pulse = 0.5 + 0.5 * math.sin(f / 8 * math.tau)
+        t.radial(8, 8, 6 + pulse * 2, mix(white[5], VIOLET[4], pulse), VIOLET[1])
+        pattern_grid(t, 4, 4, 2, 1, True, accent=white, frame=VIOLET, phase=f)
+        frames.append(t)
+    save_animation('block/quantum_assembler_emitter_working', frames, frametime=2)
+
+    for name, lit in (('quantum_assembler_light', False), ('quantum_assembler_light_on', True)):
+        t = Tex(seed=147).fill(void[0])
+        t.rect(2, 2, 13, 13, VIOLET[3] if lit else VIOLET[0])
+        t.rect(4, 4, 11, 11, white[4] if lit else VIOLET[1])
+        t.save('block/' + name)
+
+    # White singularity cores for the extra emitters and the crown.
+    for name, lit in (('quantum_assembler_core', False), ('quantum_assembler_core_on', True)):
+        t = Tex(seed=148).fill(VIOLET[1] if not lit else VIOLET[3])
+        t.radial(8, 8, 7, white[5] if lit else VIOLET[2], VIOLET[3] if lit else VIOLET[0])
+        t.save('block/' + name)
+
+
+def assembler_model(state: str, quantum: bool = False) -> Model:
+    """state: 'off' (no network), 'on' (online, idle) or 'working'. quantum: the late-game Quantum Assembler,
+    the same machine in the void/violet/white palette with extra singularity emitters."""
     lit = state != 'off'
     working = state == 'working'
-    emitter = {'off': 'block/assembler_emitter', 'on': 'block/assembler_emitter_on', 'working': 'block/assembler_emitter_working'}[state]
-    strip = {'off': 'block/assembler_strip', 'on': 'block/assembler_strip_on', 'working': 'block/assembler_strip_working'}[state]
-    m = Model(textures={
-        'particle': 'block/assembler_base', 'base': 'block/assembler_base', 'top': 'block/assembler_top',
-        'dark': 'block/autocraft_casing_dark', 'pillar': 'block/assembler_pillar', 'strip': strip, 'glass': 'block/assembler_glass',
+    p = 'block/quantum_assembler' if quantum else 'block/assembler'
+    emitter = {'off': f'{p}_emitter', 'on': f'{p}_emitter_on', 'working': f'{p}_emitter_working'}[state]
+    strip = {'off': f'{p}_strip', 'on': f'{p}_strip_on', 'working': f'{p}_strip_working'}[state]
+    textures = {
+        'particle': f'{p}_base', 'base': f'{p}_base', 'top': f'{p}_top',
+        'dark': 'block/autocraft_casing_dark', 'pillar': f'{p}_pillar', 'strip': strip, 'glass': f'{p}_glass',
         'emitter': emitter, 'trim': 'block/autocraft_trim', 'crystal': 'block/omnium_crystal' + ('_on' if lit else ''),
-        'light': 'block/assembler_light' + ('_on' if working else ''),
-    }, render_type='minecraft:translucent')
+        'light': f'{p}_light' + ('_on' if working else ''),
+    }
+    if quantum:
+        textures['core'] = 'block/quantum_assembler_core' + ('_on' if lit else '')
+    m = Model(textures=textures, render_type='minecraft:translucent')
     # Plinth and cap.
     m.box((0, 0, 0), (16, 3, 16), faces={'north': 'base', 'south': 'base', 'east': 'base', 'west': 'base', 'up': 'dark',
                                         'down': 'dark'}, cull=True, name='plinth', uv={f: [0, 13, 16, 16] for f in
@@ -435,6 +524,21 @@ def assembler_model(state: str) -> Model:
     for x, z in ((1.5, 1.5), (13.5, 1.5), (1.5, 13.5), (13.5, 13.5)):
         m.box((x - 0.75, 16, z - 0.75), (x + 0.75, 17.5, z + 0.75), tex='crystal', emissive=lit,
               rotation=(45, 'y', (x, 16, z)), name='finial')
+    if quantum:
+        # Singularity emitters: white cores on the pillars' inner corners aimed at the chamber, glowing
+        # collars around every pillar and a singularity crown over the cap.
+        for x, z in ((3, 3), (12.25, 3), (3, 12.25), (12.25, 12.25)):
+            m.box((x, 7.25, z), (x + 0.75, 8.75, z + 0.75), tex='core', emissive=lit, name='singularity_emitter')
+        for x in (0, 13):
+            for z in (0, 13):
+                for y in (4.5, 10.75):
+                    m.box((x - 0.1, y, z - 0.1), (x + 3.1, y + 0.75, z + 3.1), tex='core', emissive=lit,
+                          faces={'up': None, 'down': None}, uv={f: [4, 7.5, 12, 8.5] for f in ('north', 'south', 'east', 'west')},
+                          name='pillar_collar')
+        m.box((6.75, 16, 6.75), (9.25, 17.75, 9.25), tex='core', emissive=lit, rotation=(45, 'y', (8, 16, 8)),
+              name='crown')
+        m.box((7.5, 17.75, 7.5), (8.5, 18.5, 8.5), tex='crystal', emissive=lit, rotation=(45, 'y', (8, 16, 8)),
+              name='crown_tip')
     # Glass panes last so they sort behind the solid parts.
     for f, (a, b) in {'north': ((3, 3, 0.5), (13, 13, 1)), 'south': ((3, 3, 15), (13, 13, 15.5)),
                       'west': ((0.5, 3, 3), (1, 13, 13)), 'east': ((15, 3, 3), (15.5, 13, 13))}.items():
@@ -648,6 +752,9 @@ def data():
         'O': f'{MOD}:omnium_ingot', 'A': f'{MOD}:advanced_processor', 'P': 'minecraft:piston', 'C': 'minecraft:crafter',
         'G': 'minecraft:glass',
     })
+    shaped('quantum_assembler', ['QOQ', 'OAO', 'QNQ'], {
+        'Q': f'{MOD}:quantum_processor', 'O': f'{MOD}:omnium_ingot', 'A': f'{MOD}:assembler', 'N': 'minecraft:nether_star',
+    })
     shaped('crafting_processor', ['OGO', 'ALA', 'OGO'], {
         'O': f'{MOD}:omnium_ingot', 'G': 'minecraft:gold_ingot', 'A': f'{MOD}:advanced_processor', 'L': f'{MOD}:logic_processor',
     })
@@ -661,6 +768,7 @@ def main():
     terminal_textures()
     provider_textures()
     assembler_textures()
+    quantum_assembler_textures()
     processor_textures()
     item_textures()
 
@@ -680,6 +788,13 @@ def main():
         'active=false,working=false': 'block/assembler', 'active=true,working=false': 'block/assembler_on',
         'active=false,working=true': 'block/assembler_working', 'active=true,working=true': 'block/assembler_working',
     })
+    assembler_model('off', quantum=True).save('block/quantum_assembler')
+    assembler_model('on', quantum=True).save('block/quantum_assembler_on')
+    assembler_model('working', quantum=True).save('block/quantum_assembler_working')
+    blockstate_variants('quantum_assembler', {
+        'active=false,working=false': 'block/quantum_assembler', 'active=true,working=false': 'block/quantum_assembler_on',
+        'active=false,working=true': 'block/quantum_assembler_working', 'active=true,working=true': 'block/quantum_assembler_working',
+    })
 
     processor_model('off').save('block/crafting_processor')
     processor_model('on').save('block/crafting_processor_on')
@@ -692,6 +807,7 @@ def main():
     item_model('pattern_terminal', parent='block/pattern_terminal_on')
     item_model('pattern_provider', parent='block/pattern_provider_on')
     item_model('assembler', parent='block/assembler_on')
+    item_model('quantum_assembler', parent='block/quantum_assembler_on')
     item_model('crafting_processor', parent='block/crafting_processor_on')
     item_model('blank_pattern')
     glowing_item_model('crafting_pattern')
@@ -699,7 +815,8 @@ def main():
 
     data()
     counts = {n: len(json.loads((ASSETS / 'models' / 'block' / (n + '.json')).read_text())['elements'])
-              for n in ('pattern_terminal_on', 'pattern_provider_on', 'assembler_working', 'crafting_processor_busy', 'assembler_ring')}
+              for n in ('pattern_terminal_on', 'pattern_provider_on', 'assembler_working', 'quantum_assembler_working',
+                        'crafting_processor_busy', 'assembler_ring')}
     print('Autocraft art written; elements per model:', counts)
 
 

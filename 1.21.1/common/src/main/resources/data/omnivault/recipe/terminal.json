@@ -3,7 +3,7 @@
   "category": "misc",
   "pattern": [
     "IGI",
-    "LOL",
+    "RCR",
     "IRI"
   ],
   "key": {
@@ -13,14 +13,11 @@
     "G": {
       "item": "minecraft:glass"
     },
-    "L": {
-      "item": "omnivault:logic_processor"
-    },
-    "O": {
-      "item": "omnivault:omnium_ingot"
-    },
     "R": {
       "item": "minecraft:redstone"
+    },
+    "C": {
+      "item": "minecraft:chest"
     }
   },
   "result": {

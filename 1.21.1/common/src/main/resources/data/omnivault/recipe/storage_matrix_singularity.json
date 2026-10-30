@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "MQM",
+    "QNQ",
+    "MQM"
+  ],
+  "key": {
+    "M": {
+      "item": "omnivault:storage_matrix_16m"
+    },
+    "Q": {
+      "item": "omnivault:quantum_processor"
+    },
+    "N": {
+      "item": "minecraft:nether_star"
+    }
+  },
+  "result": {
+    "id": "omnivault:storage_matrix_singularity",
+    "count": 1
+  }
+}
