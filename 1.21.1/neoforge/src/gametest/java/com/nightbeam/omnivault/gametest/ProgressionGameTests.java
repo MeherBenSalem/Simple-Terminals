@@ -167,4 +167,21 @@ public class ProgressionGameTests {
         helper.assertTrue(quantum == normal * 16, "quantum " + quantum + " vs normal " + normal);
         helper.succeed();
     }
+
+    @GameTest(template = "floor_9x9")
+    public static void storageBusAndInventoryCableDoNotDoubleCount(GameTestHelper helper) {
+        BlockPos hub = new BlockPos(2, 2, 4);
+        helper.setBlock(hub, NetworkContent.STORAGE_HUB.get());
+        helper.setBlock(new BlockPos(3, 2, 4), NetworkContent.INVENTORY_CABLE.get());
+        helper.setBlock(new BlockPos(4, 2, 4), NetworkContent.INVENTORY_CABLE.get());
+        // The chest touches the inventory cable at (3,2,4) and is faced by a storage bus fed from (4,2,4).
+        chest(helper, new BlockPos(3, 2, 5), 15);
+        helper.setBlock(new BlockPos(4, 2, 5), NetworkContent.STORAGE_BUS.get().defaultBlockState()
+                .setValue(com.nightbeam.omnivault.network.block.DirectionalDeviceBlock.FACING, Direction.WEST));
+        helper.runAfterDelay(25, () -> {
+            helper.assertTrue(networkAt(helper, hub).storage().getCount(COBBLE) == 15, "chest counted once, got "
+                    + networkAt(helper, hub).storage().getCount(COBBLE));
+            helper.succeed();
+        });
+    }
 }

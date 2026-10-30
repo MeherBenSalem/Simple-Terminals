@@ -8,6 +8,7 @@ import com.nightbeam.omnivault.network.api.NetworkBlock;
 import com.nightbeam.omnivault.network.block.DriveBlockEntity;
 import com.nightbeam.omnivault.network.block.InventoryCableBlock;
 import com.nightbeam.omnivault.network.block.NexusCoreBlockEntity;
+import com.nightbeam.omnivault.network.block.StorageBusBlockEntity;
 import com.nightbeam.omnivault.platform.Services;
 import com.nightbeam.omnivault.storage.FluidAccessStorage;
 import com.nightbeam.omnivault.storage.SlotAccessStorage;
@@ -330,6 +331,12 @@ public class StorageNetwork {
     /** Every inventory touching an Inventory Cable or the Storage Hub, each counted once. */
     private void collectTouchingInventories(List<ItemStorage> items, List<FluidStorage> fluids) {
         Set<net.minecraft.core.GlobalPos> seen = new java.util.HashSet<>();
+        // Inventories a Storage Bus already faces keep that bus's filter and priority; don't add them twice.
+        for (NetworkNode node : nodes) {
+            if (node instanceof StorageBusBlockEntity bus && bus.getLevel() != null) {
+                seen.add(net.minecraft.core.GlobalPos.of(bus.getLevel().dimension(), bus.getBlockPos().relative(bus.facing())));
+            }
+        }
         for (Anchor anchor : inventoryAnchors) {
             ServerLevel level = anchor.level();
             for (Direction direction : Direction.values()) {
