@@ -1,4 +1,4 @@
-name: Verify recipes and builds
+name: Verify build and GameTests
 
 on:
   push:
@@ -14,39 +14,22 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  native-recipes:
+  resources:
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
-      - uses: actions/setup-java@v4
-        with:
-          distribution: temurin
-          java-version: '25'
-      - name: Validate source resources
+      - name: Lang fragments are merged
+        run: python3 tools/assets/build_lang.py --check
+      - name: Resource and release-guard tests
         run: python3 -m unittest discover -s tests -v
-      - name: Test original Minecraft recipe and loot implementations
-        run: python3 tests/native_recipe/run.py --java "$JAVA_HOME/bin/java"
-      - name: Test 26.2 registry-property construction
-        run: python3 tests/native_registry_ids/run.py --java "$JAVA_HOME/bin/java"
 
-  loader-builds:
+  neoforge-1-21-1:
     runs-on: ubuntu-latest
     timeout-minutes: 60
-    strategy:
-      fail-fast: false
-      matrix:
-        minecraft: ['1.20.1', '1.21.1', '26.2']
-        include:
-          - minecraft: '1.20.1'
-            java: '21'
-          - minecraft: '1.21.1'
-            java: '21'
-          - minecraft: '26.2'
-            java: '25'
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -55,44 +38,24 @@ jobs:
       - uses: actions/setup-java@v4
         with:
           distribution: temurin
-          java-version: |
-            17
-            21
-            25
-      - name: Select build JDK
-        run: echo "JAVA_HOME=${JAVA_HOME_${{ matrix.java }}_X64}" >> "$GITHUB_ENV"
+          java-version: '21'
       - uses: gradle/actions/setup-gradle@v4
-      - name: Build both loaders
-        working-directory: ${{ matrix.minecraft }}
+      - name: Build
+        working-directory: 1.21.1
         run: bash gradlew build --no-daemon --stacktrace
-      - name: Verify survival resources in both packaged loader jars
-        env:
-          MC_VERSION: ${{ matrix.minecraft }}
+      - name: Run GameTests on a dedicated server
+        working-directory: 1.21.1
+        run: bash gradlew :neoforge:runGameTestServer --no-daemon --stacktrace
+      - name: Validate the packaged jar
         shell: bash
         run: |
           set -euo pipefail
-          case "$MC_VERSION" in
-            1.20.1) loaders=(fabric forge) ;;
-            *) loaders=(fabric neoforge) ;;
-          esac
-          args=()
-          for loader in "${loaders[@]}"; do
-            mapfile -t jars < <(find "$MC_VERSION/$loader/build/libs" -maxdepth 1 -type f \
-              -name 'simple-terminals-*.jar' ! -name '*-sources.jar' ! -name '*-javadoc.jar' \
-              ! -name '*-dev.jar' ! -name '*-dev-shadow.jar' | sort)
-            if [ "${#jars[@]}" -ne 1 ]; then
-              echo "Expected one distributable $loader jar, found ${#jars[@]}" >&2
-              exit 1
-            fi
-            args+=(--jar "$MC_VERSION:${jars[0]}")
-          done
-          python3 tests/test_terminal_recipe_resources.py "${args[@]}" -v
-      - name: Retain tested loader jars
+          version="$(sed -n 's/^version=//p' 1.21.1/gradle.properties)"
+          python3 scripts/release_guard.py --source build --version "$version" \
+            --manifest "$RUNNER_TEMP/manifest.json" --notes "$RUNNER_TEMP/notes.md"
+      - name: Keep the tested jar
         uses: actions/upload-artifact@v4
         with:
-          name: simple-terminals-${{ matrix.minecraft }}
-          path: |
-            ${{ matrix.minecraft }}/fabric/build/libs/*.jar
-            ${{ matrix.minecraft }}/forge/build/libs/*.jar
-            ${{ matrix.minecraft }}/neoforge/build/libs/*.jar
+          name: omnivault-1.21.1-neoforge
+          path: 1.21.1/neoforge/build/libs/*.jar
           if-no-files-found: error

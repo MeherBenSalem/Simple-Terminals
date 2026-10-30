@@ -67,13 +67,9 @@ function savePublishState() {
   fs.writeFileSync(statePath, `${JSON.stringify(publishState, null, 2)}\n`);
 }
 
+// OmniVault ships NeoForge for 1.21.1 first; add targets here as ports land.
 const targets = [
-  { minecraft: '1.20.1', loader: 'fabric' },
-  { minecraft: '1.20.1', loader: 'forge' },
-  { minecraft: '1.21.1', loader: 'fabric' },
   { minecraft: '1.21.1', loader: 'neoforge' },
-  { minecraft: '26.2', loader: 'fabric' },
-  { minecraft: '26.2', loader: 'neoforge' },
 ];
 
 function findJar(target) {
@@ -85,7 +81,7 @@ function findJar(target) {
   const suffix = `-${version}.jar`;
   const candidates = fs
     .readdirSync(libs)
-    .filter((name) => name.endsWith(suffix))
+    .filter((name) => name.startsWith(`omnivault-${target.minecraft}-${target.loader}-`) && name.endsWith(suffix))
     .filter((name) => !/(?:-sources|-javadoc|-dev|-dev-shadow)\.jar$/i.test(name))
     .map((name) => path.join(libs, name));
 
