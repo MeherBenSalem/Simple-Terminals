@@ -47,6 +47,7 @@ neoForge {
 }
 
 dependencies {
+    compileOnly "mezz.jei:jei-${minecraft_version}-neoforge-api:${jei_version}"
     gametestImplementation sourceSets.main.output
 }
 

@@ -3,6 +3,7 @@ package com.nightbeam.omnivault.network;
 import com.nightbeam.omnivault.OmniVault;
 import com.nightbeam.omnivault.OmniVaultCommon;
 import com.nightbeam.omnivault.network.client.NetworkClientHandlers;
+import com.nightbeam.omnivault.network.item.WirelessTerminalItem;
 import com.nightbeam.omnivault.network.menu.TerminalMenu;
 import com.nightbeam.omnivault.storage.ItemKey;
 import net.minecraft.network.RegistryFriendlyByteBuf;
@@ -114,6 +115,17 @@ public final class NetworkPackets {
         }
     }
 
+    /** Client → server: the "open wireless terminal" key was pressed. */
+    public record OpenWireless() implements CustomPacketPayload {
+        public static final Type<OpenWireless> TYPE = new Type<>(OmniVault.id("open_wireless"));
+        public static final StreamCodec<RegistryFriendlyByteBuf, OpenWireless> CODEC = StreamCodec.unit(new OpenWireless());
+
+        @Override
+        public Type<? extends CustomPacketPayload> type() {
+            return TYPE;
+        }
+    }
+
     /** Menus that accept {@link MenuValue}. */
     public interface ValueReceiver {
         void receiveValue(int key, long value);
@@ -131,6 +143,19 @@ public final class NetworkPackets {
             registrar.toServer(GridInsert.TYPE, GridInsert.CODEC, (payload, player) -> {
                 if (player.containerMenu instanceof TerminalMenu menu && menu.containerId == payload.containerId()) {
                     menu.handleInsertCarried(player, payload.single());
+                }
+            });
+            registrar.toServer(OpenWireless.TYPE, OpenWireless.CODEC, (payload, player) -> {
+                // Off hand first, then the hotbar and main inventory.
+                if (player.getInventory().getItem(40).getItem() instanceof WirelessTerminalItem) {
+                    WirelessTerminalItem.open(player, 40);
+                    return;
+                }
+                for (int slot = 0; slot < 36; slot++) {
+                    if (player.getInventory().getItem(slot).getItem() instanceof WirelessTerminalItem) {
+                        WirelessTerminalItem.open(player, slot);
+                        return;
+                    }
                 }
             });
             registrar.toServer(MenuValue.TYPE, MenuValue.CODEC, (payload, player) -> {

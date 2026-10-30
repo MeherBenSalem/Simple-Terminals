@@ -147,6 +147,7 @@ public final class NetworkContent {
         NetworkConfig.init();
         NetworkManager.init();
         NetworkPackets.init();
+        CraftingTransfer.init();
         ModCapabilities.exposeEnergy(NEXUS_CORE_BE);
         ModCapabilities.exposeItems(NETWORK_PORT_BE);
     }

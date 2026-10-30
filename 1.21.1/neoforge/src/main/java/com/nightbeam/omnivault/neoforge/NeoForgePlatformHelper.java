@@ -91,6 +91,9 @@ public class NeoForgePlatformHelper implements IPlatformHelper {
 
     @Override
     public void sendToPlayer(ServerPlayer player, CustomPacketPayload payload) {
-        PacketDistributor.sendToPlayer(player, payload);
+        // Fake players from other mods (and test players) have no modded connection to talk to.
+        if (player.connection != null && player.connection.hasChannel(payload)) {
+            PacketDistributor.sendToPlayer(player, payload);
+        }
     }
 }

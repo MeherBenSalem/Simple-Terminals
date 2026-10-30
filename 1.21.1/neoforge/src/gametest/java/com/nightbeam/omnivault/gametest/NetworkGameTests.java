@@ -272,4 +272,36 @@ public class NetworkGameTests {
             });
         });
     }
+
+    @GameTest(template = "floor_9x9")
+    public static void craftingTerminalTransfersAndRefills(GameTestHelper helper) {
+        spine(helper);
+        driveWithCell(helper, new BlockPos(3, 1, 5), CellTier.T4K);
+        helper.setBlock(new BlockPos(5, 1, 5), NetworkContent.CRAFTING_TERMINAL.get().defaultBlockState()
+                .setValue(OrientedDeviceBlock.FACING, Direction.SOUTH));
+        helper.runAfterDelay(5, () -> {
+            StorageNetwork network = network(helper);
+            ItemKey planks = ItemKey.of(new ItemStack(Items.OAK_PLANKS));
+            network.storage().insert(planks, 64, false);
+            net.minecraft.server.level.ServerPlayer player = helper.makeMockServerPlayerInLevel();
+            player.getInventory().clearContent();
+            var terminal = (com.nightbeam.omnivault.network.block.TerminalBlockEntity) helper.getBlockEntity(new BlockPos(5, 1, 5));
+            var menu = new com.nightbeam.omnivault.network.menu.CraftingTerminalMenu(1, player.getInventory(), terminal);
+            player.containerMenu = menu;
+            // A recipe viewer asks for a crafting table: planks in the top-left 2x2.
+            java.util.List<java.util.List<ItemStack>> slots = new java.util.ArrayList<>();
+            for (int i = 0; i < 9; i++) {
+                slots.add(i == 0 || i == 1 || i == 3 || i == 4 ? java.util.List.of(new ItemStack(Items.OAK_PLANKS)) : java.util.List.of());
+            }
+            menu.transferRecipe(player, slots);
+            helper.assertTrue(menu.getSlot(menu.resultIndex()).getItem().is(Items.CRAFTING_TABLE), "transfer sets up a crafting table recipe");
+            helper.assertTrue(network.storage().getCount(planks) == 60, "transfer took four planks from the network");
+            // Shift-click the result: the grid refills from the network until the planks run out.
+            menu.clicked(menu.resultIndex(), 0, net.minecraft.world.inventory.ClickType.QUICK_MOVE, player);
+            helper.assertTrue(player.getInventory().countItem(Items.CRAFTING_TABLE) == 16, "16 tables from 64 planks, got "
+                    + player.getInventory().countItem(Items.CRAFTING_TABLE));
+            helper.assertTrue(network.storage().getCount(planks) == 0, "all planks used");
+            helper.succeed();
+        });
+    }
 }

@@ -1,17 +1,34 @@
 package com.nightbeam.omnivault.network.client;
 
+import com.mojang.blaze3d.platform.InputConstants;
 import com.nightbeam.omnivault.client.OmniVaultClient;
+import com.nightbeam.omnivault.network.NetworkPackets;
+import com.nightbeam.omnivault.platform.Services;
+import net.minecraft.client.KeyMapping;
+import net.minecraft.client.Minecraft;
+import org.lwjgl.glfw.GLFW;
 import com.nightbeam.omnivault.network.NetworkContent;
 import com.nightbeam.omnivault.network.block.CableBlock;
 import com.nightbeam.omnivault.network.cell.CellTier;
 import com.nightbeam.omnivault.network.menu.TerminalMenu;
 
 public final class NetworkClient {
+    public static final KeyMapping OPEN_WIRELESS = new KeyMapping("key.omnivault.open_wireless",
+            InputConstants.Type.KEYSYM, GLFW.GLFW_KEY_G, "key.categories.omnivault");
+
     private NetworkClient() {
     }
 
     public static void init() {
+        OmniVaultClient.onClientTick(() -> {
+            while (OPEN_WIRELESS.consumeClick()) {
+                if (Minecraft.getInstance().player != null && Minecraft.getInstance().screen == null) {
+                    Services.PLATFORM.sendToServer(new NetworkPackets.OpenWireless());
+                }
+            }
+        });
         OmniVaultClient.registration(r -> {
+            r.keyMapping(OPEN_WIRELESS);
             r.<TerminalMenu, TerminalScreen<TerminalMenu>>screen(NetworkContent.TERMINAL_MENU, TerminalScreen::new);
             r.screen(NetworkContent.CRAFTING_TERMINAL_MENU, CraftingTerminalScreen::new);
             r.screen(NetworkContent.DRIVE_MENU, DriveScreen::new);

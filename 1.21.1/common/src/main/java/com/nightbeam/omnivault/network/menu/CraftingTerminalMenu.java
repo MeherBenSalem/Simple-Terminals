@@ -19,6 +19,8 @@ import net.minecraft.world.item.crafting.CraftingInput;
 import net.minecraft.world.item.crafting.RecipeType;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.List;
+
 /**
  * A terminal with a 3×3 crafting grid. After every craft the grid refills itself from the
  * network, so shift-clicking the result crafts as many as the network can supply.
@@ -143,6 +145,51 @@ public class CraftingTerminalMenu extends TerminalMenu {
             craftSlots.setItem(i, ItemStack.EMPTY);
         }
         updateResult();
+    }
+
+    /**
+     * Fills the grid from a recipe viewer: the current grid goes back first, then each slot takes one
+     * matching item from the network, or failing that from the player's inventory.
+     */
+    public void transferRecipe(Player player, List<List<ItemStack>> candidates) {
+        clearGrid(player);
+        StorageNetwork network = network();
+        refilling = true;
+        try {
+            for (int i = 0; i < 9; i++) {
+                for (ItemStack candidate : candidates.get(i)) {
+                    ItemKey key = ItemKey.of(candidate);
+                    if (key == null) {
+                        continue;
+                    }
+                    ItemStack found = network != null && network.isActive() ? network.extract(key, 1) : ItemStack.EMPTY;
+                    if (found.isEmpty()) {
+                        found = takeFromInventory(player, key);
+                    }
+                    if (!found.isEmpty()) {
+                        craftSlots.setItem(i, found);
+                        break;
+                    }
+                }
+            }
+        } finally {
+            refilling = false;
+        }
+        updateResult();
+        if (host != null) {
+            host.setChanged();
+        }
+    }
+
+    private static ItemStack takeFromInventory(Player player, ItemKey key) {
+        var inventory = player.getInventory();
+        for (int slot = 0; slot < inventory.items.size(); slot++) {
+            ItemStack stack = inventory.items.get(slot);
+            if (key.matches(stack)) {
+                return stack.split(1);
+            }
+        }
+        return ItemStack.EMPTY;
     }
 
     @Override
