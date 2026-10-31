@@ -3,6 +3,7 @@ package com.nightbeam.omnivault.network.cell;
 import com.mojang.serialization.Codec;
 import com.nightbeam.omnivault.OmniVault;
 import com.nightbeam.omnivault.storage.FluidKey;
+import com.nightbeam.omnivault.util.LegacySavedData;
 import it.unimi.dsi.fastutil.objects.Object2LongLinkedOpenHashMap;
 import net.minecraft.core.UUIDUtil;
 import net.minecraft.server.MinecraftServer;
@@ -19,10 +20,13 @@ public class FluidCellData extends SavedData {
     private static final Codec<FluidCellData> CODEC = Codec.unboundedMap(UUIDUtil.STRING_CODEC, Codec.unboundedMap(Codec.STRING, Codec.LONG))
             .fieldOf("cells").codec().xmap(FluidCellData::load, FluidCellData::save);
     private static final SavedDataType<FluidCellData> TYPE = new SavedDataType<>(OmniVault.id("fluid_cells"), FluidCellData::new, CODEC, null);
+    /** 1.21.1's file, read while a world has none of ours yet. */
+    public static final LegacySavedData<FluidCellData> LEGACY = new LegacySavedData<>(TYPE, "omnivault_fluid_cells", CODEC,
+            LegacySavedData.StackPaths.NONE);
     private final Map<UUID, Tank> cells = new HashMap<>();
 
     public static FluidCellData get(MinecraftServer server) {
-        return server.getDataStorage().computeIfAbsent(TYPE);
+        return LEGACY.get(server);
     }
 
     public Tank getOrCreate(UUID id) {

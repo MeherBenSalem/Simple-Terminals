@@ -3,6 +3,9 @@ package com.nightbeam.omnivault.physical.linked;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import com.nightbeam.omnivault.OmniVault;
+import com.nightbeam.omnivault.util.LegacySavedData;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.Tag;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.ItemStackWithSlot;
 import net.minecraft.world.SimpleContainer;
@@ -21,11 +24,19 @@ public class LinkedVaultData extends SavedData {
             .xmap(LinkedVaultData::load, LinkedVaultData::entries);
     // Mod data has no data fixers (both loaders accept a null fixer type).
     private static final SavedDataType<LinkedVaultData> TYPE = new SavedDataType<>(OmniVault.id("linked_vaults"), LinkedVaultData::new, CODEC, null);
+    /** 1.21.1's file, read while a world has none of ours yet. */
+    public static final LegacySavedData<LinkedVaultData> LEGACY = new LegacySavedData<>(TYPE, "omnivault_linked_vaults", CODEC, (data, fixer) -> {
+        for (Tag entry : data.getListOrEmpty("Inventories")) {
+            if (entry instanceof CompoundTag inventory) {
+                fixer.stacks(inventory.getListOrEmpty("Items"));
+            }
+        }
+    });
 
     private final Map<String, Inventory> inventories = new HashMap<>();
 
     public static LinkedVaultData get(MinecraftServer server) {
-        return server.getDataStorage().computeIfAbsent(TYPE);
+        return LEGACY.get(server);
     }
 
     public Inventory inventory(LinkedFrequency frequency) {

@@ -32,7 +32,8 @@ import java.util.function.Consumer;
 public class NeoForgeGameTests {
     /** The same classes the Fabric {@code fabric-gametest} entrypoint lists, without the Fabric-only ones. */
     private static final List<Class<?>> TESTS = List.of(AutocraftGameTests.class, BackpackGameTests.class, CoreGameTests.class,
-            DrawerGameTests.class, NetworkGameTests.class, PhysicalGameTests.class, ProgressionGameTests.class, ResourceGameTests.class);
+            DrawerGameTests.class, MigrationGameTests.class, NetworkGameTests.class, PhysicalGameTests.class, ProgressionGameTests.class,
+            ResourceGameTests.class);
     private static final DeferredRegister<Consumer<GameTestHelper>> FUNCTIONS = DeferredRegister.create(Registries.TEST_FUNCTION, OmniVault.MOD_ID);
     private static final Map<Class<?>, Object> INSTANCES = new HashMap<>();
 

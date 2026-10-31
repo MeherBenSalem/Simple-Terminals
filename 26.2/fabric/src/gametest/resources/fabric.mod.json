@@ -12,6 +12,7 @@
             "com.nightbeam.omnivault.gametest.CoreGameTests",
             "com.nightbeam.omnivault.gametest.DrawerGameTests",
             "com.nightbeam.omnivault.gametest.FabricTransferGameTests",
+            "com.nightbeam.omnivault.gametest.MigrationGameTests",
             "com.nightbeam.omnivault.gametest.NetworkGameTests",
             "com.nightbeam.omnivault.gametest.PhysicalGameTests",
             "com.nightbeam.omnivault.gametest.ProgressionGameTests",

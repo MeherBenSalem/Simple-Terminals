@@ -4,8 +4,11 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import com.nightbeam.omnivault.OmniVault;
 import com.nightbeam.omnivault.storage.ItemKey;
+import com.nightbeam.omnivault.util.LegacySavedData;
 import it.unimi.dsi.fastutil.objects.Object2LongLinkedOpenHashMap;
 import net.minecraft.core.UUIDUtil;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.Tag;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.level.saveddata.SavedData;
 import net.minecraft.world.level.saveddata.SavedDataType;
@@ -26,10 +29,21 @@ public class CellData extends SavedData {
             .fieldOf("cells").codec().xmap(CellData::fromEntries, CellData::toEntries);
     // Mod data has no data fixers (both loaders accept a null fixer type).
     private static final SavedDataType<CellData> TYPE = new SavedDataType<>(OmniVault.id("cells"), CellData::new, CODEC, null);
+    /** 1.21.1's file, read while a world has none of ours yet. */
+    public static final LegacySavedData<CellData> LEGACY = new LegacySavedData<>(TYPE, "omnivault_cells", CODEC, (data, fixer) -> {
+        CompoundTag cells = data.getCompoundOrEmpty("cells");
+        for (String id : cells.keySet()) {
+            for (Tag entry : cells.getListOrEmpty(id)) {
+                if (entry instanceof CompoundTag saved) {
+                    fixer.stack(saved, "item");
+                }
+            }
+        }
+    });
     private final Map<UUID, CellInventory> cells = new HashMap<>();
 
     public static CellData get(MinecraftServer server) {
-        return server.getDataStorage().computeIfAbsent(TYPE);
+        return LEGACY.get(server);
     }
 
     public CellInventory getOrCreate(UUID id) {
