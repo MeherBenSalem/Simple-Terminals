@@ -12,8 +12,10 @@ Thanks for contributing to OmniVault (formerly Simple Terminals).
 
 1. Fork the repository and create a branch from `main`.
 2. Make the smallest coherent change that solves the problem.
-3. Build and test from `1.21.1/`: `./gradlew build`, `./gradlew :neoforge:runGameTestServer` and
+3. Build and test in every Minecraft workspace you changed (`1.20.1/`, `1.21.1/`, `26.2/`, `26.3/`):
+   `./gradlew build`, `./gradlew :neoforge:runGameTestServer` (`:forge:` on 1.20.1) and
    `./gradlew :fabric:runGametest`, plus `python3 -m unittest discover -s tests` from the repository root.
+   Gameplay changes belong in every workspace.
 4. Update documentation when behavior or release steps change.
 5. Open a pull request with a clear summary and verification notes.
 
@@ -21,7 +23,8 @@ Thanks for contributing to OmniVault (formerly Simple Terminals).
 
 - Follow `docs/ARCHITECTURE.md`: gameplay goes in `common` (vanilla APIs only), loader glue in `fabric` and
   `neoforge`; anything a loader provides goes through a service with an implementation for each.
-- Change art and data through the generators in `tools/assets/` and lang through `tools/lang/`, never the generated files.
+- Change art and data through the generators in `tools/assets/` and lang through `tools/lang/`, never the generated files;
+  then refresh the other versions with `tools/port/resources_1_20_1.py` and `tools/port/resources_26.py <version>`.
 - Add a GameTest for gameplay changes.
 - Do not invent Minecraft, Fabric, Forge, or NeoForge APIs — verify against the exact version you target.
 - Avoid committing generated jars, logs, run directories, secrets, or local IDE files.
