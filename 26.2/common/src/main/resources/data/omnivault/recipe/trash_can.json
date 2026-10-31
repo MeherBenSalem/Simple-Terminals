@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "III",
+    "CLC",
+    "CCC"
+  ],
+  "key": {
+    "I": "minecraft:iron_ingot",
+    "C": "minecraft:cobblestone",
+    "L": "minecraft:lava_bucket"
+  },
+  "result": {
+    "id": "omnivault:trash_can",
+    "count": 1
+  }
+}

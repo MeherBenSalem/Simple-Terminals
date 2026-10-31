@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=north": {
+      "model": "omnivault:block/iron_backpack"
+    },
+    "facing=east": {
+      "model": "omnivault:block/iron_backpack",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "omnivault:block/iron_backpack",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "omnivault:block/iron_backpack",
+      "y": 270
+    }
+  }
+}

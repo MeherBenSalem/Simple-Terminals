@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "ROR",
+    "QLQ",
+    "ROR"
+  ],
+  "key": {
+    "R": "minecraft:redstone",
+    "O": "omnivault:omnium_dust",
+    "Q": "minecraft:quartz",
+    "L": "omnivault:logic_processor"
+  },
+  "result": {
+    "id": "omnivault:storage_matrix_4k",
+    "count": 1
+  }
+}

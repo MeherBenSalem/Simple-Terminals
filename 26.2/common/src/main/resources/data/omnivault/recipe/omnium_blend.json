@@ -1,0 +1,13 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    "minecraft:iron_ingot",
+    "omnivault:omnium_dust",
+    "omnivault:omnium_dust"
+  ],
+  "result": {
+    "id": "omnivault:omnium_blend",
+    "count": 1
+  }
+}

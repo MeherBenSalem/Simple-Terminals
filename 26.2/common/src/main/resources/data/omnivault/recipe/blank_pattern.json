@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "GRG",
+    "RLR",
+    "III"
+  ],
+  "key": {
+    "G": "minecraft:glowstone_dust",
+    "R": "minecraft:redstone",
+    "L": "omnivault:logic_processor",
+    "I": "minecraft:iron_ingot"
+  },
+  "result": {
+    "id": "omnivault:blank_pattern",
+    "count": 4
+  }
+}

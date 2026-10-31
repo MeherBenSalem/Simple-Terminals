@@ -1,0 +1,20 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "IHI",
+    "OLO",
+    "ICI"
+  ],
+  "key": {
+    "I": "minecraft:iron_ingot",
+    "H": "minecraft:hopper",
+    "O": "omnivault:omnium_ingot",
+    "L": "omnivault:logic_processor",
+    "C": "minecraft:chest"
+  },
+  "result": {
+    "id": "omnivault:network_port",
+    "count": 1
+  }
+}

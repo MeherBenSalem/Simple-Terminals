@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    " E ",
+    "ANA",
+    " P "
+  ],
+  "key": {
+    "E": "minecraft:echo_shard",
+    "A": "omnivault:advanced_processor",
+    "N": "minecraft:netherite_scrap",
+    "P": "minecraft:ender_pearl"
+  },
+  "result": {
+    "id": "omnivault:quantum_processor",
+    "count": 1
+  }
+}

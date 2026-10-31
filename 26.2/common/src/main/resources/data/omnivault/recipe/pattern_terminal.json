@@ -1,0 +1,14 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    "omnivault:terminal",
+    "omnivault:advanced_processor",
+    "minecraft:crafting_table",
+    "omnivault:blank_pattern"
+  ],
+  "result": {
+    "id": "omnivault:pattern_terminal",
+    "count": 1
+  }
+}

@@ -33,7 +33,7 @@ neoForge {
             server()
             gameDirectory = project.file('runs/server')
         }
-        // QA client: joins a dev server on localhost:25565 straight away (see tools/qa/).
+        // QA client: joins a dev server on localhost (port 25565, or -Pqa_port) straight away (see tools/qa/).
         qaClient {
             client()
             gameDirectory = project.file('runs/client')

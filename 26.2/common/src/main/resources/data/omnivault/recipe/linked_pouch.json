@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "LWL",
+    "LEL",
+    "LPL"
+  ],
+  "key": {
+    "L": "minecraft:leather",
+    "W": "#minecraft:wool",
+    "E": "minecraft:ender_pearl",
+    "P": "omnivault:logic_processor"
+  },
+  "result": {
+    "id": "omnivault:linked_pouch",
+    "count": 1
+  }
+}

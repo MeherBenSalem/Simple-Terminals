@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "PRP",
+    "CIC",
+    "PRP"
+  ],
+  "key": {
+    "P": "#minecraft:planks",
+    "R": "minecraft:redstone",
+    "C": "minecraft:chest",
+    "I": "minecraft:iron_ingot"
+  },
+  "result": {
+    "id": "omnivault:storage_hub",
+    "count": 1
+  }
+}

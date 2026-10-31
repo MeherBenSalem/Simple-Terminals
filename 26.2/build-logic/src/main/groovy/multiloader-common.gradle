@@ -25,9 +25,26 @@ repositories {
         }
         filter { includeGroupAndSubgroups('org.spongepowered') }
     }
-    maven {
-        name = 'BlameJared'
-        url = 'https://maven.blamejared.com'
+    exclusiveContent {
+        forRepository {
+            maven {
+                name = 'Fabric'
+                url = 'https://maven.fabricmc.net'
+            }
+        }
+        filter {
+            includeGroupAndSubgroups('net.fabricmc')
+            includeGroup('teamreborn')
+        }
+    }
+    exclusiveContent {
+        forRepository {
+            maven {
+                name = 'BlameJared'
+                url = 'https://maven.blamejared.com'
+            }
+        }
+        filter { includeGroup('mezz.jei') }
     }
 }
 
@@ -95,13 +112,13 @@ processResources {
 publishing {
     publications {
         register('mavenJava', MavenPublication) {
-            artifactId base.archivesName.get()
+            artifactId = base.archivesName.get()
             from components.java
         }
     }
     repositories {
         maven {
-            url System.getenv('local_maven_url')
+            url = System.getenv('local_maven_url')
         }
     }
 }

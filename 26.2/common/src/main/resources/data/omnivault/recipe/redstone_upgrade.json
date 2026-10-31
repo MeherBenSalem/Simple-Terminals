@@ -1,0 +1,13 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    "omnivault:upgrade_base",
+    "minecraft:redstone_torch",
+    "minecraft:redstone"
+  ],
+  "result": {
+    "id": "omnivault:redstone_upgrade",
+    "count": 1
+  }
+}

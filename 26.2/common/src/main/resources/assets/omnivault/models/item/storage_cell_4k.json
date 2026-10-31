@@ -1,0 +1,8 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "omnivault:item/storage_cell/tint",
+    "layer1": "omnivault:item/storage_cell/body",
+    "layer2": "omnivault:item/storage_cell/glyph_4k"
+  }
+}

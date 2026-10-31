@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    " D ",
+    "LOL",
+    " Q "
+  ],
+  "key": {
+    "D": "minecraft:diamond",
+    "L": "omnivault:logic_processor",
+    "O": "omnivault:omnium_ingot",
+    "Q": "minecraft:quartz"
+  },
+  "result": {
+    "id": "omnivault:advanced_processor",
+    "count": 1
+  }
+}

@@ -1,0 +1,43 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "glow": "omnivault:item/processing_pattern_glow",
+    "particle": "omnivault:item/processing_pattern_glow"
+  },
+  "elements": [
+    {
+      "from": [
+        0,
+        0,
+        7.45
+      ],
+      "to": [
+        16,
+        16,
+        8.55
+      ],
+      "shade": false,
+      "light_emission": 15,
+      "faces": {
+        "north": {
+          "uv": [
+            16,
+            0,
+            0,
+            16
+          ],
+          "texture": "#glow"
+        },
+        "south": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "texture": "#glow"
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,47 @@
+{
+    "schemaVersion": 1,
+    "id": "omnivault",
+    "version": "${version}",
+    "name": "${mod_name}",
+    "description": "${description}",
+    "authors": [
+        "${mod_author}"
+    ],
+    "contributors": [
+        "${credits}"
+    ],
+    "contact": {
+        "homepage": "https://nightbeam.cloud",
+        "sources": "https://github.com/MeherBenSalem/Simple-Terminals",
+        "issues": "https://github.com/MeherBenSalem/Simple-Terminals/issues"
+    },
+    "license": "${license}",
+    "icon": "omnivault_logo.png",
+    "environment": "*",
+    "entrypoints": {
+        "main": [
+            "com.nightbeam.omnivault.fabric.OmniVaultFabric"
+        ],
+        "client": [
+            "com.nightbeam.omnivault.fabric.client.OmniVaultFabricClient"
+        ],
+        "jei_mod_plugin": [
+            "com.nightbeam.omnivault.compat.jei.OmniVaultJeiPlugin"
+        ]
+    },
+    "mixins": [
+        "omnivault.fabric.mixins.json"
+    ],
+    "depends": {
+        "fabricloader": ">=${fabric_loader_version}",
+        "fabric-api": "*",
+        "minecraft": "~${minecraft_version}",
+        "java": ">=${java_version}"
+    },
+    "suggests": {
+        "jei": "*"
+    },
+    "breaks": {
+        "simple_terminals": "*"
+    }
+}

@@ -1,0 +1,9 @@
+{
+  "replace": false,
+  "values": [
+    "omnivault:compacting_drawer",
+    "omnivault:drawer_1x1",
+    "omnivault:drawer_1x2",
+    "omnivault:drawer_2x2"
+  ]
+}
