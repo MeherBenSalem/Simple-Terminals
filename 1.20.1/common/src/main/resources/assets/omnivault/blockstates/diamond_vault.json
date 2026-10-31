@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=north": {
+      "model": "omnivault:block/diamond_vault"
+    },
+    "facing=east": {
+      "model": "omnivault:block/diamond_vault",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "omnivault:block/diamond_vault",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "omnivault:block/diamond_vault",
+      "y": 270
+    }
+  }
+}

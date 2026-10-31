@@ -1,0 +1,74 @@
+plugins {
+    id 'multiloader-loader'
+    id 'net.neoforged.moddev.legacyforge'
+}
+
+sourceSets {
+    // In-world GameTests: run with ./gradlew :forge:runGameTestServer. Not part of the shipped jar.
+    // The tests themselves are shared with Fabric and live in common/src/gametest.
+    gametest {
+        java.srcDir project(':common').file('src/gametest/java')
+        resources.srcDir project(':common').file('src/gametest/resources')
+    }
+}
+
+legacyForge {
+    version = "${minecraft_version}-${forge_version}"
+    // Forge reads access transformers with SRG names (see the file for the Mojang names).
+    def at = file('src/main/resources/META-INF/accesstransformer.cfg')
+    if (at.exists()) {
+        accessTransformers.from(at.absolutePath)
+        validateAccessTransformers = true
+    }
+    parchment {
+        minecraftVersion = parchment_minecraft
+        mappingsVersion = parchment_version
+    }
+    addModdingDependenciesTo(sourceSets.gametest)
+    runs {
+        configureEach {
+            systemProperty('forge.enabledGameTestNamespaces', mod_id)
+            ideName = "Forge ${it.name.capitalize()} (${project.path})"
+        }
+        client {
+            client()
+            gameDirectory = project.file('runs/client')
+        }
+        server {
+            server()
+            gameDirectory = project.file('runs/server')
+        }
+        // QA client: joins a dev server on localhost:25565 (or $QA_SERVER) straight away (see tools/qa/).
+        qaClient {
+            client()
+            gameDirectory = project.file('runs/client')
+            programArguments.addAll '--quickPlayMultiplayer', System.getenv('QA_SERVER') ?: 'localhost:25565',
+                    '--username', 'Builder', '--width', '1920', '--height', '1080'
+        }
+        gameTestServer {
+            type = 'gameTestServer'
+            sourceSet = sourceSets.gametest
+            gameDirectory = project.file('runs/gametest')
+        }
+    }
+    mods {
+        "${mod_id}" {
+            sourceSet sourceSets.main
+            sourceSet sourceSets.gametest
+        }
+    }
+}
+
+dependencies {
+    compileOnly "mezz.jei:jei-${minecraft_version}-forge-api:${jei_version}"
+    gametestImplementation sourceSets.main.output
+}
+
+tasks.named('compileGametestJava', JavaCompile) {
+    dependsOn(configurations.commonJava)
+}
+
+// The mod jar is remapped to SRG names for Forge; the dev-named jar is only an intermediate.
+jar {
+    finalizedBy('reobfJar')
+}

@@ -1,0 +1,13 @@
+{
+  "parent": "omnivault:block/backpack_template",
+  "textures": {
+    "body": "omnivault:block/backpack/iron/body",
+    "front": "omnivault:block/backpack/iron/front",
+    "lid": "omnivault:block/backpack/iron/lid",
+    "strap": "omnivault:block/backpack/iron/strap",
+    "trim": "omnivault:block/backpack/iron/trim",
+    "back": "omnivault:block/backpack/iron/back",
+    "gem": "omnivault:block/backpack/omnium_gem",
+    "particle": "omnivault:block/backpack/iron/body"
+  }
+}
