@@ -12,6 +12,7 @@ guard = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(guard)
 
 VERSION = '2.0.0'
+LOADER_DEPENDENCY = {'forge': '[47,)', 'neoforge': '[21.1.80,)'}
 TOML = '''modLoader = "javafml"
 loaderVersion = "[4,)"
 license = "Apache-2.0"
@@ -20,13 +21,13 @@ modId = "omnivault"
 version = "2.0.0"
 displayName = "OmniVault"
 [[dependencies.omnivault]]
-modId = "neoforge"
+modId = "{loader}"
 type = "required"
-versionRange = "[21.1.80,)"
+versionRange = "{loader_range}"
 [[dependencies.omnivault]]
 modId = "minecraft"
 type = "required"
-versionRange = "[1.21.1, 1.22)"
+versionRange = "{minecraft_range}"
 '''
 FABRIC = {
     'schemaVersion': 1,
@@ -38,38 +39,49 @@ FABRIC = {
         'client': ['com.nightbeam.omnivault.fabric.client.OmniVaultFabricClient'],
     },
     'mixins': ['omnivault.fabric.mixins.json'],
-    'depends': {'fabricloader': '>=0.16.14', 'fabric-api': '*', 'minecraft': '~1.21.1', 'java': '>=21'},
+    'depends': {'fabricloader': '>=0.16.14', 'fabric-api': '*', 'java': '>=21'},
 }
-MIXINS = {'package': 'com.nightbeam.omnivault.fabric.mixin', 'refmap': 'omnivault.refmap.json', 'mixins': ['ItemEntityMixin']}
+MIXINS = {'package': 'com.nightbeam.omnivault.fabric.mixin', 'mixins': ['ItemEntityMixin']}
 
 
-def manifest(loader):
-    return f'Manifest-Version: 1.0\nImplementation-Version: 2.0.0\nBuilt-On-Minecraft: 1.21.1\nImplementation-Title: {loader}\n\n'
+def manifest(minecraft, loader):
+    return (f'Manifest-Version: 1.0\nImplementation-Version: 2.0.0\nBuilt-On-Minecraft: {minecraft}\n'
+            f'Implementation-Title: {loader}\n\n')
 
 
-def fabric_json(**changes):
-    return json.dumps({**FABRIC, **changes})
+def toml(minecraft, loader):
+    return TOML.format(loader=loader, loader_range=LOADER_DEPENDENCY[loader],
+                       minecraft_range=guard.MINECRAFT_RANGES[loader][minecraft])
 
 
-def entries(loader='neoforge', **overrides):
+def fabric_json(minecraft, **changes):
+    mod = {**FABRIC, 'depends': {**FABRIC['depends'], 'minecraft': guard.MINECRAFT_RANGES['fabric'][minecraft]}}
+    return json.dumps({**mod, **changes})
+
+
+def entries(minecraft='1.21.1', loader='neoforge', **overrides):
+    paths = guard.layout(minecraft)
     files = {
-        'META-INF/MANIFEST.MF': manifest(loader),
+        'META-INF/MANIFEST.MF': manifest(minecraft, loader),
         'assets/omnivault/lang/en_us.json': json.dumps({'block.omnivault.drive': 'Cell Drive', 'item.omnivault.omni_tool': 'OmniTool'}),
         'assets/omnivault/blockstates/drive.json': '{"variants": {}}',
-        'assets/omnivault/models/item/drive.json': '{}',
-        'assets/omnivault/models/item/omni_tool.json': '{}',
-        'data/omnivault/loot_table/blocks/drive.json': '{}',
-        'data/omnivault/recipe/drive.json': '{}',
+        'assets/omnivault/' + paths['item_model'].format('drive'): '{}',
+        'assets/omnivault/' + paths['item_model'].format('omni_tool'): '{}',
+        f'data/omnivault/{paths["loot"]}/blocks/drive.json': '{}',
+        f'data/omnivault/{paths["recipes"]}/drive.json': '{}',
         'pack.mcmeta': '{"pack": {"pack_format": 34}}',
     }
-    if loader == 'neoforge':
-        files['META-INF/neoforge.mods.toml'] = TOML
-    else:
-        files['fabric.mod.json'] = fabric_json()
-        files['omnivault.fabric.mixins.json'] = json.dumps(MIXINS)
-        files['omnivault.refmap.json'] = '{"mappings": {}}'
+    if loader == 'fabric':
+        mixins = dict(MIXINS)
+        if paths['refmap']:
+            mixins['refmap'] = 'omnivault.refmap.json'
+            files['omnivault.refmap.json'] = '{"mappings": {}}'
+        files['fabric.mod.json'] = fabric_json(minecraft)
+        files['omnivault.fabric.mixins.json'] = json.dumps(mixins)
         files['omnivault_logo.png'] = b'\x89PNG'
         files['com/nightbeam/omnivault/fabric/mixin/ItemEntityMixin.class'] = b'\xca\xfe\xba\xbe'
+    else:
+        files[guard.METADATA[loader]] = toml(minecraft, loader)
     for name in guard.REQUIRED_CLASSES + guard.LOADER_CLASSES[loader]:
         files[name] = b'\xca\xfe\xba\xbe'
     for name in guard.REQUIRED_SERVICES:
@@ -90,89 +102,171 @@ class ReleaseGuardTest(unittest.TestCase):
     def setUp(self):
         self.tmp = tempfile.TemporaryDirectory()
         self.root = Path(self.tmp.name)
-        self.libs = self.root / '1.21.1' / 'neoforge' / 'build' / 'libs'
-        self.fabric_libs = self.root / '1.21.1' / 'fabric' / 'build' / 'libs'
 
     def tearDown(self):
         self.tmp.cleanup()
 
+    def libs(self, minecraft, loader):
+        return self.root / minecraft / loader / 'build' / 'libs'
+
+    def build_jar(self, minecraft, loader, **overrides):
+        return write_jar(self.libs(minecraft, loader) / guard.filename(minecraft, loader, VERSION),
+                         entries(minecraft, loader, **overrides))
+
+    def build_all(self, minecraft=None):
+        for mc, loader in guard.select_targets(minecraft):
+            self.build_jar(mc, loader)
+
     def build(self, **overrides):
-        """Both release jars; the overrides change the NeoForge one."""
-        self.build_fabric()
-        return write_jar(self.libs / guard.filename('1.21.1', 'neoforge', VERSION), entries(**overrides))
+        """The 1.21.1 jars; the overrides change the NeoForge one."""
+        self.build_jar('1.21.1', 'fabric')
+        return self.build_jar('1.21.1', 'neoforge', **overrides)
 
-    def build_fabric(self, **overrides):
-        return write_jar(self.fabric_libs / guard.filename('1.21.1', 'fabric', VERSION), entries('fabric', **overrides))
+    def build_fabric(self, minecraft='1.21.1', **overrides):
+        return self.build_jar(minecraft, 'fabric', **overrides)
 
-    def validate(self):
-        artifacts = guard.select_artifacts(self.root, VERSION, 'build')
+    def validate(self, minecraft=('1.21.1',)):
+        artifacts = guard.select_artifacts(self.root, VERSION, 'build', list(minecraft) if minecraft else None)
         return [guard.validate_jar(artifact, VERSION) for artifact in artifacts]
 
     def test_valid_jar_passes_and_is_hashed(self):
         self.build()
-        write_jar(self.libs / 'omnivault-1.21.1-neoforge-2.0.0-sources.jar', {'x': 'y'})
+        write_jar(self.libs('1.21.1', 'neoforge') / 'omnivault-1.21.1-neoforge-2.0.0-sources.jar', {'x': 'y'})
         hashes = self.validate()
         self.assertEqual(len(hashes), 2)
         self.assertEqual(set(hashes[0]), {'sha256', 'sha1', 'sha512'})
+
+    def test_every_target_passes(self):
+        self.build_all()
+        artifacts = guard.select_artifacts(self.root, VERSION, 'build')
+        self.assertEqual([(a['minecraft'], a['loader']) for a in artifacts], list(guard.TARGETS))
+        for artifact in artifacts:
+            guard.validate_jar(artifact, VERSION)
+
+    def test_full_release_needs_every_minecraft_version(self):
+        self.build_all(['1.21.1', '26.2'])
+        with self.assertRaisesRegex(guard.ReleaseError, 'Missing release jars.*1.20.1'):
+            guard.select_artifacts(self.root, VERSION, 'build')
+
+    def test_minecraft_selection_releases_only_those_versions(self):
+        self.build_all(['1.20.1', '26.3'])
+        artifacts = guard.select_artifacts(self.root, VERSION, 'build', ['1.20.1', '26.3'])
+        self.assertEqual({(a['minecraft'], a['loader']) for a in artifacts},
+                         {('1.20.1', 'fabric'), ('1.20.1', 'forge'), ('26.3', 'fabric'), ('26.3', 'neoforge')})
+
+    def test_unknown_minecraft_version_blocks(self):
+        with self.assertRaisesRegex(guard.ReleaseError, 'Unknown Minecraft version'):
+            guard.select_artifacts(self.root, VERSION, 'build', ['1.19.2'])
+        with self.assertRaisesRegex(guard.ReleaseError, 'Unknown Minecraft version'):
+            guard.select_artifacts(self.root, VERSION, 'build', [])
 
     def test_missing_jar_blocks(self):
         with self.assertRaisesRegex(guard.ReleaseError, 'Missing release jars'):
             self.validate()
 
     def test_missing_fabric_jar_blocks(self):
-        write_jar(self.libs / guard.filename('1.21.1', 'neoforge', VERSION), entries())
+        self.build_jar('1.21.1', 'neoforge')
         with self.assertRaisesRegex(guard.ReleaseError, 'fabric'):
             self.validate()
 
     def test_wrong_fabric_identity_blocks(self):
         self.build()
-        self.build_fabric(**{'fabric.mod.json': fabric_json(id='simple_terminals')})
+        self.build_fabric(**{'fabric.mod.json': fabric_json('1.21.1', id='simple_terminals')})
         with self.assertRaisesRegex(guard.ReleaseError, 'Fabric mod identity'):
             self.validate()
 
     def test_fabric_minecraft_dependency_is_checked(self):
         self.build()
-        self.build_fabric(**{'fabric.mod.json': fabric_json(depends={**FABRIC['depends'], 'minecraft': '*'})})
+        self.build_fabric(**{'fabric.mod.json': fabric_json('1.21.1', depends={**FABRIC['depends'], 'minecraft': '*'})})
         with self.assertRaisesRegex(guard.ReleaseError, 'Minecraft dependency'):
             self.validate()
 
-    def test_fabric_mixins_need_their_refmap(self):
+    def test_fabric_dependency_must_match_its_minecraft_version(self):
+        self.build_jar('26.2', 'neoforge')
+        self.build_fabric('26.2', **{'fabric.mod.json': fabric_json('26.3')})
+        with self.assertRaisesRegex(guard.ReleaseError, 'Minecraft dependency'):
+            self.validate(['26.2'])
+
+    def test_obfuscated_fabric_mixins_need_their_refmap(self):
         self.build()
         self.build_fabric(**{'omnivault.refmap.json': None})
         with self.assertRaisesRegex(guard.ReleaseError, 'refmap'):
             self.validate()
 
+    def test_unobfuscated_fabric_mixins_need_no_refmap(self):
+        self.build_all(['26.2'])
+        self.assertEqual(len(self.validate(['26.2'])), 2)
+
     def test_fabric_test_stand_ins_must_not_ship(self):
-        self.build()
-        self.build_fabric(**{'net/neoforged/neoforge/gametest/GameTestHolder.class': b'\xca\xfe\xba\xbe'})
-        with self.assertRaisesRegex(guard.ReleaseError, 'stand-ins'):
-            self.validate()
+        for stand_in in ('net/neoforged/neoforge/gametest/GameTestHolder.class',
+                         'net/minecraftforge/gametest/GameTestHolder.class'):
+            with self.subTest(stand_in=stand_in):
+                self.build()
+                self.build_fabric(**{stand_in: b'\xca\xfe\xba\xbe'})
+                with self.assertRaisesRegex(guard.ReleaseError, 'stand-ins'):
+                    self.validate()
 
     def test_stale_jar_blocks(self):
         self.build()
-        write_jar(self.libs / 'omnivault-1.21.1-neoforge-1.9.0.jar', entries())
+        write_jar(self.libs('1.21.1', 'neoforge') / 'omnivault-1.21.1-neoforge-1.9.0.jar', entries())
         with self.assertRaisesRegex(guard.ReleaseError, 'stale'):
             self.validate()
 
     def test_wrong_mod_id_blocks(self):
-        self.build(**{'META-INF/neoforge.mods.toml': TOML.replace('modId = "omnivault"', 'modId = "simple_terminals"')})
+        self.build(**{'META-INF/neoforge.mods.toml': toml('1.21.1', 'neoforge').replace('modId = "omnivault"', 'modId = "simple_terminals"')})
         with self.assertRaisesRegex(guard.ReleaseError, 'identity'):
             self.validate()
 
     def test_wrong_version_blocks(self):
-        self.build(**{'META-INF/neoforge.mods.toml': TOML.replace('version = "2.0.0"', 'version = "2.0.1"')})
+        self.build(**{'META-INF/neoforge.mods.toml': toml('1.21.1', 'neoforge').replace('version = "2.0.0"', 'version = "2.0.1"')})
         with self.assertRaisesRegex(guard.ReleaseError, 'version'):
             self.validate()
+
+    def test_forge_metadata_is_checked(self):
+        self.build_fabric('1.20.1')
+        self.build_jar('1.20.1', 'forge', **{'META-INF/mods.toml': toml('1.20.1', 'forge').replace('[1.20.1,1.20.2)', '[1.20,1.21)')})
+        with self.assertRaisesRegex(guard.ReleaseError, 'Minecraft version range'):
+            self.validate(['1.20.1'])
+
+    def test_forge_jar_needs_a_forge_dependency(self):
+        self.build_fabric('1.20.1')
+        self.build_jar('1.20.1', 'forge', **{'META-INF/mods.toml': toml('1.20.1', 'forge').replace('modId = "forge"', 'modId = "neoforge"')})
+        with self.assertRaisesRegex(guard.ReleaseError, 'forge dependency'):
+            self.validate(['1.20.1'])
+
+    def test_loader_metadata_must_match_the_loader(self):
+        self.build_fabric('1.20.1')
+        self.build_jar('1.20.1', 'forge', **{'META-INF/neoforge.mods.toml': toml('1.21.1', 'neoforge')})
+        with self.assertRaisesRegex(guard.ReleaseError, 'loader metadata'):
+            self.validate(['1.20.1'])
 
     def test_block_without_loot_table_blocks(self):
         self.build(**{'data/omnivault/loot_table/blocks/drive.json': None})
         with self.assertRaisesRegex(guard.ReleaseError, 'loot_table'):
             self.validate()
 
+    def test_legacy_versions_use_plural_data_folders(self):
+        self.build_fabric('1.20.1')
+        self.build_jar('1.20.1', 'forge', **{'data/omnivault/recipe/extra.json': '{}'})
+        with self.assertRaisesRegex(guard.ReleaseError, 'another Minecraft version'):
+            self.validate(['1.20.1'])
+
+    def test_modern_versions_reject_plural_data_folders(self):
+        self.build(**{'data/omnivault/recipes/extra.json': '{}'})
+        with self.assertRaisesRegex(guard.ReleaseError, 'another Minecraft version'):
+            self.validate()
+
     def test_item_without_model_blocks(self):
         self.build(**{'assets/omnivault/models/item/omni_tool.json': None})
         with self.assertRaisesRegex(guard.ReleaseError, 'item model'):
             self.validate()
+
+    def test_modern_items_need_item_model_definitions(self):
+        self.build_jar('26.3', 'fabric')
+        self.build_jar('26.3', 'neoforge', **{'assets/omnivault/items/omni_tool.json': None,
+                                              'assets/omnivault/models/item/omni_tool.json': '{}'})
+        with self.assertRaisesRegex(guard.ReleaseError, 'item model'):
+            self.validate(['26.3'])
 
     def test_gametests_must_not_ship(self):
         self.build(**{'com/nightbeam/omnivault/gametest/NetworkGameTests.class': b'\xca\xfe\xba\xbe'})

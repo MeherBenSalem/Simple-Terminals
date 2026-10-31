@@ -4,17 +4,17 @@
 #   tools/qa/devrun.sh start-server
 #   tools/qa/devrun.sh start-client         # needs Xvfb on $DISPLAY (default :1)
 #   tools/qa/devrun.sh stop-client | stop-server
-# QA_LOADER picks the loader: neoforge (default) or fabric. Logs go to $QA_LOGS (default /tmp/omnivault-qa).
+# QA_MC picks the Minecraft workspace (default 1.21.1) and QA_LOADER the loader in it: neoforge (default), fabric
+# or forge. Logs go to $QA_LOGS (default /tmp/omnivault-qa).
 set -u
 LOGS=${QA_LOGS:-/tmp/omnivault-qa}
 mkdir -p "$LOGS"
 ROOT=$(cd "$(dirname "$0")/../.." && pwd)
-WS="$ROOT/1.21.1"
+WS="$ROOT/${QA_MC:-1.21.1}"
 LOADER=${QA_LOADER:-neoforge}
-case "$LOADER" in
-  neoforge|fabric) ;;
-  *) echo "QA_LOADER must be neoforge or fabric" >&2; exit 2 ;;
-esac
+if [ ! -d "$WS/$LOADER" ]; then
+  echo "No $LOADER workspace in $WS (set QA_MC and QA_LOADER)" >&2; exit 2
+fi
 RUNS="$WS/$LOADER/runs"
 export JAVA_HOME=${QA_JAVA_HOME:-${JAVA_HOME:-/usr/lib/jvm/java-21-openjdk-amd64}}
 case "$1" in
@@ -56,7 +56,7 @@ PROPS
     ;;
   stop-client|stop-server)
     # Only java processes started from this workspace are considered.
-    want=$([ "$1" = stop-client ] && echo 'runQaClient|quickPlayMultiplayer' || echo 'runServer|neoforgeserver|--nogui|KnotServer|nogui')
+    want=$([ "$1" = stop-client ] && echo 'runQaClient|quickPlayMultiplayer' || echo 'runServer|neoforgeserver|forgeserver|--nogui|KnotServer|nogui')
     for pid in $(pgrep -x java); do
       cmd=$(tr '\0' ' ' < "/proc/$pid/cmdline")
       cwd=$(readlink "/proc/$pid/cwd")
