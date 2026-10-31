@@ -1,0 +1,82 @@
+plugins {
+    id 'multiloader-loader'
+    id 'net.neoforged.moddev'
+}
+
+sourceSets {
+    // In-world GameTests: run with ./gradlew :neoforge:runGameTestServer. Not part of the shipped jar.
+    // The tests themselves are shared with Fabric and live in common/src/gametest.
+    gametest {
+        java.srcDir project(':common').file('src/gametest/java')
+        resources.srcDir project(':common').file('src/gametest/resources')
+    }
+}
+
+neoForge {
+    version = neoforge_version
+    // Automatically enable neoforge AccessTransformers if the file exists
+    def at = project(':common').file('src/main/resources/META-INF/accesstransformer.cfg')
+    if (at.exists()) {
+        accessTransformers.from(at.absolutePath)
+    }
+    addModdingDependenciesTo(sourceSets.gametest)
+    runs {
+        configureEach {
+            systemProperty('neoforge.enabledGameTestNamespaces', mod_id)
+            ideName = "NeoForge ${it.name.capitalize()} (${project.path})"
+        }
+        client {
+            client()
+            gameDirectory = project.file('runs/client')
+        }
+        server {
+            server()
+            gameDirectory = project.file('runs/server')
+        }
+        // QA client: joins a dev server on localhost:25565 straight away (see tools/qa/).
+        qaClient {
+            client()
+            gameDirectory = project.file('runs/client')
+            programArguments.addAll '--quickPlayMultiplayer', "localhost:${findProperty('qa_port') ?: 25565}", '--username', 'Builder', '--width', '1920', '--height', '1080'
+        }
+        gameTestServer {
+            type = 'gameTestServer'
+            sourceSet = sourceSets.gametest
+            gameDirectory = project.file('runs/gametest')
+        }
+    }
+    mods {
+        "${mod_id}" {
+            sourceSet sourceSets.main
+            sourceSet sourceSets.gametest
+        }
+    }
+}
+
+dependencies {
+    compileOnly "mezz.jei:jei-${minecraft_version}-neoforge-api:${jei_version}"
+    gametestImplementation sourceSets.main.output
+}
+
+tasks.named('compileGametestJava', JavaCompile) {
+    dependsOn(configurations.commonJava)
+}
+
+// Implement mcgradleconventions loader attribute
+def loaderAttribute = Attribute.of('io.github.mcgradleconventions.loader', String)
+['apiElements', 'runtimeElements', 'sourcesElements', 'javadocElements'].each { variant ->
+    configurations.named(variant) {
+        attributes {
+            attribute(loaderAttribute, 'neoforge')
+        }
+    }
+}
+sourceSets.configureEach {
+    [it.compileClasspathConfigurationName, it.runtimeClasspathConfigurationName, it.getTaskName(null, 'jarJar')].each { variant ->
+        configurations.named(variant) {
+            attributes {
+                attribute(loaderAttribute, 'neoforge')
+            }
+        }
+    }
+}
