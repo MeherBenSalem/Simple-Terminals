@@ -6,7 +6,7 @@ import com.nightbeam.omnivault.fabric.OmniVaultFabric;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
-import net.fabricmc.fabric.api.client.model.loading.v1.ModelLoadingPlugin;
+import net.fabricmc.fabric.api.client.model.loading.v1.PreparableModelLoadingPlugin;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.client.rendering.v1.ColorProviderRegistry;
 import net.fabricmc.fabric.api.client.rendering.v1.LivingEntityFeatureRendererRegistrationCallback;
@@ -48,9 +48,9 @@ public class OmniVaultFabricClient implements ClientModInitializer {
         Registrar registrar = new Registrar();
         OmniVaultClient.register(registrar);
         List<ResourceLocation> models = List.copyOf(registrar.models);
-        ModelLoadingPlugin.register(context -> {
+        PreparableModelLoadingPlugin.register(EmissiveModels::loadRenderTypes, (renderTypes, context) -> {
             context.addModels(models);
-            EmissiveModels.register(context);
+            EmissiveModels.register(context, renderTypes);
         });
         ClientTickEvents.END_CLIENT_TICK.register(client -> OmniVaultClient.clientTick());
     }
