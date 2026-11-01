@@ -37,6 +37,7 @@ allow-flight=true
 view-distance=8
 simulation-distance=6
 motd=OmniVault QA
+white-list=false
 PROPS
     # Skip the first-launch accessibility prompt (it blocks the auto-join) and keep captures quiet and stable.
     mkdir -p "$RUNS/client"
@@ -51,7 +52,9 @@ PROPS
     cd "$WS" && nohup bash ./gradlew ":$LOADER:runServer" --no-daemon > "$LOGS/server.log" 2>&1 &
     ;;
   start-client)
-    export DISPLAY=${DISPLAY:-:1} LIBGL_ALWAYS_SOFTWARE=1 GALLIUM_DRIVER=llvmpipe
+    # SDL_VIDEO_FORCE_EGL: 26.3 opens its window through SDL3, which finds no GLX visual under Xvfb (needs
+    # libegl1 and libegl-mesa0). On 26.3 NeoForge also set earlyWindowControl = false in runs/client/config/fml.toml.
+    export DISPLAY=${DISPLAY:-:1} LIBGL_ALWAYS_SOFTWARE=1 GALLIUM_DRIVER=llvmpipe SDL_VIDEO_FORCE_EGL=1
     cd "$WS" && nohup bash ./gradlew ":$LOADER:runQaClient" --no-daemon > "$LOGS/client.log" 2>&1 &
     ;;
   stop-client|stop-server)

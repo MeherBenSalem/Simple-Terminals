@@ -90,9 +90,11 @@ What differs:
 - **26.2 and 26.3** use `Identifier`, ids set in block and item properties, `ValueInput`/`ValueOutput`,
   server-only recipes, render-state block entity renderers and the extract-based GUI. On NeoForge the
   storage seams use its transfer API (`ResourceHandler`, transactions), with the same undo and
-  commit-on-close adapters as Fabric. Saved data lives in `data/omnivault/`; worlds upgraded from 1.21.1
-  have their `data/omnivault_*.dat` files read once and moved there. GameTests are registered through
-  `RegisterGameTestsEvent` on NeoForge and Fabric's `@GameTest`.
+  commit-on-close adapters as Fabric. Saved data lives in `data/omnivault/`; in a world upgraded from 1.21.1,
+  `util.LegacySavedData` reads the old `data/omnivault_*.dat` files once (running vanilla's item fixers on every
+  stack) and saves them in the new place, leaving the old files as a backup. GameTests are registered through
+  `RegisterGameTestsEvent` on NeoForge and Fabric's `@GameTest`. 26.3 adds SDL3 key codes, blocks without
+  codecs and new loot table and model formats, which `resources_26.py` handles per version.
 
 ## Shared building blocks
 

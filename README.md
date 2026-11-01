@@ -47,7 +47,7 @@ cd 1.21.1   # or 1.20.1, 26.2, 26.3
 ```
 
 The jars are written to `<minecraft>/<loader>/build/libs/omnivault-<minecraft>-<loader>-<version>.jar`, for example
-`1.21.1/neoforge/build/libs/omnivault-1.21.1-neoforge-2.0.0.jar`. The loader folders are `forge` and `fabric` for
+`1.21.1/neoforge/build/libs/omnivault-1.21.1-neoforge-2.0.1.jar`. The loader folders are `forge` and `fabric` for
 1.20.1, and `neoforge` and `fabric` for the other versions.
 
 ## Testing

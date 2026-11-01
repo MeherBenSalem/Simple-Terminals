@@ -5,7 +5,8 @@
 OmniVault now runs on **Minecraft 1.20.1** (Forge, Fabric), **26.2** and **26.3** (NeoForge, Fabric) as well as
 1.21.1. Every version and loader has the whole 2.0 feature set: the Storage Hub and Inventory Cable, the
 channel-free storage network with cells up to Singularity, autocrafting, Quantum Bridges, vaults, drawers, linked
-vaults and backpacks. See 2.0.0 below for the full list.
+vaults and backpacks. The full list is in the
+[2.0.0 notes](https://github.com/MeherBenSalem/Simple-Terminals/blob/main/CHANGELOG.md#200).
 
 ### New Minecraft versions
 * **1.20.1** on Forge 47.4.28+ and on Fabric (Fabric API required), Java 17.
