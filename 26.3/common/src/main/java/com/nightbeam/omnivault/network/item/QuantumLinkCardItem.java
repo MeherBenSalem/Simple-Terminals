@@ -11,6 +11,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.util.Prediction;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
@@ -59,7 +60,7 @@ public class QuantumLinkCardItem extends Item implements BlockUseOverride {
             // Record this bridge on a single card split off the stack.
             ItemStack recorded = card.split(1);
             recorded.set(NetworkContent.BRIDGE_LINK.get(), here);
-            player.getInventory().placeItemBackInInventory(recorded);
+            player.getInventory().placeItemBackInInventory(recorded, Prediction.SERVER_ONLY);
             player.sendOverlayMessage(Component.translatable("message.omnivault.bridge.recorded").withStyle(ChatFormatting.LIGHT_PURPLE));
             return InteractionResult.CONSUME;
         }

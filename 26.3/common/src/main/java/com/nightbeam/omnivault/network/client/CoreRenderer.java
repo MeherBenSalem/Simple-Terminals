@@ -51,7 +51,7 @@ public class CoreRenderer implements BlockEntityRenderer<NexusCoreBlockEntity, C
 
         pose.pushPose();
         pose.translate(0.5, 0.5 + (state.active ? Mth.sin(state.time * 0.08f) * 0.03f : 0), 0.5);
-        pose.mulPose(Axis.YP.rotationDegrees(state.time * 2.0f * speed));
+        pose.rotateDegrees(Axis.YP, state.time * 2.0f * speed);
         pose.translate(-0.5, -0.5, -0.5);
         collector.submitBlockModel(pose, RenderTypes.translucentMovingBlock(), List.of(ClientPlatform.INSTANCE.getStandaloneModel(CRYSTAL)),
                 new int[]{tint}, glow, OverlayTexture.NO_OVERLAY, 0);
@@ -59,8 +59,8 @@ public class CoreRenderer implements BlockEntityRenderer<NexusCoreBlockEntity, C
 
         pose.pushPose();
         pose.translate(0.5, 0.5, 0.5);
-        pose.mulPose(Axis.YP.rotationDegrees(-state.time * 3.0f * speed));
-        pose.mulPose(Axis.XP.rotationDegrees(18.0f));
+        pose.rotateDegrees(Axis.YP, -state.time * 3.0f * speed);
+        pose.rotateDegrees(Axis.XP, 18.0f);
         pose.translate(-0.5, -0.5, -0.5);
         collector.submitBlockModel(pose, RenderTypes.translucentMovingBlock(), List.of(ClientPlatform.INSTANCE.getStandaloneModel(RING)),
                 new int[]{tint}, glow, OverlayTexture.NO_OVERLAY, 0);

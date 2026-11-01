@@ -1,6 +1,5 @@
 package com.nightbeam.omnivault.network.block;
 
-import com.mojang.serialization.MapCodec;
 import com.nightbeam.omnivault.content.CoreContent;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -13,7 +12,6 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.BaseEntityBlock;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
@@ -26,17 +24,11 @@ import org.jetbrains.annotations.Nullable;
 
 /** An antenna mast. Connects to the network through its base (every side but the top). */
 public class WirelessTransmitterBlock extends DeviceBlock {
-    public static final MapCodec<WirelessTransmitterBlock> CODEC = simpleCodec(WirelessTransmitterBlock::new);
     private static final VoxelShape SHAPE = Shapes.or(Block.box(1, 0, 1, 15, 4, 15), Block.box(5, 4, 5, 11, 16, 11));
 
     public WirelessTransmitterBlock(Properties properties) {
         super(properties);
         registerDefaultState(stateDefinition.any().setValue(ACTIVE, false));
-    }
-
-    @Override
-    protected MapCodec<? extends BaseEntityBlock> codec() {
-        return CODEC;
     }
 
     @Override

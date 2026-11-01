@@ -22,6 +22,11 @@ What changes from 1.21.1:
   * the controls category for our keys is translated as key.category.omnivault.main;
   * pack.mcmeta declares min_format and max_format.
 
+And from 26.3:
+  * a face lit evenly ("shade": false) is shaded as if it faced up ("shade_direction_override": "up");
+  * loot tables take one "condition" and one "modifier" where they took "conditions" and "functions"
+    lists, and conditions and functions name their kind with "type".
+
 The script only reads 1.21.1 and only writes the targets below (META-INF and any other hand-written
 files next to them are left alone); files there that 1.21.1 no longer produces are deleted.
 """
@@ -40,7 +45,13 @@ MOD = 'omnivault'
 # Resource pack major.minor and data pack major.minor of each target (version.json's pack_version).
 PACK_VERSIONS = {
     '26.2': ((88, 0), (107, 1)),
+    '26.3': ((97, 1), (121, 0)),
 }
+# The first 26.x release with each format change after 26.2.
+SHADE_DIRECTION_OVERRIDE = (26, 3)
+LOOT_MODIFIERS = (26, 3)
+# Cooking times 1.21.1 used when a recipe gave none (26.3 requires one).
+COOKING_TIMES = {'minecraft:smelting': 200, 'minecraft:blasting': 100, 'minecraft:smoking': 100, 'minecraft:campfire_cooking': 600}
 
 # Item models that 1.21.1 only reaches through an override; they are models, not items.
 OVERRIDE_MODELS = {'relocator_full', 'netherite_relocator_full'}
@@ -93,7 +104,11 @@ class Output:
 # -- models -----------------------------------------------------------------------------------------
 
 
-def convert_model(model):
+def version_key(version):
+    return tuple(int(part) for part in version.split('.'))
+
+
+def convert_model(model, version):
     """A 1.21.1 block or item model as 26.x reads it; returns (model, glowing item layers)."""
     model = dict(model)
     model.pop('render_type', None)
@@ -106,12 +121,14 @@ def convert_model(model):
         model['parent'] = 'minecraft:item/generated'
     model.pop('overrides', None)
     if 'elements' in model:
-        model['elements'] = [convert_element(element) for element in model['elements']]
+        model['elements'] = [convert_element(element, version) for element in model['elements']]
     return model, glowing
 
 
-def convert_element(element):
+def convert_element(element, version):
     element = dict(element)
+    if version_key(version) >= SHADE_DIRECTION_OVERRIDE and element.pop('shade', True) is False:
+        element['shade_direction_override'] = 'up'
     data = element.pop('neoforge_data', None)
     if data:
         light = max(data.get('block_light', 0), data.get('sky_light', 0))
@@ -140,7 +157,7 @@ def convert_face(face):
     return dict(face, uv=uv)
 
 
-def glow_model(texture):
+def glow_model(texture, version):
     """A flat, full-bright overlay for one layer of a generated item model, just outside its two faces."""
     return {
         'parent': 'minecraft:item/generated',
@@ -148,7 +165,7 @@ def glow_model(texture):
         'elements': [{
             'from': [0, 0, 7.45],
             'to': [16, 16, 8.55],
-            'shade': False,
+            **({'shade_direction_override': 'up'} if version_key(version) >= SHADE_DIRECTION_OVERRIDE else {'shade': False}),
             'light_emission': 15,
             'faces': {
                 'north': {'uv': [16, 0, 0, 16], 'texture': '#glow'},
@@ -189,7 +206,7 @@ def item_definition(name, source_model, glowing):
     return {'model': model}
 
 
-def convert_assets(output, target):
+def convert_assets(output, target, version):
     assets = SOURCE / 'assets' / MOD
     out = target / 'assets' / MOD
     for path in sorted((assets / 'textures').rglob('*')):
@@ -198,19 +215,19 @@ def convert_assets(output, target):
     for path in sorted((assets / 'blockstates').glob('*.json')):
         output.json(out / 'blockstates' / path.name, load(path))
     for path in sorted((assets / 'models' / 'block').rglob('*.json')):
-        model, _ = convert_model(load(path))
+        model, _ = convert_model(load(path), version)
         output.json(out / path.relative_to(assets), model)
     lang = load(assets / 'lang' / 'en_us.json')
     names = {key.split('.')[2] for key in lang if key.count('.') == 2 and key.split('.')[:2] in (['item', MOD], ['block', MOD])}
     for path in sorted((assets / 'models' / 'item').glob('*.json')):
         name = path.stem
         source = load(path)
-        model, glowing = convert_model(source)
+        model, glowing = convert_model(source, version)
         if glowing:
             # The glowing layers become overlays; the base model keeps the layers below them.
             textures = model['textures']
             for layer in glowing:
-                output.json(out / 'models' / 'item' / f'{name}_glow_{layer}.json', glow_model(textures.pop(f'layer{layer}')))
+                output.json(out / 'models' / 'item' / f'{name}_glow_{layer}.json', glow_model(textures.pop(f'layer{layer}'), version))
         output.json(out / 'models' / 'item' / path.name, model)
         if name in OVERRIDE_MODELS:
             continue
@@ -248,7 +265,41 @@ def convert_recipe(recipe):
     for field in ('ingredient', 'template', 'base', 'addition'):
         if field in recipe:
             recipe[field] = ingredient(recipe[field])
+    if recipe['type'] in COOKING_TIMES:
+        recipe.setdefault('cookingtime', COOKING_TIMES[recipe['type']])
     return recipe
+
+
+def loot_condition(condition):
+    condition = {'type' if key == 'condition' else key: value for key, value in condition.items()}
+    return convert_loot(condition)
+
+
+def loot_function(function):
+    function = {'type' if key == 'function' else key: value for key, value in function.items()}
+    return convert_loot(function)
+
+
+def convert_loot(value):
+    """A 1.21.1 loot table part with lists of conditions and functions folded into one of each."""
+    if isinstance(value, list):
+        return [convert_loot(entry) for entry in value]
+    if not isinstance(value, dict):
+        return value
+    converted = {}
+    for key, entry in value.items():
+        if key == 'conditions':
+            terms = [loot_condition(condition) for condition in entry]
+            converted['condition'] = terms[0] if len(terms) == 1 else {'type': 'minecraft:all_of', 'terms': terms}
+        elif key == 'functions':
+            functions = [loot_function(function) for function in entry]
+            # A list is read as one sequence of functions.
+            converted['modifier'] = functions[0] if len(functions) == 1 else functions
+        elif key in ('rolls', 'bonus_rolls') and isinstance(entry, float) and entry.is_integer():
+            converted[key] = int(entry)
+        else:
+            converted[key] = convert_loot(entry)
+    return converted
 
 
 def dye_recipe(item):
@@ -261,7 +312,7 @@ def dye_recipe(item):
     }
 
 
-def convert_data(output, target):
+def convert_data(output, target, version):
     data = SOURCE / 'data'
     for path in sorted(data.rglob('*.json')):
         relative = path.relative_to(data)
@@ -273,6 +324,8 @@ def convert_data(output, target):
             continue
         if relative.parts[1] == 'recipe':
             content = convert_recipe(content)
+        elif relative.parts[1] == 'loot_table' and version_key(version) >= LOOT_MODIFIERS:
+            content = convert_loot(content)
         output.json(target / 'data' / relative, content)
 
 
@@ -296,8 +349,8 @@ def build(version):
     target = workspace / 'common' / 'src' / 'main' / 'resources'
     target_gametest = workspace / 'common' / 'src' / 'gametest' / 'resources'
     output = Output()
-    convert_assets(output, target)
-    convert_data(output, target)
+    convert_assets(output, target, version)
+    convert_data(output, target, version)
     output.json(target / 'pack.mcmeta', pack_mcmeta(version))
     output.copy(target / f'{MOD}_logo.png', SOURCE / f'{MOD}_logo.png')
     convert_gametest(output, target_gametest)

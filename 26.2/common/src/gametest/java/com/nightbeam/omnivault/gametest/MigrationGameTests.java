@@ -154,7 +154,12 @@ public class MigrationGameTests {
             check(helper, Files.isRegularFile(old), "the 1.21.1 file is kept");
 
             Files.delete(old);
-            checks.accept(legacy.get(server, new SavedDataStorage(folder, server.getFixerUpper(), server.registryAccess()), folder));
+            SavedDataStorage reloaded = new SavedDataStorage(folder, server.getFixerUpper(), server.registryAccess());
+            T restored = legacy.get(server, reloaded, folder);
+            checks.accept(restored);
+            // Saving again waits for the storage's file work too (NeoForge tidies temporary files after a read).
+            restored.setDirty();
+            reloaded.saveAndJoin();
         } catch (IOException e) {
             throw new UncheckedIOException(e);
         } finally {

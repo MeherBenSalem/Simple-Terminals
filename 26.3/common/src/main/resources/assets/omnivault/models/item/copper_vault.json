@@ -1267,7 +1267,7 @@
           "texture": "#glow"
         }
       },
-      "shade": false,
+      "shade_direction_override": "up",
       "light_emission": 15
     },
     {
@@ -2724,7 +2724,7 @@
           "texture": "#emblem"
         }
       },
-      "shade": false,
+      "shade_direction_override": "up",
       "light_emission": 15
     },
     {
@@ -2855,7 +2855,7 @@
           "texture": "#glow"
         }
       },
-      "shade": false,
+      "shade_direction_override": "up",
       "light_emission": 15
     }
   ],

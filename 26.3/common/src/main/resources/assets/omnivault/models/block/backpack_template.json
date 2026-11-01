@@ -546,7 +546,6 @@
         3.25
       ],
       "name": "omnium_gem",
-      "shade": false,
       "faces": {
         "north": {
           "uv": [
@@ -594,6 +593,7 @@
           "texture": "#gem"
         }
       },
+      "shade_direction_override": "up",
       "light_emission": 15
     },
     {

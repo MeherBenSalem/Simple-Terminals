@@ -19,6 +19,8 @@ import java.lang.annotation.Target;
 public @interface GameTest {
     String environment() default "minecraft:default";
 
+    String dimension() default "minecraft:overworld";
+
     String structure() default "fabric-gametest-api-v1:empty";
 
     int maxTicks() default 20;

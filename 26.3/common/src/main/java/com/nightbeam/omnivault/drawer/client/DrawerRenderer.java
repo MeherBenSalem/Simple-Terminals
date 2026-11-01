@@ -27,6 +27,7 @@ import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.resources.model.geometry.BakedQuad;
+import net.minecraft.client.resources.model.geometry.ItemQuads;
 import net.minecraft.client.resources.model.sprite.SpriteId;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -125,7 +126,7 @@ public class DrawerRenderer implements BlockEntityRenderer<AbstractDrawerBlockEn
         pose.pushPose();
         // Local frame: +x to the viewer's right, +y up, +z towards the viewer, front plane at z = 0.5.
         pose.translate(0.5, 0.5, 0.5);
-        pose.mulPose(Axis.YP.rotationDegrees(-state.facing.toYRot()));
+        pose.rotateDegrees(Axis.YP, -state.facing.toYRot());
         for (Compartment compartment : state.compartments) {
             submitItem(compartment, pose, collector, state.lightCoords);
             if (state.labels) {
@@ -239,10 +240,10 @@ public class DrawerRenderer implements BlockEntityRenderer<AbstractDrawerBlockEn
     private record FlatItems(SubmitNodeCollector delegate, boolean ghost, int light) implements DelegatingSubmitNodeCollector {
         @Override
         public void submitItem(PoseStack poseStack, ItemDisplayContext displayContext, int lightCoords, int overlayCoords, int outlineColor,
-                               int[] tintLayers, List<BakedQuad> quads, ItemStackRenderState.FoilType foilType) {
+                               int[] tintLayers, ItemQuads quads, ItemStackRenderState.FoilType foilType) {
             Map<RenderType, List<BakedQuad>> byType = new LinkedHashMap<>();
-            for (BakedQuad quad : quads) {
-                byType.computeIfAbsent(renderType(quad), type -> new ArrayList<>()).add(quad);
+            for (BakedQuad quad : quads.all()) {
+                byType.computeIfAbsent(renderType(quad, foilType), type -> new ArrayList<>()).add(quad);
             }
             int itemLight = ghost ? light : lightCoords;
             byType.forEach((type, typeQuads) -> delegate.submitCustomGeometry(poseStack, type, (pose, buffer) -> {
@@ -252,18 +253,12 @@ public class DrawerRenderer implements BlockEntityRenderer<AbstractDrawerBlockEn
                     putFlat(pose.pose(), buffer, quad, ghost ? ghostColor(color) : color, itemLight, overlayCoords);
                 }
             }));
-            if (!ghost && foilType != ItemStackRenderState.FoilType.NONE) {
-                delegate.submitCustomGeometry(poseStack, RenderTypes.glint(), (pose, buffer) -> {
-                    for (BakedQuad quad : quads) {
-                        putFlat(pose.pose(), buffer, quad, -1, itemLight, overlayCoords);
-                    }
-                });
-            }
         }
 
-        private RenderType renderType(BakedQuad quad) {
+        /** Glint is part of an item's render type; ghosts are drawn plain. */
+        private RenderType renderType(BakedQuad quad, ItemStackRenderState.FoilType foilType) {
             if (!ghost) {
-                return quad.materialInfo().itemRenderType();
+                return foilType == ItemStackRenderState.FoilType.NONE ? quad.materialInfo().itemRenderType() : quad.materialInfo().itemGlintRenderType();
             }
             return quad.materialInfo().sprite().atlasLocation().equals(TextureAtlas.LOCATION_BLOCKS)
                     ? Sheets.translucentBlockItemSheet() : Sheets.translucentItemSheet();

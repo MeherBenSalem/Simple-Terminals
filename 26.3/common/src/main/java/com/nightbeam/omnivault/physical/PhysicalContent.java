@@ -63,7 +63,7 @@ public final class PhysicalContent {
 
     public static final Supplier<LinkedVaultBlock> LINKED_VAULT = ModRegistry.blockWithItem("linked_vault",
             LinkedVaultBlock::new, () -> BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_BLACK).strength(22.5f, 600.0f)
-                    .sound(SoundType.NETHERITE_BLOCK).lightLevel(state -> 5).noOcclusion().pushReaction(PushReaction.BLOCK),
+                    .sound(SoundType.NETHERITE_BLOCK).lightLevel(state -> 5).noOcclusion().pushReaction(PushReaction.IMMOVEABLE),
             (LinkedVaultBlock block, Item.Properties p) -> new LinkedVaultItem(block, p.rarity(Rarity.UNCOMMON)));
     public static final Supplier<LinkedPouchItem> LINKED_POUCH = ModRegistry.item("linked_pouch",
             LinkedPouchItem::new, p -> p.stacksTo(1).rarity(Rarity.UNCOMMON));

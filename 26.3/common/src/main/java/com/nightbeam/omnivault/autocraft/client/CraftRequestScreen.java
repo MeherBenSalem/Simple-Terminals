@@ -1,5 +1,6 @@
 package com.nightbeam.omnivault.autocraft.client;
 
+import com.mojang.blaze3d.platform.InputConstants;
 import com.nightbeam.omnivault.autocraft.AutocraftPackets;
 import com.nightbeam.omnivault.autocraft.menu.CraftRequestMenu;
 import com.nightbeam.omnivault.autocraft.plan.PlanError;
@@ -17,7 +18,6 @@ import net.minecraft.client.input.KeyEvent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Inventory;
-import org.lwjgl.glfw.GLFW;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -254,7 +254,7 @@ public class CraftRequestScreen extends AbstractContainerScreen<CraftRequestMenu
     @Override
     public boolean keyPressed(KeyEvent event) {
         int keyCode = event.key();
-        if (keyCode == GLFW.GLFW_KEY_ENTER || keyCode == GLFW.GLFW_KEY_KP_ENTER) {
+        if (keyCode == InputConstants.KEY_RETURN || keyCode == InputConstants.KEY_NUMPADENTER) {
             if (canStart()) {
                 startJob();
             } else {
@@ -262,7 +262,7 @@ public class CraftRequestScreen extends AbstractContainerScreen<CraftRequestMenu
             }
             return true;
         }
-        if (amount.isFocused() && keyCode != GLFW.GLFW_KEY_ESCAPE) {
+        if (amount.isFocused() && keyCode != InputConstants.KEY_ESCAPE) {
             amount.keyPressed(event);
             return true;
         }

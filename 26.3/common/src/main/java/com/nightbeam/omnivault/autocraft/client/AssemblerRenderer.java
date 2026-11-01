@@ -75,8 +75,8 @@ public class AssemblerRenderer implements BlockEntityRenderer<AssemblerBlockEnti
         for (int i = 0; i < 2; i++) {
             pose.pushPose();
             pose.translate(0.5, 0.5, 0.5);
-            pose.mulPose(Axis.YP.rotationDegrees((i == 0 ? 1 : -1.6f) * state.time * speed));
-            pose.mulPose(Axis.XP.rotationDegrees(i == 0 ? 20.0f : -35.0f));
+            pose.rotateDegrees(Axis.YP, (i == 0 ? 1 : -1.6f) * state.time * speed);
+            pose.rotateDegrees(Axis.XP, i == 0 ? 20.0f : -35.0f);
             float scale = i == 0 ? 1.0f : 0.72f;
             pose.scale(scale, scale, scale);
             pose.translate(-0.5, -0.5, -0.5);
@@ -87,7 +87,7 @@ public class AssemblerRenderer implements BlockEntityRenderer<AssemblerBlockEnti
         if (!state.item.isEmpty()) {
             pose.pushPose();
             pose.translate(0.5, 0.5 + Mth.sin(state.time * 0.15f) * 0.04, 0.5);
-            pose.mulPose(Axis.YP.rotationDegrees(state.time * 4.0f));
+            pose.rotateDegrees(Axis.YP, state.time * 4.0f);
             pose.scale(0.42f, 0.42f, 0.42f);
             state.item.submit(pose, collector, LightCoordsUtil.FULL_BRIGHT, OverlayTexture.NO_OVERLAY, 0);
             pose.popPose();

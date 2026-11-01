@@ -35,7 +35,7 @@ public final class LidRendering {
     /** Rotates the pose from block space into the north-facing model space of a vault facing {@code facing}. */
     public static void faceModel(PoseStack pose, Direction facing) {
         pose.translate(0.5f, 0.0f, 0.5f);
-        pose.mulPose(Axis.YP.rotationDegrees(180.0f - facing.toYRot()));
+        pose.rotateDegrees(Axis.YP, 180.0f - facing.toYRot());
         pose.translate(-0.5f, 0.0f, -0.5f);
     }
 
@@ -45,7 +45,7 @@ public final class LidRendering {
             return;
         }
         pose.translate(0.0f, HINGE_Y, HINGE_Z);
-        pose.mulPose(Axis.XP.rotationDegrees(openness * MAX_ANGLE));
+        pose.rotateDegrees(Axis.XP, openness * MAX_ANGLE);
         pose.translate(0.0f, -HINGE_Y, -HINGE_Z);
     }
 
@@ -61,7 +61,8 @@ public final class LidRendering {
             instance.setOverlayCoords(OverlayTexture.NO_OVERLAY);
             for (Direction side : SIDES) {
                 for (BakedQuad quad : model.getQuads(side)) {
-                    float shade = quad.materialInfo().shade() ? lighting.byFace(turn(quad.direction(), facing)) : lighting.up();
+                    Direction shading = quad.materialInfo().shadeDirectionOverride();
+                    float shade = lighting.byFace(turn(shading != null ? shading : quad.direction(), facing));
                     int color = quad.materialInfo().isTinted() ? tint : 0xFFFFFFFF;
                     instance.setColor(ARGB.scaleRGB(color, shade));
                     buffer.putBakedQuad(last, quad, instance);

@@ -8,19 +8,17 @@
         {
           "type": "minecraft:item",
           "name": "omnivault:compacting_drawer",
-          "functions": [
-            {
-              "function": "minecraft:copy_components",
-              "source": "block_entity",
-              "include": [
-                "minecraft:custom_name",
-                "omnivault:drawer_contents",
-                "omnivault:compacting_contents",
-                "omnivault:drawer_locked",
-                "omnivault:drawer_upgrades"
-              ]
-            }
-          ]
+          "modifier": {
+            "type": "minecraft:copy_components",
+            "source": "block_entity",
+            "include": [
+              "minecraft:custom_name",
+              "omnivault:drawer_contents",
+              "omnivault:compacting_contents",
+              "omnivault:drawer_locked",
+              "omnivault:drawer_upgrades"
+            ]
+          }
         }
       ]
     }

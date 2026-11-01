@@ -57,18 +57,18 @@ public class StorageMonitorRenderer implements BlockEntityRenderer<StorageMonito
         }
         pose.pushPose();
         pose.translate(0.5, 0.5, 0.5);
-        pose.mulPose(Axis.YP.rotationDegrees(180 - state.facing.toYRot()));
+        pose.rotateDegrees(Axis.YP, 180 - state.facing.toYRot());
         // Now -Z is the screen side; the screen surface sits 1px in front of the casing.
         pose.translate(0, 0.08, -0.5 - 0.002);
         pose.pushPose();
         pose.scale(0.42f, 0.42f, 0.02f);
-        pose.mulPose(Axis.YP.rotationDegrees(180));
+        pose.rotateDegrees(Axis.YP, 180);
         state.item.submit(pose, collector, LightCoordsUtil.FULL_BRIGHT, OverlayTexture.NO_OVERLAY, 0);
         pose.popPose();
         pose.translate(0, -0.3, -0.005);
         // Face the text towards the viewer in front of the screen, like sign text.
         float scale = 0.012f;
-        pose.mulPose(Axis.YP.rotationDegrees(180));
+        pose.rotateDegrees(Axis.YP, 180);
         pose.scale(scale, -scale, scale);
         collector.submitText(pose, -font.width(state.text) / 2f, 0, FormattedCharSequence.forward(state.text, Style.EMPTY), false,
                 Font.DisplayMode.POLYGON_OFFSET, LightCoordsUtil.FULL_BRIGHT, state.online ? 0xFF8EF3FF : 0xFF5A6270, 0, 0);

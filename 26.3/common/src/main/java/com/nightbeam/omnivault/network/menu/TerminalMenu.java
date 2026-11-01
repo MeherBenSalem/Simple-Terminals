@@ -11,6 +11,7 @@ import com.nightbeam.omnivault.storage.ItemKey;
 import com.nightbeam.omnivault.storage.ItemStorage;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.util.Prediction;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.MenuType;
@@ -242,7 +243,7 @@ public class TerminalMenu extends OVMenu {
             setCarried(result);
         } else {
             setCarried(carried);
-            player.getInventory().placeItemBackInInventory(result);
+            player.getInventory().placeItemBackInInventory(result, Prediction.SERVER_ONLY);
         }
     }
 

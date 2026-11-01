@@ -91,7 +91,6 @@
         16,
         16
       ],
-      "shade": false,
       "faces": {
         "north": {
           "uv": [
@@ -154,6 +153,7 @@
           "cullface": "down"
         }
       },
+      "shade_direction_override": "up",
       "light_emission": 15
     }
   ]

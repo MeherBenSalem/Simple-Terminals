@@ -1,6 +1,5 @@
 package com.nightbeam.omnivault.network.block;
 
-import com.mojang.serialization.MapCodec;
 import com.nightbeam.omnivault.network.NetworkContent;
 import com.nightbeam.omnivault.network.NetworkManager;
 import net.minecraft.ChatFormatting;
@@ -12,7 +11,6 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.component.TooltipDisplay;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.BaseEntityBlock;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
@@ -27,15 +25,8 @@ import java.util.function.Consumer;
  * touching the hub or an Inventory Cable connected to it show up together in a Storage Terminal.
  */
 public class StorageHubBlock extends NexusCoreBlock {
-    public static final MapCodec<StorageHubBlock> CODEC = simpleCodec(StorageHubBlock::new);
-
     public StorageHubBlock(Properties properties) {
         super(properties);
-    }
-
-    @Override
-    protected MapCodec<? extends BaseEntityBlock> codec() {
-        return CODEC;
     }
 
     @Nullable

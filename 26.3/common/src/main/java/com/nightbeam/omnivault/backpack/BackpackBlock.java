@@ -1,7 +1,5 @@
 package com.nightbeam.omnivault.backpack;
 
-import com.mojang.serialization.MapCodec;
-import com.mojang.serialization.codecs.RecordCodecBuilder;
 import com.nightbeam.omnivault.OmniVault;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -53,10 +51,6 @@ import java.util.Map;
 
 /** A backpack set down in the world: opens on right-click, sneak-right-click with an empty hand picks it up. */
 public class BackpackBlock extends BaseEntityBlock implements SimpleWaterloggedBlock {
-    public static final MapCodec<BackpackBlock> CODEC = RecordCodecBuilder.mapCodec(i -> i.group(
-            BackpackTier.CODEC.fieldOf("tier").forGetter(BackpackBlock::tier),
-            propertiesCodec()
-    ).apply(i, BackpackBlock::new));
     public static final EnumProperty<Direction> FACING = HorizontalDirectionalBlock.FACING;
     public static final BooleanProperty WATERLOGGED = BlockStateProperties.WATERLOGGED;
     /** Dynamic drop name used by the backpack loot tables: the stored backpack item. */
@@ -101,11 +95,6 @@ public class BackpackBlock extends BaseEntityBlock implements SimpleWaterloggedB
 
     public BackpackTier tier() {
         return tier;
-    }
-
-    @Override
-    protected MapCodec<? extends BaseEntityBlock> codec() {
-        return CODEC;
     }
 
     @Override

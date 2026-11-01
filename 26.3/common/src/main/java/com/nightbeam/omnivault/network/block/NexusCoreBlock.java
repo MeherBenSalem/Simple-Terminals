@@ -1,6 +1,5 @@
 package com.nightbeam.omnivault.network.block;
 
-import com.mojang.serialization.MapCodec;
 import com.nightbeam.omnivault.network.NetworkContent;
 import com.nightbeam.omnivault.network.menu.CoreMenu;
 import com.nightbeam.omnivault.platform.Services;
@@ -10,7 +9,6 @@ import net.minecraft.world.InteractionResult;
 import net.minecraft.world.SimpleMenuProvider;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.BaseEntityBlock;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityTicker;
@@ -21,16 +19,9 @@ import net.minecraft.world.phys.BlockHitResult;
 import org.jetbrains.annotations.Nullable;
 
 public class NexusCoreBlock extends DeviceBlock {
-    public static final MapCodec<NexusCoreBlock> CODEC = simpleCodec(NexusCoreBlock::new);
-
     public NexusCoreBlock(Properties properties) {
         super(properties);
         registerDefaultState(stateDefinition.any().setValue(ACTIVE, false));
-    }
-
-    @Override
-    protected MapCodec<? extends BaseEntityBlock> codec() {
-        return CODEC;
     }
 
     @Override

@@ -1,7 +1,5 @@
 package com.nightbeam.omnivault.drawer;
 
-import com.mojang.serialization.MapCodec;
-import com.mojang.serialization.codecs.RecordCodecBuilder;
 import com.nightbeam.omnivault.content.CoreContent;
 import com.nightbeam.omnivault.content.Wrenchable;
 import com.nightbeam.omnivault.storage.ItemKey;
@@ -37,10 +35,6 @@ import org.jetbrains.annotations.Nullable;
  */
 public class DrawerBlock extends BaseEntityBlock implements Wrenchable {
     public static final EnumProperty<Direction> FACING = BlockStateProperties.HORIZONTAL_FACING;
-    public static final MapCodec<DrawerBlock> CODEC = RecordCodecBuilder.mapCodec(i -> i.group(
-            DrawerLayout.CODEC.fieldOf("layout").forGetter(DrawerBlock::layout),
-            propertiesCodec()
-    ).apply(i, DrawerBlock::new));
 
     private final DrawerLayout layout;
 
@@ -52,11 +46,6 @@ public class DrawerBlock extends BaseEntityBlock implements Wrenchable {
 
     public DrawerLayout layout() {
         return layout;
-    }
-
-    @Override
-    protected MapCodec<? extends BaseEntityBlock> codec() {
-        return CODEC;
     }
 
     @Override

@@ -332,7 +332,6 @@
           8
         ]
       },
-      "shade": false,
       "faces": {
         "north": {
           "uv": [
@@ -389,6 +388,7 @@
           "texture": "#p0"
         }
       },
+      "shade_direction_override": "up",
       "light_emission": 15
     },
     {
@@ -642,7 +642,6 @@
           8
         ]
       },
-      "shade": false,
       "faces": {
         "north": {
           "uv": [
@@ -699,6 +698,7 @@
           "texture": "#p0"
         }
       },
+      "shade_direction_override": "up",
       "light_emission": 15
     }
   ],

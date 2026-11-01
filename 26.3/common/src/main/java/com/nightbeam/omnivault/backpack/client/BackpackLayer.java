@@ -14,7 +14,6 @@ import net.minecraft.client.renderer.block.dispatch.BlockStateModelPart;
 import net.minecraft.client.renderer.entity.RenderLayerParent;
 import net.minecraft.client.renderer.entity.layers.RenderLayer;
 import net.minecraft.client.renderer.entity.state.AvatarRenderState;
-import net.minecraft.client.renderer.rendertype.RenderTypes;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
@@ -48,13 +47,12 @@ public class BackpackLayer extends RenderLayer<AvatarRenderState, PlayerModel> {
         getParentModel().body.translateAndRotate(pose);
         // Just below the neck, against the back of the torso (+Z is the player's back in model space).
         pose.translate(0, 1.0f / 16, 2.0f / 16);
-        pose.mulPose(Axis.XP.rotationDegrees(180));
+        pose.rotateDegrees(Axis.XP, 180);
         pose.scale(SCALE, SCALE, SCALE);
         pose.translate(-0.5f, -MODEL_TOP, -MODEL_BACK);
-        collector.submitBlockModel(pose, Sheets.cutoutBlockItemSheet(), model, tints, light, OverlayTexture.NO_OVERLAY, state.outlineColor);
-        if (stack.hasFoil()) {
-            collector.submitBlockModel(pose, RenderTypes.entityGlint(), model, tints, light, OverlayTexture.NO_OVERLAY, 0);
-        }
+        // The glint is part of the render type.
+        collector.submitBlockModel(pose, stack.hasFoil() ? Sheets.cutoutBlockItemGlintSheet() : Sheets.cutoutBlockItemSheet(), model, tints, light,
+                OverlayTexture.NO_OVERLAY, state.outlineColor);
         pose.popPose();
     }
 

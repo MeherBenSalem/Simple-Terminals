@@ -8,6 +8,7 @@ import com.nightbeam.omnivault.util.InventorySorting;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.protocol.game.ClientboundContainerSetSlotPacket;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.util.Prediction;
 import net.minecraft.world.Container;
 import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.entity.player.Inventory;
@@ -303,7 +304,7 @@ public class BackpackMenu extends OVMenu implements InventorySorting.Sortable {
         }
         slot.onTake(player, stack);
         if (index == craftResultIndex) {
-            player.drop(stack, false);
+            player.drop(stack, false, Prediction.SERVER_ONLY);
         }
         return original;
     }

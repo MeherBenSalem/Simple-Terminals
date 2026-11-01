@@ -1,6 +1,5 @@
 package com.nightbeam.omnivault.autocraft.block;
 
-import com.mojang.serialization.MapCodec;
 import com.nightbeam.omnivault.network.block.DeviceBlock;
 import com.nightbeam.omnivault.network.block.MenuDevice;
 import com.nightbeam.omnivault.platform.services.IPlatformHelper;
@@ -9,7 +8,6 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.BaseEntityBlock;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
@@ -31,11 +29,6 @@ public class AutocraftDeviceBlock extends DeviceBlock {
         super(properties);
         this.factory = factory;
         registerDefaultState(stateDefinition.any().setValue(ACTIVE, false).setValue(WORKING, false));
-    }
-
-    @Override
-    protected MapCodec<? extends BaseEntityBlock> codec() {
-        return simpleCodec(properties -> new AutocraftDeviceBlock(factory, properties));
     }
 
     @Override

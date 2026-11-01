@@ -96,6 +96,6 @@ public enum VaultTier implements StringRepresentable {
                 .strength(hardness, resistance)
                 .sound(sound)
                 .noOcclusion()
-                .pushReaction(PushReaction.BLOCK);
+                .pushReaction(PushReaction.IMMOVEABLE);
     }
 }

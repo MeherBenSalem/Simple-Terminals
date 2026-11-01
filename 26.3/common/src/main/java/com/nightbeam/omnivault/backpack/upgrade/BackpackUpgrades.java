@@ -17,6 +17,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.util.Prediction;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.effect.MobEffectCategory;
 import net.minecraft.world.effect.MobEffectInstance;
@@ -286,7 +287,7 @@ public final class BackpackUpgrades {
             if (!leftover.isEmpty()) {
                 ItemStack rest = items.insert(leftover, false);
                 if (!rest.isEmpty() && !player.getInventory().add(rest)) {
-                    player.drop(rest, false);
+                    player.drop(rest, false, Prediction.SERVER_ONLY);
                 }
             }
             return true;

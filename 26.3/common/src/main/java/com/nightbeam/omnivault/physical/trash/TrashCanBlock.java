@@ -1,6 +1,5 @@
 package com.nightbeam.omnivault.physical.trash;
 
-import com.mojang.serialization.MapCodec;
 import com.nightbeam.omnivault.content.BlockUseOverride;
 import com.nightbeam.omnivault.platform.Services;
 import net.minecraft.core.BlockPos;
@@ -41,17 +40,11 @@ import org.jetbrains.annotations.Nullable;
 public class TrashCanBlock extends BaseEntityBlock implements SimpleWaterloggedBlock {
     public static final EnumProperty<Direction> FACING = BlockStateProperties.HORIZONTAL_FACING;
     public static final BooleanProperty WATERLOGGED = BlockStateProperties.WATERLOGGED;
-    public static final MapCodec<TrashCanBlock> CODEC = simpleCodec(TrashCanBlock::new);
     private static final VoxelShape SHAPE = Shapes.or(Block.box(2, 0, 2, 14, 13, 14), Block.box(5, 13, 7, 11, 14.5, 9));
 
     public TrashCanBlock(Properties properties) {
         super(properties);
         registerDefaultState(stateDefinition.any().setValue(FACING, Direction.NORTH).setValue(WATERLOGGED, false));
-    }
-
-    @Override
-    protected MapCodec<? extends BaseEntityBlock> codec() {
-        return CODEC;
     }
 
     @Override

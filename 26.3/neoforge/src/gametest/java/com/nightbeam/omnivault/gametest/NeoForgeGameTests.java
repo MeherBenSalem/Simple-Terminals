@@ -66,7 +66,8 @@ public class NeoForgeGameTests {
         for (Method method : methods()) {
             GameTest test = method.getAnnotation(GameTest.class);
             Identifier id = OmniVault.id(name(method));
-            TestData<Holder<TestEnvironmentDefinition<?>>> data = new TestData<>(environment, Identifier.parse(test.structure()), test.maxTicks(),
+            TestData<Holder<TestEnvironmentDefinition<?>>> data = new TestData<>(environment,
+                    ResourceKey.create(Registries.DIMENSION, Identifier.parse(test.dimension())), Identifier.parse(test.structure()), test.maxTicks(),
                     test.setupTicks(), test.required(), test.rotation(), test.manualOnly(), test.maxAttempts(), test.requiredSuccesses(),
                     test.skyAccess(), test.padding());
             event.registerTest(id, new FunctionGameTestInstance(ResourceKey.create(Registries.TEST_FUNCTION, id), data));

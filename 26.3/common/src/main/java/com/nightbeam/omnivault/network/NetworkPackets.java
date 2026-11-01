@@ -7,11 +7,13 @@ import com.nightbeam.omnivault.network.item.WirelessTerminalItem;
 import com.nightbeam.omnivault.network.menu.TerminalMenu;
 import com.nightbeam.omnivault.storage.FluidKey;
 import com.nightbeam.omnivault.storage.ItemKey;
+import io.netty.buffer.ByteBuf;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -122,6 +124,8 @@ public final class NetworkPackets {
     public record CoreStats(int containerId, int state, int nodes, int types, long stored, long capacity,
                             long energy, long energyMax, int usage, Map<String, Integer> devices) implements CustomPacketPayload {
         public static final Type<CoreStats> TYPE = new Type<>(OmniVault.id("core_stats"));
+        /** Device counts by name. */
+        private static final StreamCodec<ByteBuf, Map<String, Integer>> DEVICES = ByteBufCodecs.map(HashMap::new, ByteBufCodecs.STRING_UTF8, ByteBufCodecs.VAR_INT);
         public static final StreamCodec<RegistryFriendlyByteBuf, CoreStats> CODEC = StreamCodec.of(
                 (buf, s) -> {
                     buf.writeVarInt(s.containerId);
@@ -133,11 +137,11 @@ public final class NetworkPackets {
                     buf.writeVarLong(s.energy);
                     buf.writeVarLong(s.energyMax);
                     buf.writeVarInt(s.usage);
-                    buf.writeMap(s.devices, (b, k) -> b.writeUtf(k), (b, v) -> b.writeVarInt(v));
+                    DEVICES.encode(buf, s.devices);
                 },
                 buf -> new CoreStats(buf.readVarInt(), buf.readVarInt(), buf.readVarInt(), buf.readVarInt(), buf.readVarLong(),
                         buf.readVarLong(), buf.readVarLong(), buf.readVarLong(), buf.readVarInt(),
-                        buf.readMap(b -> b.readUtf(), b -> b.readVarInt())));
+                        DEVICES.decode(buf)));
 
         @Override
         public Type<? extends CustomPacketPayload> type() {

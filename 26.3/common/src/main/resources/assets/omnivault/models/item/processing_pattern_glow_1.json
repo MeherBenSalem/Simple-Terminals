@@ -16,7 +16,7 @@
         16,
         8.55
       ],
-      "shade": false,
+      "shade_direction_override": "up",
       "light_emission": 15,
       "faces": {
         "north": {

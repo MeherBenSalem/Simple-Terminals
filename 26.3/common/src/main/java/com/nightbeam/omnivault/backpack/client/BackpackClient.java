@@ -22,8 +22,7 @@ import java.util.List;
 
 /** Client registration for backpacks: screen, worn layer, models, dye colours and the open key. */
 public final class BackpackClient {
-    public static final KeyMapping OPEN_KEY = new KeyMapping("key.omnivault.open_backpack", InputConstants.Type.KEYSYM,
-            InputConstants.KEY_B, KeyMapping.Category.INVENTORY);
+    public static final KeyMapping OPEN_KEY = new KeyMapping("key.omnivault.open_backpack", InputConstants.KEY_B, KeyMapping.Category.INVENTORY);
 
     private BackpackClient() {
     }

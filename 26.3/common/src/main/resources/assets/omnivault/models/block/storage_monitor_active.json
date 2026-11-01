@@ -80,7 +80,6 @@
         15.5,
         3
       ],
-      "shade": false,
       "faces": {
         "east": {
           "uv": [
@@ -119,6 +118,7 @@
           "texture": "#p0"
         }
       },
+      "shade_direction_override": "up",
       "light_emission": 15
     },
     {
@@ -403,7 +403,6 @@
         15,
         1
       ],
-      "shade": false,
       "faces": {
         "north": {
           "uv": [
@@ -451,6 +450,7 @@
           "texture": "#p0"
         }
       },
+      "shade_direction_override": "up",
       "light_emission": 15
     },
     {
@@ -464,7 +464,6 @@
         15,
         1
       ],
-      "shade": false,
       "faces": {
         "north": {
           "uv": [
@@ -512,6 +511,7 @@
           "texture": "#p0"
         }
       },
+      "shade_direction_override": "up",
       "light_emission": 15
     },
     {
@@ -525,7 +525,6 @@
         15,
         1
       ],
-      "shade": false,
       "faces": {
         "north": {
           "uv": [
@@ -573,6 +572,7 @@
           "texture": "#p0"
         }
       },
+      "shade_direction_override": "up",
       "light_emission": 15
     },
     {
@@ -586,7 +586,6 @@
         1.5,
         1
       ],
-      "shade": false,
       "faces": {
         "north": {
           "uv": [
@@ -634,6 +633,7 @@
           "texture": "#p0"
         }
       },
+      "shade_direction_override": "up",
       "light_emission": 15
     }
   ]

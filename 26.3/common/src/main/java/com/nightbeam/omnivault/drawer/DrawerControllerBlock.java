@@ -1,6 +1,5 @@
 package com.nightbeam.omnivault.drawer;
 
-import com.mojang.serialization.MapCodec;
 import com.nightbeam.omnivault.content.CoreContent;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -33,16 +32,10 @@ import org.jetbrains.annotations.Nullable;
  */
 public class DrawerControllerBlock extends BaseEntityBlock {
     public static final EnumProperty<Direction> FACING = DrawerBlock.FACING;
-    public static final MapCodec<DrawerControllerBlock> CODEC = simpleCodec(DrawerControllerBlock::new);
 
     public DrawerControllerBlock(Properties properties) {
         super(properties);
         registerDefaultState(stateDefinition.any().setValue(FACING, Direction.NORTH));
-    }
-
-    @Override
-    protected MapCodec<? extends BaseEntityBlock> codec() {
-        return CODEC;
     }
 
     @Override

@@ -628,7 +628,6 @@
         9,
         9
       ],
-      "shade": false,
       "faces": {
         "east": {
           "uv": [
@@ -651,6 +650,7 @@
           "tintindex": 0
         }
       },
+      "shade_direction_override": "up",
       "light_emission": 15
     },
     {
@@ -664,7 +664,6 @@
         10.75,
         9
       ],
-      "shade": false,
       "faces": {
         "up": {
           "uv": [
@@ -687,6 +686,7 @@
           "tintindex": 0
         }
       },
+      "shade_direction_override": "up",
       "light_emission": 15
     },
     {
@@ -700,7 +700,6 @@
         9,
         10.75
       ],
-      "shade": false,
       "faces": {
         "north": {
           "uv": [
@@ -723,6 +722,7 @@
           "tintindex": 0
         }
       },
+      "shade_direction_override": "up",
       "light_emission": 15
     }
   ]

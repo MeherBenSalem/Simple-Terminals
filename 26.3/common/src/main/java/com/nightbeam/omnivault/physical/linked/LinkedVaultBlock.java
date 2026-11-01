@@ -1,6 +1,5 @@
 package com.nightbeam.omnivault.physical.linked;
 
-import com.mojang.serialization.MapCodec;
 import com.nightbeam.omnivault.content.BlockUseOverride;
 import com.nightbeam.omnivault.content.Wrenchable;
 import com.nightbeam.omnivault.physical.PhysicalConfig;
@@ -62,7 +61,6 @@ import java.util.Map;
 public class LinkedVaultBlock extends BaseEntityBlock implements SimpleWaterloggedBlock, Wrenchable {
     public static final EnumProperty<Direction> FACING = BlockStateProperties.HORIZONTAL_FACING;
     public static final BooleanProperty WATERLOGGED = BlockStateProperties.WATERLOGGED;
-    public static final MapCodec<LinkedVaultBlock> CODEC = simpleCodec(LinkedVaultBlock::new);
 
     /** Latch footprints on the lid in model pixels (model faces north): latch i is centred on x = 11 - 3i. */
     public static final double LATCH_Y0 = 14, LATCH_Y1 = 15, LATCH_Z0 = 4, LATCH_Z1 = 7, LATCH_HALF_WIDTH = 1;
@@ -140,11 +138,6 @@ public class LinkedVaultBlock extends BaseEntityBlock implements SimpleWaterlogg
             }
         }
         return -1;
-    }
-
-    @Override
-    protected MapCodec<? extends BaseEntityBlock> codec() {
-        return CODEC;
     }
 
     @Override

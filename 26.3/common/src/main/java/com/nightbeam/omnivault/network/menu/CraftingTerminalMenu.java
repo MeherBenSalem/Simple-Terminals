@@ -6,6 +6,7 @@ import com.nightbeam.omnivault.storage.ItemKey;
 import net.minecraft.core.NonNullList;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.util.Prediction;
 import net.minecraft.world.Container;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
@@ -139,7 +140,7 @@ public class CraftingTerminalMenu extends TerminalMenu {
             }
             ItemStack rest = network != null ? network.insert(stack) : stack;
             if (!rest.isEmpty()) {
-                player.getInventory().placeItemBackInInventory(rest);
+                player.getInventory().placeItemBackInInventory(rest, Prediction.SERVER_ONLY);
             }
             craftSlots.setItem(i, ItemStack.EMPTY);
         }
@@ -222,7 +223,7 @@ public class CraftingTerminalMenu extends TerminalMenu {
                 return ItemStack.EMPTY;
             }
             slot.onTake(player, stack);
-            player.drop(stack, false);
+            player.drop(stack, false, Prediction.SERVER_ONLY);
             return original;
         }
         if (index >= craftStart && index < resultIndex) {

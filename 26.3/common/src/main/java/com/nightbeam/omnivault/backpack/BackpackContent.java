@@ -49,7 +49,7 @@ public final class BackpackContent {
         for (BackpackTier tier : BackpackTier.values()) {
             Supplier<BackpackBlock> block = ModRegistry.block(tier.id(), p -> new BackpackBlock(tier, p), () -> BlockBehaviour.Properties.of()
                     .mapColor(tier == BackpackTier.NETHERITE ? MapColor.COLOR_BLACK : MapColor.COLOR_BROWN)
-                    .strength(0.8f, 1200.0f).sound(SoundType.WOOL).noOcclusion().pushReaction(PushReaction.DESTROY));
+                    .strength(0.8f, 1200.0f).sound(SoundType.WOOL).noOcclusion().pushReaction(PushReaction.POPPED));
             BLOCKS.put(tier, block);
             ITEMS.put(tier, ModRegistry.item(tier.id(), p -> new BackpackItem(block.get(), tier, p), p -> {
                 p.rarity(tier.rarity()).useBlockDescriptionPrefix();

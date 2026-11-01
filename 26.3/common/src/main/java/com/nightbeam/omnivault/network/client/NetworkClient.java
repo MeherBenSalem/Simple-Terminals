@@ -20,14 +20,13 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.Property;
 import org.jetbrains.annotations.Nullable;
-import org.lwjgl.glfw.GLFW;
 
 import java.util.List;
 import java.util.Set;
 
 public final class NetworkClient {
     public static final KeyMapping OPEN_WIRELESS = new KeyMapping("key.omnivault.open_wireless",
-            InputConstants.Type.KEYSYM, GLFW.GLFW_KEY_G, OmniVaultClient.KEY_CATEGORY);
+            InputConstants.KEY_G, OmniVaultClient.KEY_CATEGORY);
 
     private NetworkClient() {
     }

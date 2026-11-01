@@ -81,7 +81,6 @@
         15.5,
         3
       ],
-      "shade": false,
       "faces": {
         "east": {
           "uv": [
@@ -120,6 +119,7 @@
           "texture": "#p0"
         }
       },
+      "shade_direction_override": "up",
       "light_emission": 15
     },
     {
@@ -541,7 +541,6 @@
         15,
         2
       ],
-      "shade": false,
       "faces": {
         "north": {
           "uv": [
@@ -553,6 +552,7 @@
           "texture": "#status"
         }
       },
+      "shade_direction_override": "up",
       "light_emission": 15
     },
     {
@@ -1099,7 +1099,6 @@
         12.4,
         0.45
       ],
-      "shade": false,
       "faces": {
         "north": {
           "uv": [
@@ -1147,6 +1146,7 @@
           "texture": "#p0"
         }
       },
+      "shade_direction_override": "up",
       "light_emission": 15
     },
     {
@@ -1278,7 +1278,6 @@
         12.4,
         0.45
       ],
-      "shade": false,
       "faces": {
         "north": {
           "uv": [
@@ -1326,6 +1325,7 @@
           "texture": "#p0"
         }
       },
+      "shade_direction_override": "up",
       "light_emission": 15
     },
     {
@@ -1457,7 +1457,6 @@
         9.9,
         0.45
       ],
-      "shade": false,
       "faces": {
         "north": {
           "uv": [
@@ -1505,6 +1504,7 @@
           "texture": "#p0"
         }
       },
+      "shade_direction_override": "up",
       "light_emission": 15
     },
     {
@@ -1636,7 +1636,6 @@
         9.9,
         0.45
       ],
-      "shade": false,
       "faces": {
         "north": {
           "uv": [
@@ -1684,6 +1683,7 @@
           "texture": "#p0"
         }
       },
+      "shade_direction_override": "up",
       "light_emission": 15
     },
     {
@@ -1815,7 +1815,6 @@
         7.4,
         0.45
       ],
-      "shade": false,
       "faces": {
         "north": {
           "uv": [
@@ -1863,6 +1862,7 @@
           "texture": "#p0"
         }
       },
+      "shade_direction_override": "up",
       "light_emission": 15
     },
     {
@@ -1994,7 +1994,6 @@
         4.9,
         0.45
       ],
-      "shade": false,
       "faces": {
         "north": {
           "uv": [
@@ -2042,6 +2041,7 @@
           "texture": "#p0"
         }
       },
+      "shade_direction_override": "up",
       "light_emission": 15
     }
   ]

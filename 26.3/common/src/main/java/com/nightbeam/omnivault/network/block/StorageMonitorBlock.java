@@ -5,6 +5,7 @@ import com.nightbeam.omnivault.storage.ItemKey;
 import net.minecraft.core.BlockPos;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.util.Prediction;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
@@ -64,7 +65,7 @@ public class StorageMonitorBlock extends OrientedDeviceBlock {
             } else if (key != null && network != null && network.isActive()) {
                 ItemStack taken = network.extract(key, player.isShiftKeyDown() ? 1 : key.maxStackSize());
                 if (!taken.isEmpty()) {
-                    player.getInventory().placeItemBackInInventory(taken);
+                    player.getInventory().placeItemBackInInventory(taken, Prediction.SERVER_ONLY);
                     level.playSound(null, pos, SoundEvents.ITEM_PICKUP, SoundSource.BLOCKS, 0.4f, 1.0f);
                 }
             }

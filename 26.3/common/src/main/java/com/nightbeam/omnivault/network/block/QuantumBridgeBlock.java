@@ -1,6 +1,5 @@
 package com.nightbeam.omnivault.network.block;
 
-import com.mojang.serialization.MapCodec;
 import com.nightbeam.omnivault.content.BlockUseOverride;
 import com.nightbeam.omnivault.content.Wrenchable;
 import net.minecraft.ChatFormatting;
@@ -13,7 +12,6 @@ import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.BaseEntityBlock;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
@@ -23,16 +21,9 @@ import org.jetbrains.annotations.Nullable;
 
 /** Entangle two bridges with a Quantum Link Card; the OmniTool breaks the link. */
 public class QuantumBridgeBlock extends DeviceBlock implements Wrenchable {
-    public static final MapCodec<QuantumBridgeBlock> CODEC = simpleCodec(QuantumBridgeBlock::new);
-
     public QuantumBridgeBlock(Properties properties) {
         super(properties);
         registerDefaultState(stateDefinition.any().setValue(ACTIVE, false));
-    }
-
-    @Override
-    protected MapCodec<? extends BaseEntityBlock> codec() {
-        return CODEC;
     }
 
     @Override

@@ -148,7 +148,6 @@
         3.5,
         5.5
       ],
-      "shade": false,
       "faces": {
         "north": {
           "uv": [
@@ -196,6 +195,7 @@
           "texture": "#p0"
         }
       },
+      "shade_direction_override": "up",
       "light_emission": 15
     },
     {
@@ -209,7 +209,6 @@
         3.5,
         11.5
       ],
-      "shade": false,
       "faces": {
         "north": {
           "uv": [
@@ -257,6 +256,7 @@
           "texture": "#p0"
         }
       },
+      "shade_direction_override": "up",
       "light_emission": 15
     },
     {
@@ -270,7 +270,6 @@
         3.5,
         10.5
       ],
-      "shade": false,
       "faces": {
         "north": {
           "uv": [
@@ -318,6 +317,7 @@
           "texture": "#p0"
         }
       },
+      "shade_direction_override": "up",
       "light_emission": 15
     },
     {
@@ -331,7 +331,6 @@
         3.5,
         10.5
       ],
-      "shade": false,
       "faces": {
         "north": {
           "uv": [
@@ -379,6 +378,7 @@
           "texture": "#p0"
         }
       },
+      "shade_direction_override": "up",
       "light_emission": 15
     },
     {
@@ -510,7 +510,6 @@
         13,
         5.5
       ],
-      "shade": false,
       "faces": {
         "north": {
           "uv": [
@@ -558,6 +557,7 @@
           "texture": "#p0"
         }
       },
+      "shade_direction_override": "up",
       "light_emission": 15
     },
     {
@@ -571,7 +571,6 @@
         13,
         11.5
       ],
-      "shade": false,
       "faces": {
         "north": {
           "uv": [
@@ -619,6 +618,7 @@
           "texture": "#p0"
         }
       },
+      "shade_direction_override": "up",
       "light_emission": 15
     },
     {
@@ -632,7 +632,6 @@
         13,
         10.5
       ],
-      "shade": false,
       "faces": {
         "north": {
           "uv": [
@@ -680,6 +679,7 @@
           "texture": "#p0"
         }
       },
+      "shade_direction_override": "up",
       "light_emission": 15
     },
     {
@@ -693,7 +693,6 @@
         13,
         10.5
       ],
-      "shade": false,
       "faces": {
         "north": {
           "uv": [
@@ -741,6 +740,7 @@
           "texture": "#p0"
         }
       },
+      "shade_direction_override": "up",
       "light_emission": 15
     },
     {
@@ -1084,7 +1084,6 @@
         15.5,
         5.5
       ],
-      "shade": false,
       "faces": {
         "north": {
           "uv": [
@@ -1132,6 +1131,7 @@
           "texture": "#p0"
         }
       },
+      "shade_direction_override": "up",
       "light_emission": 15
     },
     {
@@ -1145,7 +1145,6 @@
         15.5,
         11.5
       ],
-      "shade": false,
       "faces": {
         "north": {
           "uv": [
@@ -1193,6 +1192,7 @@
           "texture": "#p0"
         }
       },
+      "shade_direction_override": "up",
       "light_emission": 15
     },
     {
@@ -1206,7 +1206,6 @@
         15.5,
         10.5
       ],
-      "shade": false,
       "faces": {
         "north": {
           "uv": [
@@ -1254,6 +1253,7 @@
           "texture": "#p0"
         }
       },
+      "shade_direction_override": "up",
       "light_emission": 15
     },
     {
@@ -1267,7 +1267,6 @@
         15.5,
         10.5
       ],
-      "shade": false,
       "faces": {
         "north": {
           "uv": [
@@ -1315,6 +1314,7 @@
           "texture": "#p0"
         }
       },
+      "shade_direction_override": "up",
       "light_emission": 15
     },
     {
@@ -1328,7 +1328,6 @@
         15.75,
         9.5
       ],
-      "shade": false,
       "faces": {
         "north": {
           "uv": [
@@ -1376,6 +1375,7 @@
           "texture": "#p0"
         }
       },
+      "shade_direction_override": "up",
       "light_emission": 15
     },
     {
@@ -2205,7 +2205,6 @@
         12,
         0.75
       ],
-      "shade": false,
       "faces": {
         "north": {
           "uv": [
@@ -2244,6 +2243,7 @@
           "texture": "#p0"
         }
       },
+      "shade_direction_override": "up",
       "light_emission": 15
     },
     {
@@ -2257,7 +2257,6 @@
         12,
         0.75
       ],
-      "shade": false,
       "faces": {
         "north": {
           "uv": [
@@ -2296,6 +2295,7 @@
           "texture": "#p0"
         }
       },
+      "shade_direction_override": "up",
       "light_emission": 15
     },
     {
@@ -2461,7 +2461,6 @@
         12,
         2
       ],
-      "shade": false,
       "faces": {
         "north": {
           "uv": [
@@ -2500,6 +2499,7 @@
           "texture": "#p0"
         }
       },
+      "shade_direction_override": "up",
       "light_emission": 15
     },
     {
@@ -2513,7 +2513,6 @@
         12,
         14.5
       ],
-      "shade": false,
       "faces": {
         "north": {
           "uv": [
@@ -2552,6 +2551,7 @@
           "texture": "#p0"
         }
       },
+      "shade_direction_override": "up",
       "light_emission": 15
     },
     {
@@ -2717,7 +2717,6 @@
         12,
         15.75
       ],
-      "shade": false,
       "faces": {
         "north": {
           "uv": [
@@ -2756,6 +2755,7 @@
           "texture": "#p0"
         }
       },
+      "shade_direction_override": "up",
       "light_emission": 15
     },
     {
@@ -2769,7 +2769,6 @@
         12,
         15.75
       ],
-      "shade": false,
       "faces": {
         "north": {
           "uv": [
@@ -2808,6 +2807,7 @@
           "texture": "#p0"
         }
       },
+      "shade_direction_override": "up",
       "light_emission": 15
     },
     {
@@ -2973,7 +2973,6 @@
         12,
         14.5
       ],
-      "shade": false,
       "faces": {
         "north": {
           "uv": [
@@ -3012,6 +3011,7 @@
           "texture": "#p0"
         }
       },
+      "shade_direction_override": "up",
       "light_emission": 15
     },
     {
@@ -3025,7 +3025,6 @@
         12,
         2
       ],
-      "shade": false,
       "faces": {
         "north": {
           "uv": [
@@ -3064,6 +3063,7 @@
           "texture": "#p0"
         }
       },
+      "shade_direction_override": "up",
       "light_emission": 15
     },
     {

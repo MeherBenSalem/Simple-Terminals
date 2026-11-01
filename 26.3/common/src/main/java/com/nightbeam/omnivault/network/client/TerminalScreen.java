@@ -1,5 +1,6 @@
 package com.nightbeam.omnivault.network.client;
 
+import com.mojang.blaze3d.platform.InputConstants;
 import com.nightbeam.omnivault.client.gui.GuiStyle;
 import com.nightbeam.omnivault.client.gui.OVButton;
 import com.nightbeam.omnivault.network.NetworkPackets;
@@ -24,7 +25,6 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import org.lwjgl.glfw.GLFW;
 
 import java.time.Duration;
 import java.util.ArrayList;
@@ -418,7 +418,7 @@ public class TerminalScreen<T extends TerminalMenu> extends AbstractContainerScr
     public boolean keyPressed(KeyEvent event) {
         int keyCode = event.key();
         if (search.isFocused()) {
-            if (keyCode == GLFW.GLFW_KEY_ESCAPE) {
+            if (keyCode == InputConstants.KEY_ESCAPE) {
                 search.setFocused(false);
                 return true;
             }

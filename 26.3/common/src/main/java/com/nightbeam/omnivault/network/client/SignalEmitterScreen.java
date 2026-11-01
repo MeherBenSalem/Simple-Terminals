@@ -1,5 +1,6 @@
 package com.nightbeam.omnivault.network.client;
 
+import com.mojang.blaze3d.platform.InputConstants;
 import com.nightbeam.omnivault.client.gui.FilteredEditBox;
 import com.nightbeam.omnivault.client.gui.GuiStyle;
 import com.nightbeam.omnivault.client.gui.OVButton;
@@ -11,7 +12,6 @@ import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.input.KeyEvent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Inventory;
-import org.lwjgl.glfw.GLFW;
 
 public class SignalEmitterScreen extends AbstractContainerScreen<SignalEmitterMenu> {
     private FilteredEditBox amount;
@@ -47,7 +47,7 @@ public class SignalEmitterScreen extends AbstractContainerScreen<SignalEmitterMe
     @Override
     public boolean keyPressed(KeyEvent event) {
         int keyCode = event.key();
-        if (amount.isFocused() && keyCode != GLFW.GLFW_KEY_ESCAPE) {
+        if (amount.isFocused() && keyCode != InputConstants.KEY_ESCAPE) {
             amount.keyPressed(event);
             return true;
         }

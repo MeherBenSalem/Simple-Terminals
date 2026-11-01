@@ -15,7 +15,6 @@
         1.4,
         0.45
       ],
-      "shade": false,
       "faces": {
         "north": {
           "uv": [
@@ -68,6 +67,7 @@
           "tintindex": 0
         }
       },
+      "shade_direction_override": "up",
       "light_emission": 15
     }
   ]

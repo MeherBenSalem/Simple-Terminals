@@ -1,6 +1,5 @@
 package com.nightbeam.omnivault.network.block;
 
-import com.mojang.serialization.MapCodec;
 import com.nightbeam.omnivault.platform.services.IPlatformHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -10,7 +9,6 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.BaseEntityBlock;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Mirror;
 import net.minecraft.world.level.block.Rotation;
@@ -78,11 +76,6 @@ public class DirectionalDeviceBlock extends DeviceBlock {
     }
 
     @Override
-    protected MapCodec<? extends BaseEntityBlock> codec() {
-        return simpleCodec(properties -> new DirectionalDeviceBlock(factory, northBoxes, properties));
-    }
-
-    @Override
     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
         builder.add(FACING);
     }
@@ -114,7 +107,6 @@ public class DirectionalDeviceBlock extends DeviceBlock {
         }
         return InteractionResult.CONSUME;
     }
-
 
     @Override
     protected void neighborChanged(BlockState state, Level level, BlockPos pos, Block neighborBlock, @Nullable Orientation orientation, boolean movedByPiston) {

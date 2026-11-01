@@ -74,7 +74,7 @@
           "texture": "#ring"
         }
       },
-      "shade": false,
+      "shade_direction_override": "up",
       "light_emission": 15
     },
     {
@@ -145,7 +145,7 @@
           "texture": "#ring"
         }
       },
-      "shade": false,
+      "shade_direction_override": "up",
       "light_emission": 15
     },
     {
@@ -216,7 +216,7 @@
           "texture": "#ring"
         }
       },
-      "shade": false,
+      "shade_direction_override": "up",
       "light_emission": 15
     },
     {
@@ -287,7 +287,7 @@
           "texture": "#ring"
         }
       },
-      "shade": false,
+      "shade_direction_override": "up",
       "light_emission": 15
     },
     {
@@ -358,7 +358,7 @@
           "texture": "#crystal"
         }
       },
-      "shade": false,
+      "shade_direction_override": "up",
       "light_emission": 15
     },
     {
@@ -429,7 +429,7 @@
           "texture": "#crystal"
         }
       },
-      "shade": false,
+      "shade_direction_override": "up",
       "light_emission": 15
     },
     {
@@ -500,7 +500,7 @@
           "texture": "#crystal"
         }
       },
-      "shade": false,
+      "shade_direction_override": "up",
       "light_emission": 15
     },
     {
@@ -571,7 +571,7 @@
           "texture": "#crystal"
         }
       },
-      "shade": false,
+      "shade_direction_override": "up",
       "light_emission": 15
     }
   ]

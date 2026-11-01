@@ -1,9 +1,7 @@
 package com.nightbeam.omnivault.autocraft.block;
 
-import com.mojang.serialization.MapCodec;
 import com.nightbeam.omnivault.network.block.DirectionalDeviceBlock;
 import com.nightbeam.omnivault.platform.services.IPlatformHelper;
-import net.minecraft.world.level.block.BaseEntityBlock;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
@@ -21,11 +19,6 @@ public class PatternProviderBlock extends DirectionalDeviceBlock {
         super(factory, FULL, properties);
         this.factory = factory;
         registerDefaultState(defaultBlockState().setValue(ACTIVE, false));
-    }
-
-    @Override
-    protected MapCodec<? extends BaseEntityBlock> codec() {
-        return simpleCodec(properties -> new PatternProviderBlock(factory, properties));
     }
 
     @Override

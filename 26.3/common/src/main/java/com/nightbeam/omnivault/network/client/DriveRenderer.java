@@ -82,7 +82,7 @@ public class DriveRenderer implements BlockEntityRenderer<DriveBlockEntity, Driv
         List<BlockStateModelPart> led = List.of(ClientPlatform.INSTANCE.getStandaloneModel(LED));
         pose.pushPose();
         pose.translate(0.5, 0.5, 0.5);
-        pose.mulPose(Axis.YP.rotationDegrees(180 - state.facing.toYRot()));
+        pose.rotateDegrees(Axis.YP, 180 - state.facing.toYRot());
         pose.translate(-0.5, -0.5, -0.5);
         for (int slot = 0; slot < DriveBlockEntity.SLOTS; slot++) {
             if (state.tiers[slot] == 0) {

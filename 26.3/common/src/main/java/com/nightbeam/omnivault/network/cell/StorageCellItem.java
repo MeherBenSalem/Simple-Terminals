@@ -8,6 +8,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
+import net.minecraft.util.Prediction;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
@@ -96,7 +97,7 @@ public class StorageCellItem extends Item implements CellItem {
                 }
                 data.remove(id);
             }
-            player.getInventory().placeItemBackInInventory(new ItemStack(NetworkContent.CELL_HOUSING.get()));
+            player.getInventory().placeItemBackInInventory(new ItemStack(NetworkContent.CELL_HOUSING.get()), Prediction.SERVER_ONLY);
             level.playSound(null, player.blockPosition(), SoundEvents.ITEM_FRAME_REMOVE_ITEM, SoundSource.PLAYERS, 0.8f, 1.3f);
         }
         return InteractionResult.SUCCESS.heldItemTransformedTo(new ItemStack(matrix.get()));

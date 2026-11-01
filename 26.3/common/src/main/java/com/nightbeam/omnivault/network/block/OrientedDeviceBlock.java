@@ -1,6 +1,5 @@
 package com.nightbeam.omnivault.network.block;
 
-import com.mojang.serialization.MapCodec;
 import com.nightbeam.omnivault.platform.services.IPlatformHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -9,7 +8,6 @@ import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.BaseEntityBlock;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Mirror;
 import net.minecraft.world.level.block.Rotation;
@@ -34,12 +32,6 @@ public class OrientedDeviceBlock extends DeviceBlock {
         super(properties);
         this.factory = factory;
         registerDefaultState(stateDefinition.any().setValue(FACING, Direction.NORTH).setValue(ACTIVE, false));
-    }
-
-    @Override
-    protected MapCodec<? extends BaseEntityBlock> codec() {
-        // Block codecs are only used for data-driven block types, which these are not.
-        return simpleCodec(properties -> new OrientedDeviceBlock(factory, properties));
     }
 
     @Override
@@ -69,7 +61,6 @@ public class OrientedDeviceBlock extends DeviceBlock {
         }
         return InteractionResult.CONSUME;
     }
-
 
     @Override
     protected BlockState rotate(BlockState state, Rotation rotation) {

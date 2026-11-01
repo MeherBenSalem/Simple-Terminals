@@ -1,7 +1,5 @@
 package com.nightbeam.omnivault.physical.vault;
 
-import com.mojang.serialization.MapCodec;
-import com.mojang.serialization.codecs.RecordCodecBuilder;
 import com.nightbeam.omnivault.content.BlockUseOverride;
 import com.nightbeam.omnivault.physical.PhysicalContent;
 import com.nightbeam.omnivault.platform.Services;
@@ -49,9 +47,6 @@ import org.jetbrains.annotations.Nullable;
 public class VaultBlock extends BaseEntityBlock implements SimpleWaterloggedBlock {
     public static final EnumProperty<Direction> FACING = BlockStateProperties.HORIZONTAL_FACING;
     public static final BooleanProperty WATERLOGGED = BlockStateProperties.WATERLOGGED;
-    public static final MapCodec<VaultBlock> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
-            VaultTier.CODEC.fieldOf("tier").forGetter(VaultBlock::tier),
-            propertiesCodec()).apply(instance, VaultBlock::new));
     private static final VoxelShape SHAPE = Block.box(1, 0, 1, 15, 14, 15);
 
     private final VaultTier tier;
@@ -64,11 +59,6 @@ public class VaultBlock extends BaseEntityBlock implements SimpleWaterloggedBloc
 
     public VaultTier tier() {
         return tier;
-    }
-
-    @Override
-    protected MapCodec<? extends BaseEntityBlock> codec() {
-        return CODEC;
     }
 
     @Override

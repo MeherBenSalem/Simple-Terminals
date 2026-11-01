@@ -50,7 +50,7 @@ public final class BackpackHooks {
         BackpackData data = Backpacks.existingData(level.getServer(), entity.getItem());
         if (data != null && BackpackUpgrades.isEverlasting(data)) {
             entity.setUnlimitedLifetime();
-            entity.setInvulnerable(true);
+            entity.setPermanentlyInvulnerable(true);
         }
     }
 }
