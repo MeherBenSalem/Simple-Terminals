@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    " R ",
+    "GOG",
+    " R "
+  ],
+  "key": {
+    "R": "minecraft:redstone",
+    "G": "minecraft:gold_ingot",
+    "O": "omnivault:omnium_ingot"
+  },
+  "result": {
+    "id": "omnivault:logic_processor",
+    "count": 1
+  }
+}

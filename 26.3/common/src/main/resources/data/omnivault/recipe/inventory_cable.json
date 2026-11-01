@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "SSS",
+    "NRN",
+    "SSS"
+  ],
+  "key": {
+    "S": "#minecraft:wooden_slabs",
+    "N": "minecraft:iron_nugget",
+    "R": "minecraft:redstone"
+  },
+  "result": {
+    "id": "omnivault:inventory_cable",
+    "count": 8
+  }
+}

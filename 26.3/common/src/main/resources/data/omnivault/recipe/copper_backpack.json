@@ -1,0 +1,17 @@
+{
+  "type": "omnivault:backpack_upgrade",
+  "category": "equipment",
+  "pattern": [
+    "MMM",
+    "MBM",
+    "MMM"
+  ],
+  "key": {
+    "M": "#c:ingots/copper",
+    "B": "omnivault:leather_backpack"
+  },
+  "result": {
+    "id": "omnivault:copper_backpack",
+    "count": 1
+  }
+}

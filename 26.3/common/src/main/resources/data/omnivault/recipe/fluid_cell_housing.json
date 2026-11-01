@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "GRG",
+    "IBI",
+    "III"
+  ],
+  "key": {
+    "G": "minecraft:glass",
+    "R": "minecraft:redstone",
+    "B": "minecraft:bucket",
+    "I": "minecraft:iron_ingot"
+  },
+  "result": {
+    "id": "omnivault:fluid_cell_housing",
+    "count": 1
+  }
+}

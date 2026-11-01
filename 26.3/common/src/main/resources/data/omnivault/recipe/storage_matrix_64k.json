@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "DMD",
+    "MAM",
+    "DMD"
+  ],
+  "key": {
+    "D": "minecraft:diamond",
+    "M": "omnivault:storage_matrix_16k",
+    "A": "omnivault:advanced_processor"
+  },
+  "result": {
+    "id": "omnivault:storage_matrix_64k",
+    "count": 1
+  }
+}

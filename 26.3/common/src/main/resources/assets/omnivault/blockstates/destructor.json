@@ -1,0 +1,27 @@
+{
+  "variants": {
+    "facing=north": {
+      "model": "omnivault:block/destructor"
+    },
+    "facing=east": {
+      "model": "omnivault:block/destructor",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "omnivault:block/destructor",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "omnivault:block/destructor",
+      "y": 270
+    },
+    "facing=up": {
+      "model": "omnivault:block/destructor",
+      "x": 270
+    },
+    "facing=down": {
+      "model": "omnivault:block/destructor",
+      "x": 90
+    }
+  }
+}

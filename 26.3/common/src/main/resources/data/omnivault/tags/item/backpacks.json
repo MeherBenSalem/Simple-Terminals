@@ -1,0 +1,11 @@
+{
+  "replace": false,
+  "values": [
+    "omnivault:leather_backpack",
+    "omnivault:copper_backpack",
+    "omnivault:iron_backpack",
+    "omnivault:gold_backpack",
+    "omnivault:diamond_backpack",
+    "omnivault:netherite_backpack"
+  ]
+}

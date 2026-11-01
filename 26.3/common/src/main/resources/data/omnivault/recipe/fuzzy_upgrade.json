@@ -1,0 +1,13 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    "omnivault:upgrade_base",
+    "minecraft:comparator",
+    "#minecraft:wool"
+  ],
+  "result": {
+    "id": "omnivault:fuzzy_upgrade",
+    "count": 1
+  }
+}

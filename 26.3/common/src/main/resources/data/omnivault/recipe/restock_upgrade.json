@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    " C ",
+    "DUD",
+    " P "
+  ],
+  "key": {
+    "C": "minecraft:chest",
+    "D": "minecraft:dropper",
+    "U": "omnivault:upgrade_base",
+    "P": "omnivault:logic_processor"
+  },
+  "result": {
+    "id": "omnivault:restock_upgrade",
+    "count": 1
+  }
+}

@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "SPS",
+    "PNP",
+    "SPS"
+  ],
+  "key": {
+    "S": "minecraft:stick",
+    "P": "#minecraft:planks",
+    "N": "minecraft:iron_nugget"
+  },
+  "result": {
+    "id": "omnivault:drawer_trim",
+    "count": 4
+  }
+}

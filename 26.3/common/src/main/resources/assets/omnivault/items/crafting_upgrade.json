@@ -1,0 +1,6 @@
+{
+  "model": {
+    "type": "minecraft:model",
+    "model": "omnivault:item/crafting_upgrade"
+  }
+}

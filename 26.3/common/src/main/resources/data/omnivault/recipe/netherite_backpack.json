@@ -1,0 +1,10 @@
+{
+  "type": "minecraft:smithing_transform",
+  "template": "minecraft:netherite_upgrade_smithing_template",
+  "base": "omnivault:diamond_backpack",
+  "addition": "minecraft:netherite_ingot",
+  "result": {
+    "id": "omnivault:netherite_backpack",
+    "count": 1
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    "omnivault:diamond_drawer_upgrade",
+    "minecraft:netherite_ingot"
+  ],
+  "result": {
+    "id": "omnivault:netherite_drawer_upgrade",
+    "count": 1
+  }
+}

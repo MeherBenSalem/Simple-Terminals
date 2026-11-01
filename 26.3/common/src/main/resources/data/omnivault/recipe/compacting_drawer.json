@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "III",
+    "PDP",
+    "ILI"
+  ],
+  "key": {
+    "I": "minecraft:iron_ingot",
+    "P": "minecraft:piston",
+    "D": "omnivault:drawer_1x1",
+    "L": "omnivault:logic_processor"
+  },
+  "result": {
+    "id": "omnivault:compacting_drawer",
+    "count": 1
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "OXO",
+    " L "
+  ],
+  "key": {
+    "O": "omnivault:omnium_ingot",
+    "X": "minecraft:dispenser",
+    "L": "omnivault:logic_processor"
+  },
+  "result": {
+    "id": "omnivault:constructor",
+    "count": 1
+  }
+}
