@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=north": {
+      "model": "omnivault:block/drawer_1x2"
+    },
+    "facing=east": {
+      "model": "omnivault:block/drawer_1x2",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "omnivault:block/drawer_1x2",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "omnivault:block/drawer_1x2",
+      "y": 270
+    }
+  }
+}

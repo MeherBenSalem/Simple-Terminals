@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=north": {
+      "model": "omnivault:block/diamond_backpack"
+    },
+    "facing=east": {
+      "model": "omnivault:block/diamond_backpack",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "omnivault:block/diamond_backpack",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "omnivault:block/diamond_backpack",
+      "y": 270
+    }
+  }
+}

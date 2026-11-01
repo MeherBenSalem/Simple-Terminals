@@ -4,17 +4,17 @@
 #   tools/qa/devrun.sh start-server
 #   tools/qa/devrun.sh start-client         # needs Xvfb on $DISPLAY (default :1)
 #   tools/qa/devrun.sh stop-client | stop-server
-# QA_LOADER picks the loader: neoforge (default) or fabric. Logs go to $QA_LOGS (default /tmp/omnivault-qa).
+# QA_MC picks the Minecraft workspace (default 1.21.1) and QA_LOADER the loader in it: neoforge (default), fabric
+# or forge. Logs go to $QA_LOGS (default /tmp/omnivault-qa).
 set -u
 LOGS=${QA_LOGS:-/tmp/omnivault-qa}
 mkdir -p "$LOGS"
 ROOT=$(cd "$(dirname "$0")/../.." && pwd)
-WS="$ROOT/1.21.1"
+WS="$ROOT/${QA_MC:-1.21.1}"
 LOADER=${QA_LOADER:-neoforge}
-case "$LOADER" in
-  neoforge|fabric) ;;
-  *) echo "QA_LOADER must be neoforge or fabric" >&2; exit 2 ;;
-esac
+if [ ! -d "$WS/$LOADER" ]; then
+  echo "No $LOADER workspace in $WS (set QA_MC and QA_LOADER)" >&2; exit 2
+fi
 RUNS="$WS/$LOADER/runs"
 export JAVA_HOME=${QA_JAVA_HOME:-${JAVA_HOME:-/usr/lib/jvm/java-21-openjdk-amd64}}
 case "$1" in
@@ -37,6 +37,7 @@ allow-flight=true
 view-distance=8
 simulation-distance=6
 motd=OmniVault QA
+white-list=false
 PROPS
     # Skip the first-launch accessibility prompt (it blocks the auto-join) and keep captures quiet and stable.
     mkdir -p "$RUNS/client"
@@ -51,12 +52,14 @@ PROPS
     cd "$WS" && nohup bash ./gradlew ":$LOADER:runServer" --no-daemon > "$LOGS/server.log" 2>&1 &
     ;;
   start-client)
-    export DISPLAY=${DISPLAY:-:1} LIBGL_ALWAYS_SOFTWARE=1 GALLIUM_DRIVER=llvmpipe
+    # SDL_VIDEO_FORCE_EGL: 26.3 opens its window through SDL3, which finds no GLX visual under Xvfb (needs
+    # libegl1 and libegl-mesa0). On 26.3 NeoForge also set earlyWindowControl = false in runs/client/config/fml.toml.
+    export DISPLAY=${DISPLAY:-:1} LIBGL_ALWAYS_SOFTWARE=1 GALLIUM_DRIVER=llvmpipe SDL_VIDEO_FORCE_EGL=1
     cd "$WS" && nohup bash ./gradlew ":$LOADER:runQaClient" --no-daemon > "$LOGS/client.log" 2>&1 &
     ;;
   stop-client|stop-server)
     # Only java processes started from this workspace are considered.
-    want=$([ "$1" = stop-client ] && echo 'runQaClient|quickPlayMultiplayer' || echo 'runServer|neoforgeserver|--nogui|KnotServer|nogui')
+    want=$([ "$1" = stop-client ] && echo 'runQaClient|quickPlayMultiplayer' || echo 'runServer|neoforgeserver|forgeserver|--nogui|KnotServer|nogui')
     for pid in $(pgrep -x java); do
       cmd=$(tr '\0' ' ' < "/proc/$pid/cmdline")
       cwd=$(readlink "/proc/$pid/cwd")

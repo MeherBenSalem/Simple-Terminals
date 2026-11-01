@@ -1,0 +1,10 @@
+{
+  "replace": false,
+  "values": [
+    "#omnivault:backpacks",
+    {
+      "id": "#c:shulker_boxes",
+      "required": false
+    }
+  ]
+}

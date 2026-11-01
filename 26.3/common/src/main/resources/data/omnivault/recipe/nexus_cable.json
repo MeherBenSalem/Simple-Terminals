@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "NNN",
+    "DRD",
+    "NNN"
+  ],
+  "key": {
+    "N": "minecraft:iron_nugget",
+    "D": "omnivault:omnium_dust",
+    "R": "minecraft:redstone"
+  },
+  "result": {
+    "id": "omnivault:nexus_cable",
+    "count": 8
+  }
+}

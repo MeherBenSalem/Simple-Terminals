@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "OMO",
+    "MAM",
+    "OMO"
+  ],
+  "key": {
+    "O": "omnivault:omnium_ingot",
+    "M": "omnivault:storage_matrix_64k",
+    "A": "omnivault:advanced_processor"
+  },
+  "result": {
+    "id": "omnivault:storage_matrix_256k",
+    "count": 1
+  }
+}

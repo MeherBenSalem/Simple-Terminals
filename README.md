@@ -24,46 +24,60 @@ OmniVault is the successor of **Simple Terminals**: worlds that used its Craftin
 
 | Minecraft | Loader | Java | Also install |
 | --- | --- | --- | --- |
+| 26.3 | NeoForge 26.3.0.100+ | 25 | Nothing (JEI optional) |
+| 26.3 | Fabric Loader 0.20.1+ | 25 | [Fabric API](https://modrinth.com/mod/fabric-api) |
+| 26.2 | NeoForge 26.2.0.93+ | 25 | Nothing (JEI optional) |
+| 26.2 | Fabric Loader 0.20.1+ | 25 | [Fabric API](https://modrinth.com/mod/fabric-api) |
 | 1.21.1 | NeoForge 21.1.80+ | 21 | Nothing (JEI optional) |
-| 1.21.1 | Fabric Loader 0.16.14+ | 21 | [Fabric API](https://modrinth.com/mod/fabric-api) (JEI optional; Team Reborn Energy for networks that need power) |
+| 1.21.1 | Fabric Loader 0.16.14+ | 21 | [Fabric API](https://modrinth.com/mod/fabric-api) |
+| 1.20.1 | Forge 47.4.28+ | 17 | Nothing (JEI optional) |
+| 1.20.1 | Fabric Loader 0.20.1+ | 17 | [Fabric API](https://modrinth.com/mod/fabric-api) |
 
-Both loaders are built from one code base with the same content: the project uses the MultiLoader layout (`common` +
-loader modules), so other Minecraft versions can follow. Install on both the server and every client.
+Every version and loader has the same content. On Fabric, JEI is optional too, and networks that need power use
+Team Reborn Energy. Each Minecraft version is a MultiLoader workspace (`common` + loader modules) in its own folder.
+Install on both the server and every client.
 
 ## Building
 
+Each Minecraft version builds on its own, with the Java version from the table (Gradle downloads it if needed):
+
 ```bash
-cd 1.21.1
+cd 1.21.1   # or 1.20.1, 26.2, 26.3
 ./gradlew build
 ```
 
-The jars are written to `1.21.1/neoforge/build/libs/omnivault-1.21.1-neoforge-<version>.jar` and
-`1.21.1/fabric/build/libs/omnivault-1.21.1-fabric-<version>.jar`.
+The jars are written to `<minecraft>/<loader>/build/libs/omnivault-<minecraft>-<loader>-<version>.jar`, for example
+`1.21.1/neoforge/build/libs/omnivault-1.21.1-neoforge-2.0.1.jar`. The loader folders are `forge` and `fabric` for
+1.20.1, and `neoforge` and `fabric` for the other versions.
 
 ## Testing
 
 ```bash
 cd 1.21.1 && ./gradlew :neoforge:runGameTestServer   # boots a NeoForge dedicated server and runs every GameTest
 cd 1.21.1 && ./gradlew :fabric:runGametest            # the same GameTests, plus Fabric transfer tests, on Fabric
+cd 1.20.1 && ./gradlew :forge:runGameTestServer      # on 1.20.1 the first loader is Forge
 python3 -m unittest discover -s tests                 # resource and release-guard checks (repository root)
 python3 tools/assets/build_lang.py --check            # en_us.json matches the lang fragments
 ```
 
 The GameTests build real networks, vaults, drawers, backpacks and autocrafting setups in a world and check the
 results, from cell capacities to a furnace smelting through a Pattern Provider and a drive in the Nether joined
-through a Quantum Bridge. The same tests run on both loaders. `tools/qa/` drives a dev server and a headless client
-(either loader, `QA_LOADER=fabric`) for in-game checks and screenshots.
+through a Quantum Bridge. The same tests run on every version and loader. `tools/qa/` drives a dev server and a
+headless client (`QA_MC=26.2 QA_LOADER=fabric`, for example) for in-game checks and screenshots.
 
 ## Project layout
 
 ```
-1.21.1/
+1.21.1/         # the reference workspace: art and lang are generated here
 ├── common/     # gameplay, menus, screens, renderers (vanilla APIs only), plus the shared GameTests
 ├── fabric/     # Fabric glue: Transfer API storages, payloads, mixins, client setup
 └── neoforge/   # NeoForge glue: capabilities, payloads, events, client setup
+1.20.1/         # the same layout with forge/ in place of neoforge/
+26.2/, 26.3/    # the same layout
 tools/
 ├── assets/     # generators for every texture, model, blockstate, recipe and loot table; offline model renderer
 ├── lang/       # lang fragments merged into en_us.json
+├── port/       # derive each other version's resources from the 1.21.1 ones
 └── qa/         # dev server / Xvfb client automation
 marketing/      # CurseForge/Modrinth listing copy and artwork
 docs/           # player guides and architecture notes

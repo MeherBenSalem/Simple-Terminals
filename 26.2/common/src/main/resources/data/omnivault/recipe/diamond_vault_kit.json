@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "gDg",
+    "DGD",
+    "gDg"
+  ],
+  "key": {
+    "g": "minecraft:glass",
+    "D": "minecraft:diamond",
+    "G": "minecraft:gold_ingot"
+  },
+  "result": {
+    "id": "omnivault:diamond_vault_kit",
+    "count": 1
+  }
+}

@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "SIS",
+    "ILI",
+    "SIS"
+  ],
+  "key": {
+    "S": "minecraft:slime_ball",
+    "I": "minecraft:iron_ingot",
+    "L": "omnivault:logic_processor"
+  },
+  "result": {
+    "id": "omnivault:relocator",
+    "count": 1
+  }
+}

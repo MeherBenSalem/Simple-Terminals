@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "OXO",
+    " L "
+  ],
+  "key": {
+    "O": "omnivault:omnium_ingot",
+    "X": "minecraft:diamond_pickaxe",
+    "L": "omnivault:logic_processor"
+  },
+  "result": {
+    "id": "omnivault:destructor",
+    "count": 1
+  }
+}

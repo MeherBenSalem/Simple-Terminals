@@ -1,0 +1,11 @@
+{
+  "model": {
+    "type": "minecraft:model",
+    "model": "omnivault:item/creative_storage_cell",
+    "tints": [
+      {
+        "type": "omnivault:cell_tier"
+      }
+    ]
+  }
+}

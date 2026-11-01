@@ -1,0 +1,24 @@
+{
+  "model": {
+    "type": "minecraft:model",
+    "model": "omnivault:item/linked_pouch",
+    "tints": [
+      {
+        "type": "minecraft:constant",
+        "value": 16777215
+      },
+      {
+        "type": "omnivault:linked_latch",
+        "latch": 0
+      },
+      {
+        "type": "omnivault:linked_latch",
+        "latch": 1
+      },
+      {
+        "type": "omnivault:linked_latch",
+        "latch": 2
+      }
+    ]
+  }
+}

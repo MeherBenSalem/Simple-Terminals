@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "OOO",
+    "ONO",
+    "OOO"
+  ],
+  "key": {
+    "O": "minecraft:obsidian",
+    "N": "minecraft:netherite_ingot"
+  },
+  "result": {
+    "id": "omnivault:netherite_vault_kit",
+    "count": 1
+  }
+}

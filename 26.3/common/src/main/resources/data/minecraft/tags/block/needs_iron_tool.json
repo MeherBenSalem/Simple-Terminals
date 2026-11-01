@@ -1,0 +1,7 @@
+{
+  "replace": false,
+  "values": [
+    "omnivault:diamond_vault",
+    "omnivault:linked_vault"
+  ]
+}

@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "III",
+    "IVI",
+    "III"
+  ],
+  "key": {
+    "I": "minecraft:iron_ingot",
+    "V": "omnivault:copper_vault"
+  },
+  "result": {
+    "id": "omnivault:iron_vault",
+    "count": 1
+  }
+}

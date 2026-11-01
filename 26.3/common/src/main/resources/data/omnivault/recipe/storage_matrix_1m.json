@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "EME",
+    "MQM",
+    "EME"
+  ],
+  "key": {
+    "E": "minecraft:echo_shard",
+    "M": "omnivault:storage_matrix_256k",
+    "Q": "omnivault:quantum_processor"
+  },
+  "result": {
+    "id": "omnivault:storage_matrix_1m",
+    "count": 1
+  }
+}

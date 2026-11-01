@@ -1,0 +1,11 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    "omnivault:crafting_pattern"
+  ],
+  "result": {
+    "id": "omnivault:blank_pattern",
+    "count": 1
+  }
+}

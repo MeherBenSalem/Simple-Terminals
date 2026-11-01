@@ -1,0 +1,13 @@
+{
+    "required": true,
+    "minVersion": "0.8",
+    "package": "com.nightbeam.omnivault.fabric.mixin",
+    "compatibilityLevel": "JAVA_21",
+    "mixins": [
+        "BlockStateBaseMixin",
+        "ItemEntityMixin"
+    ],
+    "injectors": {
+        "defaultRequire": 1
+    }
+}

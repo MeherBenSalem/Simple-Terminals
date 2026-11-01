@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=north": {
+      "model": "omnivault:block/trash_can"
+    },
+    "facing=east": {
+      "model": "omnivault:block/trash_can",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "omnivault:block/trash_can",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "omnivault:block/trash_can",
+      "y": 270
+    }
+  }
+}

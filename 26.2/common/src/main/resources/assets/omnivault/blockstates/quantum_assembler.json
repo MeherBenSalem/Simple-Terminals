@@ -1,0 +1,16 @@
+{
+  "variants": {
+    "active=false,working=false": {
+      "model": "omnivault:block/quantum_assembler"
+    },
+    "active=true,working=false": {
+      "model": "omnivault:block/quantum_assembler_on"
+    },
+    "active=false,working=true": {
+      "model": "omnivault:block/quantum_assembler_working"
+    },
+    "active=true,working=true": {
+      "model": "omnivault:block/quantum_assembler_working"
+    }
+  }
+}

@@ -1,0 +1,7 @@
+{
+  "replace": false,
+  "values": [
+    "omnivault:gold_vault",
+    "omnivault:iron_vault"
+  ]
+}

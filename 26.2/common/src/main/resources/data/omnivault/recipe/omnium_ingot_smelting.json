@@ -1,0 +1,10 @@
+{
+  "type": "minecraft:smelting",
+  "category": "misc",
+  "ingredient": "omnivault:omnium_blend",
+  "result": {
+    "id": "omnivault:omnium_ingot"
+  },
+  "experience": 0.7,
+  "cookingtime": 200
+}

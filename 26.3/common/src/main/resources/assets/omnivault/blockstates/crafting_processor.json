@@ -1,0 +1,16 @@
+{
+  "variants": {
+    "active=false,working=false": {
+      "model": "omnivault:block/crafting_processor"
+    },
+    "active=true,working=false": {
+      "model": "omnivault:block/crafting_processor_on"
+    },
+    "active=false,working=true": {
+      "model": "omnivault:block/crafting_processor_busy"
+    },
+    "active=true,working=true": {
+      "model": "omnivault:block/crafting_processor_busy"
+    }
+  }
+}

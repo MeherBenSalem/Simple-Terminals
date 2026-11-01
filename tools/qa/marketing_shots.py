@@ -29,8 +29,8 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 from client import Session, PLAYER  # noqa: E402
 
 HELPER = 'Helper'
-# QA_LOADER (neoforge or fabric) picks the dev workspace, as in devrun.sh; QA_SHOTS overrides where captures go.
-WORKSPACE = Path(__file__).resolve().parents[2] / '1.21.1' / os.environ.get('QA_LOADER', 'neoforge')
+# QA_MC and QA_LOADER pick the dev workspace, as in devrun.sh; QA_SHOTS overrides where captures go.
+WORKSPACE = Path(__file__).resolve().parents[2] / os.environ.get('QA_MC', '1.21.1') / os.environ.get('QA_LOADER', 'neoforge')
 
 NS = 'omnivault'
 OUT = Path(os.environ.get('QA_SHOTS') or Path(__file__).resolve().parents[2] / 'marketing' / 'images' / 'screenshots')

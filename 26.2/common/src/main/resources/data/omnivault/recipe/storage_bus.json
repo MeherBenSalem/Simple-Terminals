@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "OXO",
+    " L "
+  ],
+  "key": {
+    "O": "omnivault:omnium_ingot",
+    "X": "minecraft:chest",
+    "L": "omnivault:logic_processor"
+  },
+  "result": {
+    "id": "omnivault:storage_bus",
+    "count": 1
+  }
+}

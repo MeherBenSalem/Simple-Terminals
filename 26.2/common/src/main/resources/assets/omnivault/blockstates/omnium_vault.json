@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=north": {
+      "model": "omnivault:block/omnium_vault"
+    },
+    "facing=east": {
+      "model": "omnivault:block/omnium_vault",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "omnivault:block/omnium_vault",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "omnivault:block/omnium_vault",
+      "y": 270
+    }
+  }
+}

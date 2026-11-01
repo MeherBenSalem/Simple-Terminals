@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "OAO",
+    "ODO",
+    "OOO"
+  ],
+  "key": {
+    "O": "omnivault:omnium_ingot",
+    "A": "omnivault:advanced_processor",
+    "D": "minecraft:diamond"
+  },
+  "result": {
+    "id": "omnivault:omnium_vault_kit",
+    "count": 1
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "type": "minecraft:crafting_dye",
+  "dye": "#minecraft:dyes",
+  "group": "dyed_leather_backpack",
+  "result": {
+    "id": "omnivault:leather_backpack"
+  },
+  "target": "omnivault:leather_backpack"
+}

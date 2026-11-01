@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "I I",
+    " O ",
+    " I "
+  ],
+  "key": {
+    "I": "minecraft:iron_ingot",
+    "O": "omnivault:omnium_ingot"
+  },
+  "result": {
+    "id": "omnivault:omni_tool",
+    "count": 1
+  }
+}

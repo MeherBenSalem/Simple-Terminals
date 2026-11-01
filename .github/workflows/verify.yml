@@ -29,10 +29,31 @@ jobs:
       - name: Resource and release-guard tests
         run: python3 -m unittest discover -s tests -v
 
-  minecraft-1-21-1:
-    # Builds both loaders together: the release guard checks the Fabric and NeoForge jars as one release.
+  minecraft:
+    # One job per Minecraft version builds both of its loaders together: the release guard checks
+    # them as one release.
+    name: minecraft-${{ matrix.minecraft }}
     runs-on: ubuntu-latest
-    timeout-minutes: 60
+    timeout-minutes: 75
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - minecraft: '1.20.1'
+            # Builds for Java 17; Gradle itself runs on 21 (gradle/gradle-daemon-jvm.properties).
+            java: |
+              17
+              21
+            fml: forge
+          - minecraft: '1.21.1'
+            java: '21'
+            fml: neoforge
+          - minecraft: '26.2'
+            java: '25'
+            fml: neoforge
+          - minecraft: '26.3'
+            java: '25'
+            fml: neoforge
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -41,33 +62,31 @@ jobs:
       - uses: actions/setup-java@v4
         with:
           distribution: temurin
-          java-version: '21'
+          java-version: ${{ matrix.java }}
       - uses: gradle/actions/setup-gradle@v4
       - name: Build
-        working-directory: 1.21.1
+        working-directory: ${{ matrix.minecraft }}
         run: bash gradlew build --no-daemon --stacktrace
-      - name: Run GameTests on a NeoForge server
-        working-directory: 1.21.1
-        run: bash gradlew :neoforge:runGameTestServer --no-daemon --stacktrace
+      - name: Run GameTests on a ${{ matrix.fml }} server
+        working-directory: ${{ matrix.minecraft }}
+        run: bash gradlew :${{ matrix.fml }}:runGameTestServer --no-daemon --stacktrace
       - name: Run GameTests on a Fabric server
-        working-directory: 1.21.1
+        working-directory: ${{ matrix.minecraft }}
         run: bash gradlew :fabric:runGametest --no-daemon --stacktrace
       - name: Validate the packaged jars
         shell: bash
+        env:
+          MINECRAFT: ${{ matrix.minecraft }}
         run: |
           set -euo pipefail
-          version="$(sed -n 's/^version=//p' 1.21.1/gradle.properties)"
-          python3 scripts/release_guard.py --source build --version "$version" \
+          version="$(sed -n 's/^version=//p' "$MINECRAFT/gradle.properties")"
+          python3 scripts/release_guard.py --source build --version "$version" --minecraft "$MINECRAFT" \
             --manifest "$RUNNER_TEMP/manifest.json" --notes "$RUNNER_TEMP/notes.md"
-      - name: Keep the tested NeoForge jar
+      - name: Keep the tested jars
         uses: actions/upload-artifact@v4
         with:
-          name: omnivault-1.21.1-neoforge
-          path: 1.21.1/neoforge/build/libs/*.jar
-          if-no-files-found: error
-      - name: Keep the tested Fabric jar
-        uses: actions/upload-artifact@v4
-        with:
-          name: omnivault-1.21.1-fabric
-          path: 1.21.1/fabric/build/libs/*.jar
+          name: omnivault-${{ matrix.minecraft }}
+          path: |
+            ${{ matrix.minecraft }}/${{ matrix.fml }}/build/libs/*.jar
+            ${{ matrix.minecraft }}/fabric/build/libs/*.jar
           if-no-files-found: error

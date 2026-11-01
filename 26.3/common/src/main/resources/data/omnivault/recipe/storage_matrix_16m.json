@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "MNM",
+    "QSQ",
+    "MNM"
+  ],
+  "key": {
+    "M": "omnivault:storage_matrix_1m",
+    "N": "minecraft:netherite_ingot",
+    "Q": "omnivault:quantum_processor",
+    "S": "minecraft:nether_star"
+  },
+  "result": {
+    "id": "omnivault:storage_matrix_16m",
+    "count": 1
+  }
+}

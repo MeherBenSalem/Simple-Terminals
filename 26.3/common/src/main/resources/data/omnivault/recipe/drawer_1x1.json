@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "PPP",
+    "NCN",
+    "PPP"
+  ],
+  "key": {
+    "P": "#minecraft:planks",
+    "N": "minecraft:iron_nugget",
+    "C": "#c:chests/wooden"
+  },
+  "result": {
+    "id": "omnivault:drawer_1x1",
+    "count": 1
+  }
+}

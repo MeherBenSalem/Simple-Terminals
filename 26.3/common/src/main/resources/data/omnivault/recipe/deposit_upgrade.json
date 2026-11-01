@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    " H ",
+    "CUC",
+    " R "
+  ],
+  "key": {
+    "H": "minecraft:hopper",
+    "C": "minecraft:chest",
+    "U": "omnivault:upgrade_base",
+    "R": "minecraft:redstone"
+  },
+  "result": {
+    "id": "omnivault:deposit_upgrade",
+    "count": 1
+  }
+}

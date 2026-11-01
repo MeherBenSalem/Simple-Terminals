@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "SDS",
+    "DUD",
+    "SDS"
+  ],
+  "key": {
+    "S": "minecraft:stick",
+    "D": "minecraft:diamond",
+    "U": "omnivault:gold_drawer_upgrade"
+  },
+  "result": {
+    "id": "omnivault:diamond_drawer_upgrade",
+    "count": 1
+  }
+}

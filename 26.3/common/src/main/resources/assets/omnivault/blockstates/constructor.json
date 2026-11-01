@@ -1,0 +1,27 @@
+{
+  "variants": {
+    "facing=north": {
+      "model": "omnivault:block/constructor"
+    },
+    "facing=east": {
+      "model": "omnivault:block/constructor",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "omnivault:block/constructor",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "omnivault:block/constructor",
+      "y": 270
+    },
+    "facing=up": {
+      "model": "omnivault:block/constructor",
+      "x": 270
+    },
+    "facing=down": {
+      "model": "omnivault:block/constructor",
+      "x": 90
+    }
+  }
+}

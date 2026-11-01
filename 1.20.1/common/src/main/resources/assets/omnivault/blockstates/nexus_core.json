@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "active=false": {
+      "model": "omnivault:block/nexus_core"
+    },
+    "active=true": {
+      "model": "omnivault:block/nexus_core_active"
+    }
+  }
+}

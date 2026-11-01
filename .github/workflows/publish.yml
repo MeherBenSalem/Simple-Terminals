@@ -14,7 +14,9 @@
 #   CURSEFORGE_ID
 #
 # Usage after a release build is ready:
-#   git tag v1.2.3 && git push --tags
+#   git tag v1.2.3 && git push --tags         # every Minecraft version
+# or run the workflow by hand with a version and, optionally, only some Minecraft versions
+# (e.g. "1.20.1,26.2,26.3" to add ports of a release that is already out for 1.21.1).
 
 name: Publish
 
@@ -35,6 +37,10 @@ on:
         description: "modrinth, curseforge, or both"
         required: false
         default: "both"
+      minecraft:
+        description: "Comma-separated Minecraft versions to release (empty = all)"
+        required: false
+        default: ""
 
 jobs:
   publish:
@@ -44,11 +50,12 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Resolve version
+      - name: Resolve version and Minecraft versions
         id: ver
         shell: bash
         env:
           INPUT_VERSION: ${{ inputs.version }}
+          INPUT_MINECRAFT: ${{ inputs.minecraft }}
         run: |
           set -euo pipefail
           if [[ "$GITHUB_REF" == refs/tags/v* ]]; then
@@ -61,6 +68,16 @@ jobs:
           fi
           [[ "$VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+([-+][0-9A-Za-z.-]+)?$ ]] || exit 1
           echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+          # Every Minecraft workspace in the repository unless the run names some.
+          MINECRAFT="${INPUT_MINECRAFT// /}"
+          if [[ -z "$MINECRAFT" ]]; then
+            MINECRAFT="$(for d in */gradle.properties; do dirname "$d"; done | paste -sd, -)"
+          fi
+          [[ "$MINECRAFT" =~ ^[0-9.]+(,[0-9.]+)*$ ]] || exit 1
+          for mc in ${MINECRAFT//,/ }; do
+            test -f "$mc/gradle.properties" || { echo "No $mc workspace" >&2; exit 1; }
+          done
+          echo "minecraft=$MINECRAFT" >> "$GITHUB_OUTPUT"
 
       - name: Find prebuilt release jars
         id: prebuilt
@@ -82,7 +99,11 @@ jobs:
       - uses: actions/setup-java@v4
         with:
           distribution: temurin
-          java-version: '21'
+          # Each workspace builds with the Java its gradle.properties names (java_version).
+          java-version: |
+            17
+            21
+            25
 
       - name: Verify source resources and release guard tests
         run: |
@@ -95,17 +116,30 @@ jobs:
 
       - name: Build and run GameTests
         if: steps.prebuilt.outputs.found != 'true'
-        working-directory: 1.21.1
+        shell: bash
+        env:
+          MINECRAFT: ${{ steps.ver.outputs.minecraft }}
         run: |
-          bash gradlew clean build --no-daemon --stacktrace
-          bash gradlew :neoforge:runGameTestServer --no-daemon --stacktrace
-          bash gradlew :fabric:runGametest --no-daemon --stacktrace
+          set -euo pipefail
+          for mc in ${MINECRAFT//,/ }; do
+            java="$(sed -n 's/^java_version=//p' "$mc/gradle.properties")"
+            home="JAVA_HOME_${java}_X64"
+            export JAVA_HOME="${!home}"
+            # Forge on 1.20.1, NeoForge everywhere else; Fabric everywhere.
+            fml=neoforge; [ -d "$mc/forge" ] && fml=forge
+            echo "::group::Minecraft $mc (Java $java)"
+            (cd "$mc" && bash gradlew clean build --no-daemon --stacktrace \
+              && bash gradlew ":$fml:runGameTestServer" --no-daemon --stacktrace \
+              && bash gradlew :fabric:runGametest --no-daemon --stacktrace)
+            echo "::endgroup::"
+          done
 
       - name: Validate complete packaged release and version-specific notes
         env:
           VERSION: ${{ steps.ver.outputs.version }}
+          MINECRAFT: ${{ steps.ver.outputs.minecraft }}
         run: |
-          python3 scripts/release_guard.py --version "$VERSION" \
+          python3 scripts/release_guard.py --version "$VERSION" --minecraft "$MINECRAFT" \
             --manifest .release-manifest.json --notes .release-notes.md
 
       - uses: actions/setup-node@v4

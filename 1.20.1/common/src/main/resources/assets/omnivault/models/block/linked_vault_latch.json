@@ -1,0 +1,145 @@
+{
+  "render_type": "minecraft:cutout",
+  "textures": {
+    "particle": "omnivault:block/physical/linked/casing",
+    "casing": "omnivault:block/physical/linked/casing",
+    "trim": "omnivault:block/physical/linked/trim",
+    "front": "omnivault:block/physical/linked/front",
+    "side": "omnivault:block/physical/linked/side",
+    "lid": "omnivault:block/physical/linked/lid",
+    "interior": "omnivault:block/physical/interior",
+    "hardware": "omnivault:block/physical/hardware",
+    "glow": "omnivault:block/physical/glow_violet",
+    "eye": "omnivault:block/physical/emblem_teal",
+    "latch": "omnivault:block/physical/linked/latch",
+    "padlock": "omnivault:block/physical/linked/padlock",
+    "lens": "omnivault:block/physical/emblem_teal"
+  },
+  "elements": [
+    {
+      "from": [
+        6.5,
+        14,
+        3.5
+      ],
+      "to": [
+        9.5,
+        14.25,
+        7.5
+      ],
+      "name": "latch_base",
+      "faces": {
+        "north": {
+          "uv": [
+            6.5,
+            1.75,
+            9.5,
+            2
+          ],
+          "texture": "#trim"
+        },
+        "east": {
+          "uv": [
+            8.5,
+            1.75,
+            12.5,
+            2
+          ],
+          "texture": "#trim"
+        },
+        "south": {
+          "uv": [
+            6.5,
+            1.75,
+            9.5,
+            2
+          ],
+          "texture": "#trim"
+        },
+        "west": {
+          "uv": [
+            3.5,
+            1.75,
+            7.5,
+            2
+          ],
+          "texture": "#trim"
+        },
+        "up": {
+          "uv": [
+            6.5,
+            3.5,
+            9.5,
+            7.5
+          ],
+          "texture": "#trim"
+        }
+      }
+    },
+    {
+      "from": [
+        7,
+        14.25,
+        4
+      ],
+      "to": [
+        9,
+        15,
+        7
+      ],
+      "name": "latch",
+      "faces": {
+        "north": {
+          "uv": [
+            7,
+            1,
+            9,
+            1.75
+          ],
+          "texture": "#latch",
+          "tintindex": 0
+        },
+        "east": {
+          "uv": [
+            9,
+            1,
+            12,
+            1.75
+          ],
+          "texture": "#latch",
+          "tintindex": 0
+        },
+        "south": {
+          "uv": [
+            7,
+            1,
+            9,
+            1.75
+          ],
+          "texture": "#latch",
+          "tintindex": 0
+        },
+        "west": {
+          "uv": [
+            4,
+            1,
+            7,
+            1.75
+          ],
+          "texture": "#latch",
+          "tintindex": 0
+        },
+        "up": {
+          "uv": [
+            7,
+            4,
+            9,
+            7
+          ],
+          "texture": "#latch",
+          "tintindex": 0
+        }
+      }
+    }
+  ]
+}

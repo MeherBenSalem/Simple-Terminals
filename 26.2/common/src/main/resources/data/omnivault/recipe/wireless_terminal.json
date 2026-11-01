@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    " E ",
+    "OTO",
+    "OAO"
+  ],
+  "key": {
+    "E": "minecraft:ender_pearl",
+    "T": "omnivault:crafting_terminal",
+    "O": "omnivault:omnium_ingot",
+    "A": "omnivault:advanced_processor"
+  },
+  "result": {
+    "id": "omnivault:wireless_terminal",
+    "count": 1
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "parent": "omnivault:block/backpack_template",
+  "textures": {
+    "body": "omnivault:block/backpack/netherite/body",
+    "front": "omnivault:block/backpack/netherite/front",
+    "lid": "omnivault:block/backpack/netherite/lid",
+    "strap": "omnivault:block/backpack/netherite/strap",
+    "trim": "omnivault:block/backpack/netherite/trim",
+    "back": "omnivault:block/backpack/netherite/back",
+    "gem": "omnivault:block/backpack/omnium_gem",
+    "particle": "omnivault:block/backpack/netherite/body"
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "IOI",
+    "CLC",
+    "IOI"
+  ],
+  "key": {
+    "I": "minecraft:iron_ingot",
+    "O": "omnivault:omnium_ingot",
+    "C": "minecraft:chest",
+    "L": "omnivault:logic_processor"
+  },
+  "result": {
+    "id": "omnivault:drive",
+    "count": 1
+  }
+}

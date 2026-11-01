@@ -1,0 +1,13 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    "omnivault:upgrade_base",
+    "minecraft:ender_pearl",
+    "minecraft:amethyst_shard"
+  ],
+  "result": {
+    "id": "omnivault:range_upgrade",
+    "count": 1
+  }
+}

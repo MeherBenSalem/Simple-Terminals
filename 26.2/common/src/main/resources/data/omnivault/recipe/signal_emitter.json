@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    " C ",
+    "OLO"
+  ],
+  "key": {
+    "C": "minecraft:comparator",
+    "O": "omnivault:omnium_ingot",
+    "L": "omnivault:logic_processor"
+  },
+  "result": {
+    "id": "omnivault:signal_emitter",
+    "count": 1
+  }
+}

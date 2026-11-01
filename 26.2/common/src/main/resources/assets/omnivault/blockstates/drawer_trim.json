@@ -1,0 +1,7 @@
+{
+  "variants": {
+    "": {
+      "model": "omnivault:block/drawer_trim"
+    }
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "OXO",
+    " L "
+  ],
+  "key": {
+    "O": "omnivault:omnium_ingot",
+    "X": "minecraft:piston",
+    "L": "omnivault:logic_processor"
+  },
+  "result": {
+    "id": "omnivault:export_bus",
+    "count": 1
+  }
+}
