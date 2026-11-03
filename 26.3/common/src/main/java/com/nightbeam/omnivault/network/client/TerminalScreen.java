@@ -338,7 +338,7 @@ public class TerminalScreen<T extends TerminalMenu> extends AbstractContainerScr
     public boolean mouseClicked(MouseButtonEvent event, boolean doubleClick) {
         double mouseX = event.x();
         double mouseY = event.y();
-        int button = event.button();
+        int button = com.nightbeam.omnivault.client.MouseButtons.of(event);
         if (mouseX >= leftPos + SCROLL_X && mouseX < leftPos + SCROLL_X + 8
                 && mouseY >= topPos + TerminalMenu.GRID_Y && mouseY < topPos + menu.gridBottom()) {
             draggingScrollbar = true;

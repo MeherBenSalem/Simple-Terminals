@@ -1,5 +1,16 @@
 # OmniVault (formerly Simple Terminals) — Changelog
 
+## 2.0.2
+
+### Fixed (Minecraft 26.3)
+* Storage and Crafting Terminal clicks: left-click took half a stack, right-click did nothing, shift-click took one
+  item instead of moving the stack, and inserting from the cursor put in one item instead of the stack.
+* Drawer lock button, Trash and Storage screens, and the backpack buttons, scrollbar and filter slots responded to
+  the wrong mouse buttons.
+
+26.3 numbers mouse buttons differently (left 1, right 3); these screens now translate the button as Minecraft's own
+inventory screens do. Other versions are unchanged apart from the version number.
+
 ## 2.0.1
 
 OmniVault now runs on **Minecraft 1.20.1** (Forge, Fabric), **26.2** and **26.3** (NeoForge, Fabric) as well as

@@ -412,7 +412,7 @@ public class BackpackScreen extends AbstractContainerScreen<BackpackMenu> {
     public boolean mouseClicked(MouseButtonEvent event, boolean doubleClick) {
         double mouseX = event.x();
         double mouseY = event.y();
-        int button = event.button();
+        int button = com.nightbeam.omnivault.client.MouseButtons.of(event);
         int sx = sortX();
         if (button == 0 && mouseX >= sx && mouseX < sx + 14 && mouseY >= topPos + 4 && mouseY < topPos + 16) {
             Services.PLATFORM.sendToServer(new InventorySorting.SortPayload(menu.containerId, 0));

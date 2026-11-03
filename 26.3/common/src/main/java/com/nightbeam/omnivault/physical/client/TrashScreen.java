@@ -152,7 +152,7 @@ public class TrashScreen extends AbstractContainerScreen<TrashMenu> {
     public boolean mouseClicked(MouseButtonEvent event, boolean doubleClick) {
         double mouseX = event.x();
         double mouseY = event.y();
-        int button = event.button();
+        int button = com.nightbeam.omnivault.client.MouseButtons.of(event);
         if (button == 0) {
             int id = -1;
             if (inside(mouseX, mouseY, modeX(), buttonY(), MODE_W, BUTTON_H)) {

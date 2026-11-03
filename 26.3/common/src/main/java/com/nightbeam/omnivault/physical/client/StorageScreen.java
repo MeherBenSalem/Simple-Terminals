@@ -163,7 +163,7 @@ public class StorageScreen extends AbstractContainerScreen<StorageMenu> {
     public boolean mouseClicked(MouseButtonEvent event, boolean doubleClick) {
         double mouseX = event.x();
         double mouseY = event.y();
-        int button = event.button();
+        int button = com.nightbeam.omnivault.client.MouseButtons.of(event);
         if (button == 0 && overSort(mouseX, mouseY)) {
             Services.PLATFORM.sendToServer(new InventorySorting.SortPayload(menu.containerId, 0));
             minecraft.getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK, 1.0f));

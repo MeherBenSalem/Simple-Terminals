@@ -165,7 +165,7 @@ public class DrawerScreen extends AbstractContainerScreen<DrawerMenu> {
     public boolean mouseClicked(MouseButtonEvent event, boolean doubleClick) {
         double mouseX = event.x();
         double mouseY = event.y();
-        int button = event.button();
+        int button = com.nightbeam.omnivault.client.MouseButtons.of(event);
         if (button == 0 && overLock((int) mouseX, (int) mouseY) && minecraft != null && minecraft.gameMode != null) {
             minecraft.gameMode.handleInventoryButtonClick(menu.containerId, DrawerMenu.BUTTON_TOGGLE_LOCK);
             minecraft.getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK, 1.0f));
