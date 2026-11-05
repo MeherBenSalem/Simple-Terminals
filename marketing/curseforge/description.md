@@ -1,5 +1,9 @@
 ![OmniVault](https://raw.githubusercontent.com/MeherBenSalem/Simple-Terminals/main/marketing/images/banner.png)
 
+**[Discord](https://discord.gg/TJc3CxR4jK) · [The modpack](https://www.curseforge.com/minecraft/modpacks/remnants-ashen-legacy) · [Support NightBeam](https://nightbeam.dev/support) · [NightBeam Pro](https://nightbeam.dev/memberships) · [All projects](https://nightbeam.dev/projects)**
+
+> **Featured in [Remnants: Ashen Legacy](https://www.curseforge.com/minecraft/modpacks/remnants-ashen-legacy)**, NightBeam's story-driven soulslike RPG modpack.
+
 **One mod for every storage need.** Start on day one with a Storage Hub that joins every chest in the room into one
 searchable terminal, built from vanilla materials. Grow into a channel-free digital network with Cell Drives,
 storage cells, buses and full autocrafting, and finish with Singularity cells and Quantum Bridges that join your
@@ -25,7 +29,7 @@ loads as OmniVault's Crafting Terminal.
 
 ![Progression](https://raw.githubusercontent.com/MeherBenSalem/Simple-Terminals/main/marketing/images/header-progression.png)
 
-![From your first chest to a quantum network](https://raw.githubusercontent.com/MeherBenSalem/Simple-Terminals/main/marketing/images/card-progression.png)
+![From a single chest to a quantum network](https://raw.githubusercontent.com/MeherBenSalem/Simple-Terminals/main/marketing/images/card-progression.png)
 
 | Stage | Made from | What you build |
 |-------|-----------|----------------|
@@ -84,8 +88,8 @@ smithing table with a Quantum Upgrade Template and a nether star for any distanc
 ![Wire it into everything](https://raw.githubusercontent.com/MeherBenSalem/Simple-Terminals/main/marketing/images/card-automation.png)
 
 **Upgrade cards:** Speed (devices act twice as often per card, up to four), Stack (buses move twice as much per card, up
-to four), Fuzzy (filters ignore damage and other data), Redstone (runs only with a signal) and Range. Storage with a
-higher priority fills first and empties last; new items prefer storage that already holds them.
+to four), Fuzzy (filters ignore damage and other data), Redstone (runs just with a signal) and Range. Storage with a
+higher priority fills earliest and empties last; new items prefer storage that already holds them.
 
 ![Terminals](https://raw.githubusercontent.com/MeherBenSalem/Simple-Terminals/main/marketing/images/header-terminals.png)
 
@@ -99,9 +103,9 @@ higher priority fills first and empties last; new items prefer storage that alre
 | Click with an item on the cursor | Store it (right-click stores one); shift-click anything in your inventory to store it |
 | Bucket in the fluid view | An empty bucket fills, a full one empties |
 | Middle-click or Ctrl + click a craftable item | Ask the network to craft it |
-| JEI `+` in a Crafting Terminal | Moves a recipe into the grid, from the network first and your inventory second |
+| JEI `+` in a Crafting Terminal | Moves a recipe into the grid, from the network, then your inventory |
 
-Sort by count, name, mod or registry order, and show everything, only stored items or only craftable ones.
+Sort by count, name, mod or registry order, and show everything, just stored items or just craftable ones.
 
 ![Autocrafting](https://raw.githubusercontent.com/MeherBenSalem/Simple-Terminals/main/marketing/images/header-autocrafting.png)
 
@@ -116,7 +120,7 @@ Sort by count, name, mod or registry order, and show everything, only stored ite
 | Crafting Processor | Each one runs one crafting job; right-click it for the Crafting Status screen |
 
 Middle-click a craftable item in any terminal, enter an amount and press **Calculate**: the plan lists what it will
-take from storage, what it will craft and anything missing. It uses stored items first, crafts only the shortfall,
+take from storage, what it will craft and anything missing. It uses stored items before crafting, crafts just the shortfall,
 batches repeated crafts and stops runaway loops. **Start** reserves the ingredients so nothing else can take them;
 cancel from Crafting Status to get every reserved item back.
 
@@ -186,10 +190,10 @@ placed backpack works with hoppers and pipes. Surround a backpack with eight of 
 |---------|--------------|
 | Pickup | Items you pick up go straight into the backpack |
 | Magnet | Pulls nearby items and experience to you, up to 8 blocks |
-| Void | Destroys filtered items, or only what the backpack can't hold |
+| Void | Destroys filtered items, or just what the backpack can't hold |
 | Feeding | Eats from the backpack when you're hungry, skipping harmful food |
 | Restock | Tops up your hotbar stacks |
-| Compacting | Turns nine (or four) of an item into its block, with reversible recipes only |
+| Compacting | Turns nine (or four) of an item into its block, using reversible recipes |
 | Crafting | A 3×3 crafting grid tab |
 | Everlasting | A dropped backpack never despawns and can't be destroyed |
 | Deposit | Sneak-right-click a container to empty matching items into it |
@@ -249,7 +253,7 @@ Forge and NeoForge, Team Reborn Energy on Fabric).
 **Are there channels?** No. One core runs any number of devices.
 
 **Can I start without the Nether?** Yes. The Storage Hub, Inventory Cable, both terminals, the Copper Vault, drawers and
-the Leather Backpack need only vanilla materials.
+the Leather Backpack need just vanilla materials.
 
 **Will big cells or full backpacks lag my server?** Cell and backpack contents are stored in the world save under their
 own IDs, not on the item, so full items never bloat inventory data or network traffic.
@@ -291,8 +295,6 @@ Providers.
 
 ![Divider](https://raw.githubusercontent.com/MeherBenSalem/Simple-Terminals/main/marketing/images/divider.png)
 
-[Discord](https://discord.gg/SAmd9fhNhr) · [Source and issues](https://github.com/MeherBenSalem/Simple-Terminals) · [Support the project](https://nightbeam.dev/support) · Made by NightBeam Studio
-
 ---
 
 Every screenshot on this page is a single unedited frame captured in game (Minecraft 1.21.1, NeoForge, default
@@ -300,3 +302,15 @@ resources, no shaders); the other versions and loaders show the same blocks and 
 offline model renderer: the cell, device, upgrade and tool lineups, the banner's cells and the Nexus Core on the icon.
 OmniVault is licensed under Apache-2.0. The Barlow Condensed and Inter fonts used in this artwork are licensed under the
 SIL Open Font License 1.1.
+
+---
+
+### More from NightBeam Studio
+
+- **[Remnants: Ashen Legacy](https://www.curseforge.com/minecraft/modpacks/remnants-ashen-legacy)**: the story-driven soulslike RPG modpack built on NightBeam's mods
+- **[Premium server plugins](https://nightbeam.dev/store)**: anti-cheat, ranked PvP, SMP setups and more on BuiltByBit
+- **[NightBeam Pro](https://nightbeam.dev/memberships)**: the model library and NightBeam Forge credits, from $5 a month
+- **[Discord](https://discord.gg/TJc3CxR4jK)**: support, bug reports, suggestions and early looks
+- **[Support NightBeam](https://nightbeam.dev/support)**: help keep every mod free
+
+**Follow:** [YouTube](https://www.youtube.com/@nightbeamstudio) · [Instagram](https://www.instagram.com/nightbeamstudio/) · [X](https://x.com/NightBeamLLC) · [Facebook](https://www.facebook.com/profile.php?id=61574823331471) · [Source and issues](https://github.com/MeherBenSalem/Simple-Terminals)
