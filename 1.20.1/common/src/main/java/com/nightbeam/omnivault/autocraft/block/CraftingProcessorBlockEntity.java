@@ -53,7 +53,7 @@ public class CraftingProcessorBlockEntity extends NetworkNodeBlockEntity impleme
         BlockState state = getBlockState();
         boolean busy = job != null;
         if (state.hasProperty(AutocraftDeviceBlock.WORKING) && state.getValue(AutocraftDeviceBlock.WORKING) != busy) {
-            level.setBlock(worldPosition, state.setValue(AutocraftDeviceBlock.WORKING, busy), 3);
+            com.nightbeam.omnivault.util.OwnBlockState.set(this, state.setValue(AutocraftDeviceBlock.WORKING, busy), 3);
         }
     }
 

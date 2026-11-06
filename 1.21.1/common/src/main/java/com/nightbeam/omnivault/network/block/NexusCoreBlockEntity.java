@@ -67,7 +67,7 @@ public class NexusCoreBlockEntity extends BlockEntity implements NetworkNode, Mo
             BlockState state = getBlockState();
             boolean active = network.isActive();
             if (state.hasProperty(DeviceBlock.ACTIVE) && state.getValue(DeviceBlock.ACTIVE) != active) {
-                level.setBlock(worldPosition, state.setValue(DeviceBlock.ACTIVE, active), 3);
+                com.nightbeam.omnivault.util.OwnBlockState.set(this, state.setValue(DeviceBlock.ACTIVE, active), 3);
             }
         }
     }

@@ -155,7 +155,7 @@ public class AssemblerBlockEntity extends NetworkNodeBlockEntity implements Menu
         }
         BlockState state = getBlockState();
         if (state.hasProperty(AutocraftDeviceBlock.WORKING) && state.getValue(AutocraftDeviceBlock.WORKING) != working) {
-            level.setBlock(worldPosition, state.setValue(AutocraftDeviceBlock.WORKING, working), 3);
+            com.nightbeam.omnivault.util.OwnBlockState.set(this, state.setValue(AutocraftDeviceBlock.WORKING, working), 3);
         }
     }
 

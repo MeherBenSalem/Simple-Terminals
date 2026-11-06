@@ -74,7 +74,7 @@ public class SignalEmitterBlockEntity extends NetworkNodeBlockEntity implements 
     private void setPowered(boolean powered) {
         BlockState state = getBlockState();
         if (level != null && state.getValue(SignalEmitterBlock.POWERED) != powered) {
-            level.setBlock(worldPosition, state.setValue(SignalEmitterBlock.POWERED, powered), Block.UPDATE_ALL);
+            com.nightbeam.omnivault.util.OwnBlockState.set(this, state.setValue(SignalEmitterBlock.POWERED, powered), Block.UPDATE_ALL);
             level.updateNeighborsAt(worldPosition, state.getBlock());
             BlockPos behind = worldPosition.relative(state.getValue(DirectionalDeviceBlock.FACING));
             level.updateNeighborsAt(behind, state.getBlock());

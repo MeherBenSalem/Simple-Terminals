@@ -58,6 +58,23 @@ public class NetworkGameTests {
     }
 
     @GameTest(structure = Templates.FLOOR, maxTicks = Templates.TICKS)
+    public static void brokenTerminalStaysBroken(GameTestHelper helper) {
+        // Breaking a terminal on a running network used to put the block back during the network update
+        // that followed, after it had already dropped as an item (Discord ticket-0063: a duplication).
+        spine(helper);
+        BlockPos pos = new BlockPos(3, 1, 5);
+        helper.setBlock(pos, NetworkContent.TERMINAL.get().defaultBlockState().setValue(OrientedDeviceBlock.FACING, Direction.SOUTH));
+        helper.runAfterDelay(5, () -> {
+            helper.assertTrue(network(helper).isActive(), "network should be online");
+            helper.destroyBlock(pos);
+            helper.runAfterDelay(10, () -> {
+                helper.assertTrue(helper.getBlockState(pos).isAir(), "a broken terminal must not come back");
+                helper.succeed();
+            });
+        });
+    }
+
+    @GameTest(structure = Templates.FLOOR, maxTicks = Templates.TICKS)
     public void cellsStoreAndReturnItems(GameTestHelper helper) {
         spine(helper);
         driveWithCell(helper, new BlockPos(3, 1, 5), CellTier.T4K);

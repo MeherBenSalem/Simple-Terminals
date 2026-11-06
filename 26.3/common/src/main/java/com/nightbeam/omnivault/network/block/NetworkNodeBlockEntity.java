@@ -50,7 +50,7 @@ public abstract class NetworkNodeBlockEntity extends BlockEntity implements Netw
         }
         BlockState state = getBlockState();
         if (state.hasProperty(property) && state.getValue(property) != isOnline()) {
-            level.setBlock(worldPosition, state.setValue(property, isOnline()), 3);
+            com.nightbeam.omnivault.util.OwnBlockState.set(this, state.setValue(property, isOnline()), 3);
         }
     }
 

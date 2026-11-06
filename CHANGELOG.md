@@ -1,5 +1,13 @@
 # OmniVault (formerly Simple Terminals) — Changelog
 
+## 2.0.3
+
+### Fixed (every version)
+* **Duplication: breaking a terminal on a running network.** Breaking a Storage Terminal (or another device) while
+  it was connected to a Nexus Core dropped the item *and* left the block in place. Devices write their state (active,
+  working, powered) during network updates, and the update that followed the break wrote the old block back.
+  A device now only changes its own state while it is still in the world.
+
 ## 2.0.2
 
 ### Fixed (Minecraft 26.3)
