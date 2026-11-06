@@ -1,6 +1,6 @@
 ![OmniVault](https://raw.githubusercontent.com/MeherBenSalem/Simple-Terminals/main/marketing/images/banner.png)
 
-**[Discord](https://discord.gg/TJc3CxR4jK) · [Source and issues](https://github.com/MeherBenSalem/Simple-Terminals)**
+**[Docs](https://nightbeam.dev/docs/omnivault) · [Discord](https://discord.gg/TJc3CxR4jK) · [Source and issues](https://github.com/MeherBenSalem/Simple-Terminals)**
 
 **One mod for every storage need.** Start on day one with a Storage Hub that joins every chest in the room into one
 searchable terminal, built from vanilla materials. Grow into a channel-free digital network with Cell Drives,
