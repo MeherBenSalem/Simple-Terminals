@@ -58,7 +58,7 @@ public class NetworkGameTests {
     }
 
     @GameTest(structure = Templates.FLOOR, maxTicks = Templates.TICKS)
-    public static void brokenTerminalStaysBroken(GameTestHelper helper) {
+    public void brokenTerminalStaysBroken(GameTestHelper helper) {
         // Breaking a terminal on a running network used to put the block back during the network update
         // that followed, after it had already dropped as an item (Discord ticket-0063: a duplication).
         spine(helper);
