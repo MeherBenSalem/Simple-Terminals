@@ -1,27 +1,110 @@
 {
-  "variants": {
-    "facing=north": {
-      "model": "omnivault:block/destructor"
+  "multipart": [
+    {
+      "when": {
+        "facing": "north"
+      },
+      "apply": {
+        "model": "omnivault:block/destructor"
+      }
     },
-    "facing=east": {
-      "model": "omnivault:block/destructor",
-      "y": 90
+    {
+      "when": {
+        "facing": "east"
+      },
+      "apply": {
+        "model": "omnivault:block/destructor",
+        "y": 90
+      }
     },
-    "facing=south": {
-      "model": "omnivault:block/destructor",
-      "y": 180
+    {
+      "when": {
+        "facing": "south"
+      },
+      "apply": {
+        "model": "omnivault:block/destructor",
+        "y": 180
+      }
     },
-    "facing=west": {
-      "model": "omnivault:block/destructor",
-      "y": 270
+    {
+      "when": {
+        "facing": "west"
+      },
+      "apply": {
+        "model": "omnivault:block/destructor",
+        "y": 270
+      }
     },
-    "facing=up": {
-      "model": "omnivault:block/destructor",
-      "x": 270
+    {
+      "when": {
+        "facing": "up"
+      },
+      "apply": {
+        "model": "omnivault:block/destructor",
+        "x": 270
+      }
     },
-    "facing=down": {
-      "model": "omnivault:block/destructor",
-      "x": 90
+    {
+      "when": {
+        "facing": "down"
+      },
+      "apply": {
+        "model": "omnivault:block/destructor",
+        "x": 90
+      }
+    },
+    {
+      "when": {
+        "north": "true"
+      },
+      "apply": {
+        "model": "omnivault:block/bus_connector"
+      }
+    },
+    {
+      "when": {
+        "east": "true"
+      },
+      "apply": {
+        "model": "omnivault:block/bus_connector",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "south": "true"
+      },
+      "apply": {
+        "model": "omnivault:block/bus_connector",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "west": "true"
+      },
+      "apply": {
+        "model": "omnivault:block/bus_connector",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "up": "true"
+      },
+      "apply": {
+        "model": "omnivault:block/bus_connector",
+        "x": 270
+      }
+    },
+    {
+      "when": {
+        "down": "true"
+      },
+      "apply": {
+        "model": "omnivault:block/bus_connector",
+        "x": 90
+      }
     }
-  }
+  ]
 }

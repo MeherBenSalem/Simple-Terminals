@@ -4,6 +4,7 @@ import com.nightbeam.omnivault.OmniVault;
 import com.nightbeam.omnivault.content.CoreContent;
 import com.nightbeam.omnivault.network.NetworkContent;
 import com.nightbeam.omnivault.network.StorageNetwork;
+import com.nightbeam.omnivault.network.block.BusBlock;
 import com.nightbeam.omnivault.network.block.CableBlock;
 import com.nightbeam.omnivault.network.block.DirectionalDeviceBlock;
 import com.nightbeam.omnivault.network.block.DriveBlockEntity;
@@ -60,6 +61,30 @@ public class NetworkGameTests {
     private static BlockPos facing(GameTestHelper helper, BlockPos relative, net.minecraft.world.level.block.Block block, Direction direction) {
         helper.setBlock(relative, block.defaultBlockState().setValue(DirectionalDeviceBlock.FACING, direction));
         return relative;
+    }
+
+    @GameTest(template = Templates.FLOOR)
+    public static void busDrawsConnectorWhereCableJoinsFromSide(GameTestHelper helper) {
+        // A cable beside a bus joins the network, but the bus body stops 3 pixels short of that face, so the cable
+        // arm used to end in mid-air. The bus now records the side so its model draws a connector there.
+        spine(helper);
+        BlockPos bus = facing(helper, new BlockPos(5, 1, 5), NetworkContent.IMPORT_BUS.get(), Direction.SOUTH);
+        BlockPos side = new BlockPos(6, 1, 5);
+        helper.setBlock(side, NetworkContent.NEXUS_CABLE.get());
+        helper.runAfterDelay(2, () -> {
+            var state = helper.getBlockState(bus);
+            helper.assertTrue(state.getValue(BusBlock.CONNECTORS.get(Direction.EAST)), "connector toward the side cable");
+            helper.assertTrue(!state.getValue(BusBlock.CONNECTORS.get(Direction.NORTH)), "no connector on the back (the neck reaches it)");
+            helper.assertTrue(!state.getValue(BusBlock.CONNECTORS.get(Direction.SOUTH)), "no connector on the working face");
+            helper.assertTrue(!state.getValue(BusBlock.CONNECTORS.get(Direction.WEST)), "no connector toward air");
+            helper.assertTrue(network(helper).isActive(), "network should be online");
+            helper.setBlock(side, Blocks.AIR);
+            helper.runAfterDelay(2, () -> {
+                helper.assertTrue(!helper.getBlockState(bus).getValue(BusBlock.CONNECTORS.get(Direction.EAST)),
+                        "connector goes when the cable does");
+                helper.succeed();
+            });
+        });
     }
 
     @GameTest(template = Templates.FLOOR)

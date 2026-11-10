@@ -1,5 +1,6 @@
 package com.nightbeam.omnivault.network;
 
+import com.nightbeam.omnivault.network.block.BusBlock;
 import com.nightbeam.omnivault.network.block.CableBlock;
 import com.nightbeam.omnivault.network.block.ConstructorBlockEntity;
 import com.nightbeam.omnivault.network.block.DestructorBlockEntity;
@@ -91,11 +92,11 @@ public final class NetworkContent {
     public static final Supplier<TerminalBlock> CRAFTING_TERMINAL = ModRegistry.blockWithItem("crafting_terminal",
             () -> new TerminalBlock(TerminalBlock.Kind.CRAFTING, TerminalBlockEntity::new, device().noOcclusion().lightLevel(NetworkContent::screenLight)));
     public static final Supplier<DirectionalDeviceBlock> IMPORT_BUS = ModRegistry.blockWithItem("import_bus",
-            () -> new DirectionalDeviceBlock(ImportBusBlockEntity::new, BUS_SHAPE, device().noOcclusion()));
+            () -> new BusBlock(ImportBusBlockEntity::new, BUS_SHAPE, device().noOcclusion()));
     public static final Supplier<DirectionalDeviceBlock> EXPORT_BUS = ModRegistry.blockWithItem("export_bus",
-            () -> new DirectionalDeviceBlock(ExportBusBlockEntity::new, BUS_SHAPE, device().noOcclusion()));
+            () -> new BusBlock(ExportBusBlockEntity::new, BUS_SHAPE, device().noOcclusion()));
     public static final Supplier<DirectionalDeviceBlock> STORAGE_BUS = ModRegistry.blockWithItem("storage_bus",
-            () -> new DirectionalDeviceBlock(StorageBusBlockEntity::new, BUS_SHAPE, device().noOcclusion()));
+            () -> new BusBlock(StorageBusBlockEntity::new, BUS_SHAPE, device().noOcclusion()));
     public static final Supplier<OrientedDeviceBlock> NETWORK_PORT = ModRegistry.blockWithItem("network_port",
             () -> new OrientedDeviceBlock(NetworkPortBlockEntity::new, device()) {
                 @Override
@@ -104,9 +105,9 @@ public final class NetworkContent {
                 }
             });
     public static final Supplier<DirectionalDeviceBlock> DESTRUCTOR = ModRegistry.blockWithItem("destructor",
-            () -> new DirectionalDeviceBlock(DestructorBlockEntity::new, BUS_SHAPE, device().noOcclusion()));
+            () -> new BusBlock(DestructorBlockEntity::new, BUS_SHAPE, device().noOcclusion()));
     public static final Supplier<DirectionalDeviceBlock> CONSTRUCTOR = ModRegistry.blockWithItem("constructor",
-            () -> new DirectionalDeviceBlock(ConstructorBlockEntity::new, BUS_SHAPE, device().noOcclusion()));
+            () -> new BusBlock(ConstructorBlockEntity::new, BUS_SHAPE, device().noOcclusion()));
     public static final Supplier<StorageMonitorBlock> STORAGE_MONITOR = ModRegistry.blockWithItem("storage_monitor",
             () -> new StorageMonitorBlock(device().lightLevel(NetworkContent::screenLight)));
     // Late game: entangled pairs that join network segments across any distance or dimension.
