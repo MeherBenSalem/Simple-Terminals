@@ -1590,7 +1590,26 @@ def constructor(s: Shape):
     s.box([4.75, 7.5, 0.5], [11.25, 8.5, 0.75], 'steel', skip=('south',))
 
 
+def bus_connector(s: Shape):
+    """A neck from a side face of the block to the bus body, where a cable joins from the side.
+
+    Faces north (z = 0 is the block face). The body is 3..13 across and the neck 5.5..10.5, so a stub
+    reaching z 5.5 meets one of them whichever way the bus points; the rest hides inside the body."""
+    s.box([5.5, 5.5, 1], [10.5, 10.5, 5.5], 'casing_dark', skip=('north', 'south'))
+    s.box([5, 5, 0], [11, 11, 1], 'bracket', faces={'north': 'flange'})
+
+
+SIDE_ROTATIONS = {'north': {}, 'east': {'y': 90}, 'south': {'y': 180}, 'west': {'y': 270}, 'up': {'x': 270},
+                  'down': {'x': 90}}
+
+
 def pointing_devices():
+    atlas = Atlas('block/bus_connector')
+    connector = Shape(atlas, particle='block/network/casing')
+    bus_connector(connector)
+    atlas.pack()
+    atlas.save()
+    connector.save('block/bus_connector')
     for name, build in (('import_bus', import_bus), ('export_bus', export_bus), ('storage_bus', storage_bus),
                         ('destructor', destructor), ('constructor', constructor)):
         atlas = Atlas(f'block/{name}')
@@ -1600,7 +1619,14 @@ def pointing_devices():
         atlas.save()
         s.save(f'block/{name}')
         kit.item_model(name, parent=f'block/{name}')
-        kit.blockstate_facing(name)
+        # The body by facing, plus a connector on each side where the block says a cable or device joins
+        # (BusBlock's north..down properties; never the front or the back, which has its own flange).
+        parts = []
+        for facing, r in SIDE_ROTATIONS.items():
+            parts.append({'when': {'facing': facing}, 'apply': {'model': f'{M}:block/{name}', **r}})
+        for side, r in SIDE_ROTATIONS.items():
+            parts.append({'when': {side: 'true'}, 'apply': {'model': f'{M}:block/bus_connector', **r}})
+        kit.blockstate_multipart(name, parts)
 
 
 # =================================================================================================

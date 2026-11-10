@@ -59,6 +59,19 @@ public abstract class BusBlockEntity extends NetworkNodeBlockEntity implements M
         setChanged();
     }
 
+    /** Also brings the side connectors of buses saved before they existed up to date when the network forms. */
+    @Override
+    public void onNetworkStateChanged() {
+        super.onNetworkStateChanged();
+        BlockState state = getBlockState();
+        if (level != null && !level.isClientSide && state.getBlock() instanceof BusBlock bus) {
+            BlockState connected = bus.withConnectors(state, level, worldPosition);
+            if (connected != state) {
+                com.nightbeam.omnivault.util.OwnBlockState.set(this, connected, net.minecraft.world.level.block.Block.UPDATE_CLIENTS);
+            }
+        }
+    }
+
     public SimpleContainer filter() {
         return filter;
     }

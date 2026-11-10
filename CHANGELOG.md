@@ -7,6 +7,10 @@
   openings at the sides of the block, but the block told Minecraft it was a solid cube, so neighbouring blocks
   skipped drawing the faces that touch it. Looking past the bezel showed through into caves or the sky. Terminals
   now let their neighbours draw those faces, like the Nexus Core already does.
+* **Import, Export and Storage Bus connectors.** A cable (or another network block) joining a bus from the side
+  connected, but the bus body stops short of that face, so the cable ended in mid-air next to it. Buses, the
+  Destructor and the Constructor now draw a connector on each side where something joins. Buses placed before this
+  update pick up their connectors when their network next forms (for example when the world loads).
 
 ## 2.0.3
 
