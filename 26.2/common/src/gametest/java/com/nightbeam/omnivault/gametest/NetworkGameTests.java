@@ -58,6 +58,18 @@ public class NetworkGameTests {
     }
 
     @GameTest(structure = Templates.FLOOR, maxTicks = Templates.TICKS)
+    public void terminalsDoNotOccludeNeighbours(GameTestHelper helper) {
+        // The terminal model has a recessed bezel with open notches at its sides. A terminal that occluded as a full
+        // cube made its neighbours cull the faces behind those notches, so the world looked see-through beside it.
+        for (var block : java.util.List.of(NetworkContent.TERMINAL.get(), NetworkContent.CRAFTING_TERMINAL.get())) {
+            for (var state : block.getStateDefinition().getPossibleStates()) {
+                helper.assertTrue(!state.canOcclude(), "terminal state must not occlude its neighbours: " + state);
+            }
+        }
+        helper.succeed();
+    }
+
+    @GameTest(structure = Templates.FLOOR, maxTicks = Templates.TICKS)
     public void brokenTerminalStaysBroken(GameTestHelper helper) {
         // Breaking a terminal on a running network used to put the block back during the network update
         // that followed, after it had already dropped as an item (Discord ticket-0063: a duplication).
