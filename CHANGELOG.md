@@ -1,5 +1,13 @@
 # OmniVault (formerly Simple Terminals) — Changelog
 
+## 2.0.4
+
+### Fixed (every version)
+* **See-through world beside Storage and Crafting Terminals.** The terminals' recessed screen bezel leaves small
+  openings at the sides of the block, but the block told Minecraft it was a solid cube, so neighbouring blocks
+  skipped drawing the faces that touch it. Looking past the bezel showed through into caves or the sky. Terminals
+  now let their neighbours draw those faces, like the Nexus Core already does.
+
 ## 2.0.3
 
 ### Fixed (every version)

@@ -88,10 +88,11 @@ public final class NetworkContent {
                     .noOcclusion().lightLevel(state -> 2));
     public static final Supplier<OrientedDeviceBlock> DRIVE = ModRegistry.blockWithItem("drive",
             p -> new OrientedDeviceBlock(DriveBlockEntity::new, p), NetworkContent::device);
+    // Recessed screen bezel: neighbours must not cull their faces against a terminal (no x-ray beside it).
     public static final Supplier<TerminalBlock> TERMINAL = ModRegistry.blockWithItem("terminal",
-            p -> new TerminalBlock(TerminalBlock.Kind.STORAGE, TerminalBlockEntity::new, p), () -> device().lightLevel(NetworkContent::screenLight));
+            p -> new TerminalBlock(TerminalBlock.Kind.STORAGE, TerminalBlockEntity::new, p), () -> device().noOcclusion().lightLevel(NetworkContent::screenLight));
     public static final Supplier<TerminalBlock> CRAFTING_TERMINAL = ModRegistry.blockWithItem("crafting_terminal",
-            p -> new TerminalBlock(TerminalBlock.Kind.CRAFTING, TerminalBlockEntity::new, p), () -> device().lightLevel(NetworkContent::screenLight));
+            p -> new TerminalBlock(TerminalBlock.Kind.CRAFTING, TerminalBlockEntity::new, p), () -> device().noOcclusion().lightLevel(NetworkContent::screenLight));
     public static final Supplier<DirectionalDeviceBlock> IMPORT_BUS = ModRegistry.blockWithItem("import_bus",
             p -> new DirectionalDeviceBlock(ImportBusBlockEntity::new, BUS_SHAPE, p), () -> device().noOcclusion());
     public static final Supplier<DirectionalDeviceBlock> EXPORT_BUS = ModRegistry.blockWithItem("export_bus",
