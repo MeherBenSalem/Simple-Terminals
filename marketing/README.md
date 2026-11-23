@@ -7,6 +7,8 @@ ships in the mod jars except the logo, which is copied to `1.21.1/common/src/mai
 |------|------------|
 | `curseforge/description.md` | The project description (Markdown; also works on Modrinth). Images load from this repo's `main` branch. |
 | `curseforge/summary.txt` | The one-line summary (222 characters; the limit is 250). |
+| `modrinth/description.md` | The Modrinth description, made from the CurseForge copy by `python3 tools/make_modrinth_md.py .` (the screenshots go in the project's Gallery tab instead). |
+| `modrinth/summary.txt` | The Modrinth summary (the same text). |
 | `images/banner.png` | 1800×600 header banner (the hero base capture, the seven cell tiers). |
 | `images/icon.png` | 512×512 project icon (transparent corners): the Nexus Core in a machined frame. A 256×256 copy is the mod's `logoFile`. |
 | `images/card-*.png` | 1600×900 feature cards used in the description and as gallery images. |
@@ -48,7 +50,9 @@ python3 -c "from PIL import Image; Image.open('marketing/images/icon.png').resiz
 
 `renders.py` drives `tools/assets/render_models.py`, the project's offline model renderer, so regenerated models and
 textures (see `tools/assets/`) show up in the next render. The supported Minecraft versions and loaders are at the top of
-`render.cjs`; adding one there also needs a row in the compatibility table of `description.md`. The palette is the
+`render.cjs`; adding one there also needs a row in the compatibility table of `curseforge/description.md`, then
+`python3 tools/make_modrinth_md.py .` to refresh the Modrinth copy. Only the NightBeam convention's targets are listed:
+1.20.1 (Forge, Fabric) and 1.21.1, 26.2, 26.3 (NeoForge, Fabric). The palette is the
 mod's own (`client/gui/GuiStyle.java`): gunmetal panels, cyan `#38e1ff` and violet `#a46bff`.
 
 ## Retaking the screenshots

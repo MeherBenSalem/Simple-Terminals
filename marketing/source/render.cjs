@@ -8,7 +8,13 @@ const { chromium } = require('playwright');
 
 // The release and the supported versions. Adding a version is one line here (plus a row in curseforge/description.md).
 const RELEASE = { version: '2.0', name: 'OmniVault' };
-const VERSIONS = [{ minecraft: '1.21.1', loaders: ['NeoForge', 'Fabric'] }];
+// Only the NightBeam convention's targets: 1.20.1 Forge + Fabric; 1.21.1, 26.2, 26.3 NeoForge + Fabric.
+const VERSIONS = [
+  { minecraft: '1.20.1', loaders: ['Forge', 'Fabric'] },
+  { minecraft: '1.21.1', loaders: ['NeoForge', 'Fabric'] },
+  { minecraft: '26.2', loaders: ['NeoForge', 'Fabric'] },
+  { minecraft: '26.3', loaders: ['NeoForge', 'Fabric'] },
+];
 
 const root = path.resolve(__dirname, '..', '..');
 const out = path.join(root, 'marketing', 'images');
@@ -150,8 +156,8 @@ const VAULTS = [['copper', 45], ['iron', 54], ['gold', 81], ['diamond', 108], ['
 const BACKPACKS = [['leather', 27], ['copper', 36], ['iron', 54], ['gold', 81], ['diamond', 108], ['netherite', 120]];
 const BP_UPGRADES = ['pickup', 'magnet', 'void', 'feeding', 'restock', 'compacting', 'crafting', 'everlasting', 'deposit'];
 
-const versionText = VERSIONS.map((v) => `Minecraft ${v.minecraft}`).join(' · ');
-const loaders = [...new Set(VERSIONS.flatMap((v) => v.loaders))];
+const versionText = 'Minecraft ' + VERSIONS.map((v) => v.minecraft).join(' · ');
+const loaders = ['Forge', 'NeoForge', 'Fabric'].filter((l) => VERSIONS.some((v) => v.loaders.includes(l)));
 
 const assets = {
   banner: () => page(1800, 600, `
@@ -258,7 +264,7 @@ const assets = {
       'The <b class="hi">Network Port</b>: your whole network as one inventory for pipes',
       'Destructor and Constructor mine and place from the network',
       'Signal Emitters react to stock levels',
-      'Works with any mod\'s item and fluid storage, on NeoForge and Fabric'],
+      'Works with any mod\'s item and fluid storage, on Forge, NeoForge and Fabric'],
     art: `<div class="panel" style="padding:32px 30px 20px">${rivets()}
       <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px 16px">
         ${[['import_bus', 'Import Bus', 'pulls in'], ['export_bus', 'Export Bus', 'pushes out'], ['storage_bus', 'Storage Bus', 'any inventory as storage'],

@@ -39,16 +39,29 @@ Install on both the server and every client.
 
 ## Building
 
-Each Minecraft version builds on its own, with the Java version from the table (Gradle downloads it if needed):
+Each Minecraft version is a separate MultiLoader Gradle workspace with its own wrapper. These are the only supported
+targets (the NightBeam convention): 8 jars per release, all with the same version.
+
+| Minecraft | Loaders | Java | Folder |
+| --- | --- | --- | --- |
+| 1.20.1 | Forge, Fabric | 17 bytecode (build on 21) | `1.20.1/{common,forge,fabric}` |
+| 1.21.1 | NeoForge, Fabric | 21 | `1.21.1/{common,neoforge,fabric}` |
+| 26.2 | NeoForge, Fabric | 25 | `26.2/{common,neoforge,fabric}` |
+| 26.3 | NeoForge, Fabric | 25 | `26.3/{common,neoforge,fabric}` |
 
 ```bash
-cd 1.21.1   # or 1.20.1, 26.2, 26.3
-./gradlew build
+./gradlew buildAll             # every workspace, then the 8 loader jars into releases/
+cd 1.20.1 && ./gradlew build   # Gradle on Java 21 (Java 17 toolchain)
+cd 1.21.1 && ./gradlew build   # Java 21
+cd 26.3 && ./gradlew build     # Java 25 (the same for 26.2)
 ```
 
-The jars are written to `<minecraft>/<loader>/build/libs/omnivault-<minecraft>-<loader>-<version>.jar`, for example
-`1.21.1/neoforge/build/libs/omnivault-1.21.1-neoforge-2.0.1.jar`. The loader folders are `forge` and `fabric` for
-1.20.1, and `neoforge` and `fabric` for the other versions.
+The root build hands the 26.x workspaces `JAVA_HOME_25_X64` (or `-Pjava25Home=<jdk>`) and the others
+`JAVA_HOME_21_X64` (or `-Pjava21Home=<jdk>`); without them each workspace uses the current `JAVA_HOME`.
+Jars land in `<minecraft>/<loader>/build/libs/omnivault-<loader>-<minecraft>-<version>.jar`, for example
+`1.21.1/neoforge/build/libs/omnivault-neoforge-1.21.1-2.0.4.jar`. Every workspace's `gradle.properties` carries the
+same `version=` (`./gradlew checkVersions`; set it with `./gradlew syncVersion -PmodVersion=x.y.z`).
+`python3 scripts/check_targets.py workspaces` checks the targets, the shared version and the metadata ranges.
 
 ## Testing
 
@@ -57,6 +70,7 @@ cd 1.21.1 && ./gradlew :neoforge:runGameTestServer   # boots a NeoForge dedicate
 cd 1.21.1 && ./gradlew :fabric:runGametest            # the same GameTests, plus Fabric transfer tests, on Fabric
 cd 1.20.1 && ./gradlew :forge:runGameTestServer      # on 1.20.1 the first loader is Forge
 python3 -m unittest discover -s tests                 # resource and release-guard checks (repository root)
+node --test scripts/*.test.mjs                        # same-day guard tests
 python3 tools/assets/build_lang.py --check            # en_us.json matches the lang fragments
 ```
 
@@ -64,6 +78,15 @@ The GameTests build real networks, vaults, drawers, backpacks and autocrafting s
 results, from cell capacities to a furnace smelting through a Pattern Provider and a drive in the Nether joined
 through a Quantum Bridge. The same tests run on every version and loader. `tools/qa/` drives a dev server and a
 headless client (`QA_MC=26.2 QA_LOADER=fabric`, for example) for in-game checks and screenshots.
+
+## Releasing
+
+CI (`.github/workflows/ci.yml`) builds all 8 jars and runs the GameTests and the checks above on every push to `main`
+that touches the build. Publishing to Modrinth and CurseForge is `.github/workflows/publish.yml`, run by hand
+(`version`, `dry_run`) or by a `v*.*.*` tag; it never runs on a plain push. It refuses a second release of the mod on
+the same day (Africa/Tunis), builds the jars from source, fails unless exactly the 8 jars are found, and takes the
+release notes from this version's section of `CHANGELOG.md`. It needs the secrets `MODRINTH_TOKEN`,
+`CURSEFORGE_TOKEN`, `CURSEFORGE_API_KEY` and the variables `MODRINTH_ID`, `CURSEFORGE_ID`.
 
 ## Project layout
 
@@ -74,6 +97,8 @@ headless client (`QA_MC=26.2 QA_LOADER=fabric`, for example) for in-game checks 
 └── neoforge/   # NeoForge glue: capabilities, payloads, events, client setup
 1.20.1/         # the same layout with forge/ in place of neoforge/
 26.2/, 26.3/    # the same layout
+build.gradle    # root aggregator: buildAll, dist (the 8 jars into releases/), checkVersions, syncVersion
+scripts/        # release_guard.py (jar checks), check_targets.py (the 8 targets), same_day_guard.mjs (publish)
 tools/
 ├── assets/     # generators for every texture, model, blockstate, recipe and loot table; offline model renderer
 ├── lang/       # lang fragments merged into en_us.json

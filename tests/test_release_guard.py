@@ -131,7 +131,7 @@ class ReleaseGuardTest(unittest.TestCase):
 
     def test_valid_jar_passes_and_is_hashed(self):
         self.build()
-        write_jar(self.libs('1.21.1', 'neoforge') / 'omnivault-1.21.1-neoforge-2.0.0-sources.jar', {'x': 'y'})
+        write_jar(self.libs('1.21.1', 'neoforge') / 'omnivault-neoforge-1.21.1-2.0.0-sources.jar', {'x': 'y'})
         hashes = self.validate()
         self.assertEqual(len(hashes), 2)
         self.assertEqual(set(hashes[0]), {'sha256', 'sha1', 'sha512'})
@@ -208,7 +208,7 @@ class ReleaseGuardTest(unittest.TestCase):
 
     def test_stale_jar_blocks(self):
         self.build()
-        write_jar(self.libs('1.21.1', 'neoforge') / 'omnivault-1.21.1-neoforge-1.9.0.jar', entries())
+        write_jar(self.libs('1.21.1', 'neoforge') / 'omnivault-neoforge-1.21.1-1.9.0.jar', entries())
         with self.assertRaisesRegex(guard.ReleaseError, 'stale'):
             self.validate()
 
@@ -224,7 +224,7 @@ class ReleaseGuardTest(unittest.TestCase):
 
     def test_forge_metadata_is_checked(self):
         self.build_fabric('1.20.1')
-        self.build_jar('1.20.1', 'forge', **{'META-INF/mods.toml': toml('1.20.1', 'forge').replace('[1.20.1,1.20.2)', '[1.20,1.21)')})
+        self.build_jar('1.20.1', 'forge', **{'META-INF/mods.toml': toml('1.20.1', 'forge').replace('[1.20.1, 1.20.2)', '[1.20,1.21)')})
         with self.assertRaisesRegex(guard.ReleaseError, 'Minecraft version range'):
             self.validate(['1.20.1'])
 

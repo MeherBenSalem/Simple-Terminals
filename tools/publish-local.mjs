@@ -82,7 +82,7 @@ function findJar(target) {
   const suffix = `-${version}.jar`;
   const candidates = fs
     .readdirSync(libs)
-    .filter((name) => name.startsWith(`omnivault-${target.minecraft}-${target.loader}-`) && name.endsWith(suffix))
+    .filter((name) => name.startsWith(`omnivault-${target.loader}-${target.minecraft}-`) && name.endsWith(suffix))
     .filter((name) => !/(?:-sources|-javadoc|-dev|-dev-shadow)\.jar$/i.test(name))
     .map((name) => path.join(libs, name));
 

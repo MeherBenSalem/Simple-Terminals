@@ -1,22 +1,27 @@
-# Dual-publish OmniVault (formerly Simple Terminals) to Modrinth + CurseForge on version tags.
+# Publish OmniVault (formerly Simple Terminals) to Modrinth + CurseForge (NightBeam convention).
+#
+# Runs only by hand (workflow_dispatch) or on a v*.*.* tag; a push to main never releases anything.
+# Builds all 8 convention jars from source with ./gradlew buildAll (the workspaces must be at <version>), runs the
+# GameTests, and fails unless exactly the 8 jars exist:
+#   omnivault-<loader>-<minecraft>-<version>.jar for 1.20.1 Fabric + Forge; 1.21.1, 26.2 and 26.3 Fabric + NeoForge.
+# scripts/release_guard.py then checks every jar it uploads (loader metadata, Minecraft range, classes, resources),
+# hashes it and takes the release notes from this version's CHANGELOG.md section.
 #
 # Rule: EACH jar becomes its OWN Modrinth version and OWN CurseForge file
 # with the correct Minecraft version + loader tags. Never attach multiple
 # loader/MC jars as secondary files on a single version.
 #
-# Org/repo secrets:
-#   MODRINTH_TOKEN
-#   CURSEFORGE_TOKEN
-#   CURSEFORGE_API_KEY
+# Same-day guard (NightBeam convention): scripts/same_day_guard.mjs stops the run if this mod already had a
+# release today (Africa/Tunis day), on Modrinth, CurseForge or an earlier Publish run. A dry run only reports it.
+# It runs before building and again right before the upload, whatever the inputs below say.
 #
-# Repo variables:
-#   MODRINTH_ID
-#   CURSEFORGE_ID
+# Repo secrets: MODRINTH_TOKEN, CURSEFORGE_TOKEN, CURSEFORGE_API_KEY
+# Repo variables: MODRINTH_ID, CURSEFORGE_ID (fallbacks: this project's IDs, Ss3e4qjk and 1528758)
 #
-# Usage after a release build is ready:
-#   git tag v1.2.3 && git push --tags         # every Minecraft version
-# or run the workflow by hand with a version and, optionally, only some Minecraft versions
-# (e.g. "1.20.1,26.2,26.3" to add ports of a release that is already out for 1.21.1).
+# Prove it first:  gh workflow run publish.yml -f version=2.0.4 -f dry_run=true
+# Release:         gh workflow run publish.yml -f version=2.0.4   (or: git tag v2.0.4 && git push origin v2.0.4)
+# A manual run can upload only some Minecraft versions (e.g. minecraft=1.20.1,26.3 to add ports of a release that is
+# already out); all 8 jars are still built and checked, and the same-day guard still applies.
 
 name: Publish
 
@@ -34,19 +39,25 @@ on:
         required: false
         default: "false"
       platforms:
-        description: "modrinth, curseforge, or both"
+        description: "modrinth, curseforge, or both (the same-day guard still applies)"
         required: false
         default: "both"
       minecraft:
-        description: "Comma-separated Minecraft versions to release (empty = all)"
+        description: "Comma-separated Minecraft versions to upload (empty = all; from 1.20.1, 1.21.1, 26.2, 26.3); the same-day guard still applies"
         required: false
         default: ""
+
+# One Publish at a time per repo, so two runs can't both pass the same-day guard.
+concurrency:
+  group: publish-${{ github.repository }}
+  cancel-in-progress: false
 
 jobs:
   publish:
     runs-on: ubuntu-latest
     permissions:
       contents: read
+      actions: read
     steps:
       - uses: actions/checkout@v4
 
@@ -61,49 +72,58 @@ jobs:
           if [[ "$GITHUB_REF" == refs/tags/v* ]]; then
             VERSION="${GITHUB_REF_NAME#v}"
           elif [[ -n "$INPUT_VERSION" ]]; then
-            VERSION="$INPUT_VERSION"
+            VERSION="${INPUT_VERSION#v}"
           else
             echo "Provide a v*.*.* tag or workflow_dispatch version" >&2
             exit 1
           fi
-          [[ "$VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+([-+][0-9A-Za-z.-]+)?$ ]] || exit 1
+          [[ "$VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+([-+][0-9A-Za-z.-]+)?$ ]] || { echo "Invalid version: $VERSION" >&2; exit 1; }
           echo "version=$VERSION" >> "$GITHUB_OUTPUT"
-          # Every Minecraft workspace in the repository unless the run names some.
+          # Every supported Minecraft version unless the run names some.
           MINECRAFT="${INPUT_MINECRAFT// /}"
           if [[ -z "$MINECRAFT" ]]; then
-            MINECRAFT="$(for d in */gradle.properties; do dirname "$d"; done | paste -sd, -)"
+            MINECRAFT="1.20.1,1.21.1,26.2,26.3"
           fi
-          [[ "$MINECRAFT" =~ ^[0-9.]+(,[0-9.]+)*$ ]] || exit 1
+          [[ "$MINECRAFT" =~ ^[0-9.]+(,[0-9.]+)*$ ]] || { echo "Invalid minecraft input: $MINECRAFT" >&2; exit 1; }
           for mc in ${MINECRAFT//,/ }; do
-            test -f "$mc/gradle.properties" || { echo "No $mc workspace" >&2; exit 1; }
+            case "$mc" in
+              1.20.1|1.21.1|26.2|26.3) ;;
+              *) echo "::error::minecraft must name 1.20.1, 1.21.1, 26.2 or 26.3, not ${mc}"; exit 1 ;;
+            esac
           done
           echo "minecraft=$MINECRAFT" >> "$GITHUB_OUTPUT"
 
-      - name: Find prebuilt release jars
-        id: prebuilt
-        shell: bash
-        run: |
-          set -euo pipefail
-          if [ -d releases ] && [ -n "$(find releases -type f -name '*.jar' -print -quit)" ]; then
-            echo "found=true" >> "$GITHUB_OUTPUT"
-            echo "Prebuilt release directory found; the complete set must pass the release guard"
-          else
-            echo "found=false" >> "$GITHUB_OUTPUT"
-            echo "No prebuilt jars; build the release artifacts"
-          fi
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Test publisher scripts
+        run: node --test scripts/*.test.mjs
+
+      - name: Same-day guard
+        env:
+          MODRINTH_ID: ${{ vars.MODRINTH_ID || 'Ss3e4qjk' }}
+          CURSEFORGE_ID: ${{ vars.CURSEFORGE_ID || '1528758' }}
+          CURSEFORGE_API_KEY: ${{ secrets.CURSEFORGE_API_KEY }}
+          GITHUB_TOKEN: ${{ github.token }}
+          PUBLISH_WORKFLOW: publish.yml
+          UPLOAD_STEP: Upload Modrinth + CurseForge (one version per jar)
+          DRY_RUN: ${{ inputs.dry_run }}
+        run: node scripts/same_day_guard.mjs
 
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
 
+      # 21 stays JAVA_HOME (Gradle for 1.20.1/1.21.1); 17 is the 1.20.1 toolchain; the root build hands 26.x
+      # JAVA_HOME_25_X64.
       - uses: actions/setup-java@v4
         with:
           distribution: temurin
-          # Each workspace builds with the Java its gradle.properties names (java_version).
           java-version: |
             17
-            21
             25
+            21
 
       - name: Verify source resources and release guard tests
         run: |
@@ -112,39 +132,74 @@ jobs:
           python3 -m unittest discover -s tests -v
 
       - uses: gradle/actions/setup-gradle@v4
-        if: steps.prebuilt.outputs.found != 'true'
 
-      - name: Build and run GameTests
-        if: steps.prebuilt.outputs.found != 'true'
+      - name: Build all 8 jars
         shell: bash
         env:
-          MINECRAFT: ${{ steps.ver.outputs.minecraft }}
+          VERSION: ${{ steps.ver.outputs.version }}
         run: |
           set -euo pipefail
-          for mc in ${MINECRAFT//,/ }; do
+          python3 scripts/check_targets.py workspaces
+          ws_version="$(python3 scripts/check_targets.py version)"
+          if [ "$ws_version" != "$VERSION" ]; then
+            echo "::error::The workspaces are at ${ws_version}, not ${VERSION}. Bump them first (./gradlew syncVersion -PmodVersion=${VERSION})."
+            exit 1
+          fi
+          chmod +x gradlew 1.20.1/gradlew 1.21.1/gradlew 26.2/gradlew 26.3/gradlew
+          ./gradlew buildAll --no-daemon
+
+      - name: Run GameTests
+        shell: bash
+        run: |
+          set -euo pipefail
+          for mc in 1.20.1 1.21.1 26.2 26.3; do
             java="$(sed -n 's/^java_version=//p' "$mc/gradle.properties")"
+            # Gradle runs on 21 for 1.20.1 (Java 17 bytecode, gradle/gradle-daemon-jvm.properties) and 1.21.1.
+            [ "$java" = 17 ] && java=21
             home="JAVA_HOME_${java}_X64"
             export JAVA_HOME="${!home}"
             # Forge on 1.20.1, NeoForge everywhere else; Fabric everywhere.
             fml=neoforge; [ -d "$mc/forge" ] && fml=forge
-            echo "::group::Minecraft $mc (Java $java)"
-            (cd "$mc" && bash gradlew clean build --no-daemon --stacktrace \
-              && bash gradlew ":$fml:runGameTestServer" --no-daemon --stacktrace \
+            echo "::group::Minecraft $mc GameTests (Java $java)"
+            (cd "$mc" && bash gradlew ":$fml:runGameTestServer" --no-daemon --stacktrace \
               && bash gradlew :fabric:runGametest --no-daemon --stacktrace)
             echo "::endgroup::"
           done
 
-      - name: Validate complete packaged release and version-specific notes
+      - name: Verify release jars and version-specific notes
+        shell: bash
         env:
           VERSION: ${{ steps.ver.outputs.version }}
           MINECRAFT: ${{ steps.ver.outputs.minecraft }}
         run: |
-          python3 scripts/release_guard.py --version "$VERSION" --minecraft "$MINECRAFT" \
+          set -euo pipefail
+          # Exactly the 8 convention jars, one per loader + Minecraft pair, or the run stops here.
+          python3 scripts/check_targets.py jars --version "$VERSION" --dir releases --list-file jar-list.txt
+          # Every jar to upload, from the same build: loader metadata, Minecraft range, classes, resources, hashes.
+          python3 scripts/release_guard.py --source build --version "$VERSION" --minecraft "$MINECRAFT" \
             --manifest .release-manifest.json --notes .release-notes.md
 
-      - uses: actions/setup-node@v4
+      - uses: actions/upload-artifact@v4
         with:
-          node-version: "20"
+          name: verified-release
+          path: |
+            releases/*.jar
+            .release-manifest.json
+            .release-notes.md
+          include-hidden-files: true
+          if-no-files-found: error
+
+      - name: Same-day guard (again, right before upload)
+        if: ${{ inputs.dry_run != 'true' }}
+        env:
+          MODRINTH_ID: ${{ vars.MODRINTH_ID || 'Ss3e4qjk' }}
+          CURSEFORGE_ID: ${{ vars.CURSEFORGE_ID || '1528758' }}
+          CURSEFORGE_API_KEY: ${{ secrets.CURSEFORGE_API_KEY }}
+          GITHUB_TOKEN: ${{ github.token }}
+          PUBLISH_WORKFLOW: publish.yml
+          UPLOAD_STEP: Upload Modrinth + CurseForge (one version per jar)
+          DRY_RUN: ${{ inputs.dry_run }}
+        run: node scripts/same_day_guard.mjs
 
       - name: Upload Modrinth + CurseForge (one version per jar)
         if: ${{ inputs.dry_run != 'true' }}

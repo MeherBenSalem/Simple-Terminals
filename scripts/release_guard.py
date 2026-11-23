@@ -27,9 +27,9 @@ TARGETS = (
 METADATA = {'fabric': 'fabric.mod.json', 'forge': 'META-INF/mods.toml', 'neoforge': 'META-INF/neoforge.mods.toml'}
 # The Minecraft dependency each loader's metadata must declare.
 MINECRAFT_RANGES = {
-    'forge': {'1.20.1': '[1.20.1,1.20.2)'},
-    'neoforge': {'1.21.1': '[1.21.1, 1.22)', '26.2': '[26.2, 26.3)', '26.3': '[26.3, 26.4)'},
-    'fabric': {'1.20.1': '1.20.1', '1.21.1': '~1.21.1', '26.2': '~26.2', '26.3': '~26.3'},
+    'forge': {'1.20.1': '[1.20.1, 1.20.2)'},
+    'neoforge': {'1.21.1': '[1.21.1, 1.21.2)', '26.2': '[26.2, 26.3)', '26.3': '[26.3, 26.4)'},
+    'fabric': {'1.20.1': '1.20.1', '1.21.1': '1.21.1', '26.2': '26.2', '26.3': '26.3'},
 }
 REQUIRED_CLASSES = (
     'com/nightbeam/omnivault/OmniVault.class',
@@ -67,7 +67,8 @@ def validate_version(version):
 
 
 def filename(minecraft, loader, version):
-    return f'{MOD_ID}-{minecraft}-{loader}-{version}.jar'
+    # NightBeam convention: <mod_id>-<loader>-<minecraft>-<version>.jar
+    return f'{MOD_ID}-{loader}-{minecraft}-{version}.jar'
 
 
 def minecraft_key(minecraft):

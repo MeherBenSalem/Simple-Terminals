@@ -1,45 +1,85 @@
-# Build / IDE
+# Gradle
 .gradle/
-**/build/
-**/run/
-**/runs/
-**/out/
-**/bin/
-.idea/
-.vscode/
-*.iml
-*.ipr
-*.iws
+build/
+!gradle/wrapper/gradle-wrapper.jar
+
+# Eclipse
+.metadata/
+.settings/
 .classpath
 .project
-.settings/
-.DS_Store
-Thumbs.db
-*.log
+bin/
 
-# Release staging / secrets
+# IntelliJ IDEA
+.idea/
+*.iws
+*.iml
+*.ipr
+out/
+
+# VS Code / Cursor
+.vscode/
+*.code-workspace
+.cursor/
+
+# MacOS
+.DS_Store
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# Logs
+logs/
+*.log
+build_log.txt
+build_output.txt
+dep_warning.txt
+debug.log
+
+# Run folders
+run/
+runs/
+
+# Archives / built artifacts (jars are built by CI and Publish; releases/ is only the local ./gradlew dist output)
+*.jar
 releases/
+*.war
+*.zip
+*.tar
+*.tar.gz
+dist/
+target/
+
+# Keep the Gradle wrapper jar
+!**/gradle/wrapper/gradle-wrapper.jar
+
+# Env / secrets
+.env
+.env.*
+!.env.example
 secrets/
 *.env
 local.env
 
-# OS / temp
+# Publish run outputs (scripts/release_guard.py)
+.release-manifest.json
+.release-notes.md
+
+# Temp
+input.txt
+output.txt
 *.tmp
 *.bak
 *~
 
-# Knowledge graph (local)
-graphify-out/
-
-# Python regression-test caches
+# Python
 __pycache__/
 *.pyc
 
+# Knowledge graph (local)
+graphify-out/
+
 # Local agent worktrees
 .claude/
-
-build/
-out/
-target/
-run/
-runs/

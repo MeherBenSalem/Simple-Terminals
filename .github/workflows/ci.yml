@@ -1,0 +1,140 @@
+# CI for OmniVault (NightBeam convention; based on Bosses' publisher-checks.yml and Modern-Building-Wands' ci.yml).
+# Builds all 8 jars (1.20.1 Fabric + Forge; 1.21.1, 26.2, 26.3 Fabric + NeoForge) with ./gradlew buildAll and checks
+# them with scripts/check_targets.py and scripts/release_guard.py, runs the GameTests of every version on both of its
+# loaders, checks that every workspace has the same version= and that the metadata ranges stay inside their
+# Minecraft line, and runs the resource, release-guard and same-day guard tests. It absorbs verify.yml.
+# It never publishes anything.
+
+name: CI
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "1.20.1/**"
+      - "1.21.1/**"
+      - "26.2/**"
+      - "26.3/**"
+      - "scripts/**"
+      - "tests/**"
+      - "tools/**"
+      - "build.gradle"
+      - "settings.gradle"
+      - "gradle.properties"
+      - "gradle/**"
+      - "gradlew"
+      - "gradlew.bat"
+      # release_guard.py reads this version's section as the release notes.
+      - "CHANGELOG.md"
+      - ".github/workflows/**"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Check publisher syntax
+        run: |
+          for f in scripts/*.mjs; do node --check "$f"; done
+      - name: Test publisher scripts (same-day guard)
+        run: node --test scripts/*.test.mjs
+      - name: Install Pillow (the texture tests read PNGs)
+        run: python3 -m pip install pillow==11.3.0
+      - name: Lang fragments are merged
+        run: python3 tools/assets/build_lang.py --check
+      - name: Resource and release-guard tests
+        run: python3 -m unittest discover -s tests -v
+      - name: Check the 8 targets, one version and metadata ranges
+        run: python3 scripts/check_targets.py workspaces
+
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      # 21 stays JAVA_HOME (Gradle for 1.20.1/1.21.1); 17 is the 1.20.1 toolchain; the root build hands 26.x
+      # JAVA_HOME_25_X64.
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: |
+            17
+            25
+            21
+      - uses: gradle/actions/setup-gradle@v4
+      - name: Build all 8 jars
+        run: |
+          chmod +x gradlew 1.20.1/gradlew 1.21.1/gradlew 26.2/gradlew 26.3/gradlew
+          ./gradlew buildAll --no-daemon
+      - name: Check the 8 jars
+        shell: bash
+        run: |
+          set -euo pipefail
+          version="$(python3 scripts/check_targets.py version)"
+          python3 scripts/check_targets.py jars --version "$version" --dir releases --list-file ci-jars.txt
+          # Loader metadata, Minecraft ranges, classes, resources and hashes of every packaged jar.
+          python3 scripts/release_guard.py --source release --version "$version" \
+            --manifest "$RUNNER_TEMP/manifest.json" --notes "$RUNNER_TEMP/notes.md"
+          mkdir -p ci-jars
+          xargs -a ci-jars.txt cp -f -t ci-jars/
+      - uses: actions/upload-artifact@v4
+        with:
+          name: omnivault-jars
+          path: ci-jars/*.jar
+          if-no-files-found: error
+
+  gametests:
+    # One job per Minecraft version runs its GameTests on a server of each of its two loaders.
+    name: gametests-${{ matrix.minecraft }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 75
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - minecraft: "1.20.1"
+            # Builds for Java 17; Gradle itself runs on 21 (gradle/gradle-daemon-jvm.properties).
+            java: |
+              17
+              21
+            fml: forge
+          - minecraft: "1.21.1"
+            java: "21"
+            fml: neoforge
+          - minecraft: "26.2"
+            java: "25"
+            fml: neoforge
+          - minecraft: "26.3"
+            java: "25"
+            fml: neoforge
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: ${{ matrix.java }}
+      - uses: gradle/actions/setup-gradle@v4
+      - name: Run GameTests on a ${{ matrix.fml }} server
+        working-directory: ${{ matrix.minecraft }}
+        run: bash gradlew :${{ matrix.fml }}:runGameTestServer --no-daemon --stacktrace
+      - name: Run GameTests on a Fabric server
+        working-directory: ${{ matrix.minecraft }}
+        run: bash gradlew :fabric:runGametest --no-daemon --stacktrace

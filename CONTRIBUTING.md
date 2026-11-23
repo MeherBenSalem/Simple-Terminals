@@ -13,9 +13,10 @@ Thanks for contributing to OmniVault (formerly Simple Terminals).
 1. Fork the repository and create a branch from `main`.
 2. Make the smallest coherent change that solves the problem.
 3. Build and test in every Minecraft workspace you changed (`1.20.1/`, `1.21.1/`, `26.2/`, `26.3/`):
-   `./gradlew build`, `./gradlew :neoforge:runGameTestServer` (`:forge:` on 1.20.1) and
-   `./gradlew :fabric:runGametest`, plus `python3 -m unittest discover -s tests` from the repository root.
-   Gameplay changes belong in every workspace.
+   `./gradlew build` (Gradle on Java 21 for 1.20.1 and 1.21.1, Java 25 for 26.x), `./gradlew :neoforge:runGameTestServer`
+   (`:forge:` on 1.20.1) and `./gradlew :fabric:runGametest`, plus `python3 -m unittest discover -s tests` from the
+   repository root. `./gradlew buildAll` from the root builds all four (the 8 loader jars land in `releases/`).
+   Gameplay changes belong in every workspace. Only the 8 targets in the README are supported.
 4. Update documentation when behavior or release steps change.
 5. Open a pull request with a clear summary and verification notes.
 
