@@ -25,13 +25,13 @@ OmniVault is the successor of **Simple Terminals**: worlds that used its Craftin
 | Minecraft | Loader | Java | Also install |
 | --- | --- | --- | --- |
 | 26.3 | NeoForge 26.3.0.100+ | 25 | Nothing (JEI optional) |
-| 26.3 | Fabric Loader 0.20.1+ | 25 | [Fabric API](https://modrinth.com/mod/fabric-api) |
+| 26.3 | Fabric Loader 0.20.1+ | 25 | [Fabric API](https://www.curseforge.com/minecraft/mc-mods/fabric-api) |
 | 26.2 | NeoForge 26.2.0.93+ | 25 | Nothing (JEI optional) |
-| 26.2 | Fabric Loader 0.20.1+ | 25 | [Fabric API](https://modrinth.com/mod/fabric-api) |
+| 26.2 | Fabric Loader 0.20.1+ | 25 | [Fabric API](https://www.curseforge.com/minecraft/mc-mods/fabric-api) |
 | 1.21.1 | NeoForge 21.1.80+ | 21 | Nothing (JEI optional) |
-| 1.21.1 | Fabric Loader 0.16.14+ | 21 | [Fabric API](https://modrinth.com/mod/fabric-api) |
+| 1.21.1 | Fabric Loader 0.16.14+ | 21 | [Fabric API](https://www.curseforge.com/minecraft/mc-mods/fabric-api) |
 | 1.20.1 | Forge 47.4.28+ | 17 | Nothing (JEI optional) |
-| 1.20.1 | Fabric Loader 0.20.1+ | 17 | [Fabric API](https://modrinth.com/mod/fabric-api) |
+| 1.20.1 | Fabric Loader 0.20.1+ | 17 | [Fabric API](https://www.curseforge.com/minecraft/mc-mods/fabric-api) |
 
 Every version and loader has the same content. On Fabric, JEI is optional too, and networks that need power use
 Team Reborn Energy. Each Minecraft version is a MultiLoader workspace (`common` + loader modules) in its own folder.
@@ -82,11 +82,12 @@ headless client (`QA_MC=26.2 QA_LOADER=fabric`, for example) for in-game checks 
 ## Releasing
 
 CI (`.github/workflows/ci.yml`) builds all 8 jars and runs the GameTests and the checks above on every push to `main`
-that touches the build. Publishing to Modrinth and CurseForge is `.github/workflows/publish.yml`, run by hand
+that touches the build. Publishing to CurseForge is `.github/workflows/publish.yml`, run by hand
 (`version`, `dry_run`) or by a `v*.*.*` tag; it never runs on a plain push. It refuses a second release of the mod on
 the same day (Africa/Tunis), builds the jars from source, fails unless exactly the 8 jars are found, and takes the
-release notes from this version's section of `CHANGELOG.md`. It needs the secrets `MODRINTH_TOKEN`,
-`CURSEFORGE_TOKEN`, `CURSEFORGE_API_KEY` and the variables `MODRINTH_ID`, `CURSEFORGE_ID`.
+release notes from this version's section of `CHANGELOG.md`. It needs the secrets `CURSEFORGE_TOKEN`
+(upload token) and `CURSEFORGE_API_KEY` (Core API key) and the variable `CURSEFORGE_ID`. NightBeam publishes to
+CurseForge only; the Modrinth page stays up but gets no new versions.
 
 ## Project layout
 
@@ -104,7 +105,7 @@ tools/
 ├── lang/       # lang fragments merged into en_us.json
 ├── port/       # derive each other version's resources from the 1.21.1 ones
 └── qa/         # dev server / Xvfb client automation
-marketing/      # CurseForge/Modrinth listing copy and artwork
+marketing/      # CurseForge listing copy and artwork
 docs/           # player guides and architecture notes
 ```
 
