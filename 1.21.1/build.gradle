@@ -1,6 +1,7 @@
 plugins {
-    // see https://fabricmc.net/develop/ for new versions; 1.8 is the last line for Gradle 8.10
-    id 'fabric-loom' version '1.8.13' apply false
+    // see https://fabricmc.net/develop/ for new versions; the 1.13 line supports Gradle 9 and still runs on
+    // Java 21, which CI uses to run this build's Gradle (Loom 1.19 needs Java 25)
+    id 'fabric-loom' version '1.13.6' apply false
     // see https://projects.neoforged.net/neoforged/moddevgradle for new versions
-    id 'net.neoforged.moddev' version '2.0.49-beta' apply false
+    id 'net.neoforged.moddev' version '2.0.148' apply false
 }
